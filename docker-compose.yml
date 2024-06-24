@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+      - fuseki
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    depends_on:
+      - fuseki
+
+  fuseki:
+    build: ./apache-jena-fuseki-5.0.0
+    ports:
+      - "3030:3030"
