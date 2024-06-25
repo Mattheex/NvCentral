@@ -1,0 +1,141 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix edam:    <http://edamontology.org/> .
+@prefix obo:     <http://purl.obolibrary.org/obo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s:       <http://ircan.org/schema/> .
+
+s:AdultStage
+    a               owl:Class ;
+    rdfs:label      "Adult stage" ;
+    rdfs:subClassOf obo:UBERON_0000105 ;
+    owl:sameAs      obo:UBERON_0018241 .
+
+s:EmbryoStage
+    a               owl:Class ;
+    rdfs:label      "Embryo stage" ;
+    rdfs:subClassOf obo:UBERON_0000105 ;
+    owl:sameAs      obo:UBERON_0018241 .
+
+s:Fecundity
+    a               owl:Class ;
+    rdfs:label      "Fecundity" ;
+    rdfs:subClassOf obo:PATO_0001434 ;
+    owl:sameAs      obo:PATO_0000273 .
+
+s:Functional
+    a               owl:Class ;
+    rdfs:label      "Functional" ;
+    rdfs:subClassOf obo:NCIT_C25360 .
+
+s:LarvalStage
+    a               owl:Class ;
+    rdfs:label      "Larval stage" ;
+    rdfs:subClassOf obo:UBERON_0000105 ;
+    owl:sameAs      obo:UBERON_0000069 .
+
+s:Lethality
+    a               owl:Class ;
+    rdfs:label      "Lethality" ;
+    rdfs:subClassOf obo:PATO_0000169 ;
+    owl:sameAs      obo:PATO_0000718 .
+
+s:Metamorphosis
+    a               owl:Class ;
+    rdfs:label      "Metamorphosis" ;
+    rdfs:subClassOf obo:UBERON_0000105 ;
+    owl:sameAs      obo:GO_0007552 .
+
+s:NA
+    a          owl:Class ;
+    rdfs:label "NA" .
+
+s:NvERTxID
+    a               owl:Class ;
+    rdfs:label      "NvERTx ID" ;
+    rdfs:subClassOf edam:data_2109 .
+
+s:Perturbation
+    a               owl:Class ;
+    rdfs:label      "Perturbation" ;
+    rdfs:subClassOf obo:PATO_0000057 ;
+    owl:sameAs      obo:PATO_0001507 .
+
+s:PostGrowth
+    a               owl:Class ;
+    rdfs:label      "Post-Growth" ;
+    rdfs:subClassOf obo:GO_0060560, obo:PATO_0001507 .
+
+s:Regeneration
+    a               owl:Class ;
+    rdfs:label      "Regeneration" ;
+    rdfs:subClassOf obo:PATO_0001236 ;
+    owl:sameAs      obo:GO_0031099, obo:PATO_0001433 .
+
+s:Reporter
+    a               owl:Class ;
+    rdfs:label      "Reporter" ;
+    rdfs:subClassOf obo:NCIT_C25360 .
+
+s:SwimPerturbation
+    a               owl:Class ;
+    rdfs:label      "Swim perturbation" ;
+    rdfs:subClassOf obo:GO_0036268, obo:PATO_0001507 .
+
+s:Wild
+    a               owl:Class ;
+    rdfs:label      "Wild" ;
+    rdfs:subClassOf obo:NCIT_C62195 .
+
+s:cellLocated
+    a                  rdf:Property ;
+    rdfs:label         "cell located in" ;
+    rdfs:subPropertyOf obo:RO_0001025 .
+
+s:constructionDescription
+    a                  rdf:Property ;
+    rdfs:label         "has construction description" ;
+    rdfs:subPropertyOf dcterms:description .
+
+s:hasEnsemblID
+    a          rdf:Property ;
+    rdfs:label "has Ensembl ID" .
+
+s:hasGenBankNumber
+    a          rdf:Property ;
+    rdfs:label "has GenBank number" .
+
+s:hasGenomeVersion
+    a          rdf:Property ;
+    rdfs:label "has Genome Version" .
+
+s:hasNvERTxID
+    a          rdf:Property ;
+    rdfs:label "has NvERTx ID" .
+
+s:mutationType
+    a                  rdf:Property ;
+    rdfs:label         "has mutation type" ;
+    rdfs:subPropertyOf dcterms:description .
+
+s:reagentsAndProtocols
+    a                  rdf:Property ;
+    rdfs:label         "has reagents and protocols" ;
+    rdfs:subPropertyOf dcterms:description .
+
+s:regionLocated
+    a                  rdf:Property ;
+    rdfs:label         "region located in" ;
+    rdfs:subPropertyOf obo:RO_0001025 .
+
+s:subLocated
+    a                  rdf:Property ;
+    rdfs:label         "sub-located in" ;
+    rdfs:subPropertyOf obo:RO_0001025 .
+
+s:vectorDescription
+    a                  rdf:Property ;
+    rdfs:label         "has vector description" ;
+    rdfs:subPropertyOf dcterms:description .
+
