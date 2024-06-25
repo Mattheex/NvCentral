@@ -5,9 +5,9 @@ import SparqlClient from 'sparql-http-client'
 import cors from 'cors'
 
 
-let endpointUrl = 'http://fuseki:3030/NvCentral/sparql';
+let endpointUrl = 'http://localhost:3030/NvCentral/sparql';
 let user = 'admin'
-let password = 'I2jW4jF038MtBXB'
+let password = 'nemato'
 let client = new SparqlClient({endpointUrl, user, password})
 const queryType = {
     "query": "application/sparql-query",

@@ -1,3 +1,3 @@
-FROM stain/jena-fuseki:latest
+FROM secoresearch/fuseki:latest
 
 EXPOSE 3030

@@ -1,12 +1,12 @@
 FROM node:alpine
 
-WORKDIR /client
+WORKDIR /app
 
-COPY . /client
+COPY package*.json ./
 
 RUN npm install
 
-RUN npm run build
+COPY . .
 
 EXPOSE 3000
 
