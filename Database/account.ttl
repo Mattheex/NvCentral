@@ -16,7 +16,7 @@
 
 <LabRottingerLab>
     a           foaf:Group ;
-    foaf:member <TeamMemberRottingerLab> ;
+    foaf:member <TeamMemberRottingerLabMatthieu> ;
     foaf:name   "Rottinger Lab" .
 
 <RentzschLab>
