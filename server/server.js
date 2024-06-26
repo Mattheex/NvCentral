@@ -1,8 +1,8 @@
 import express from 'express';
-
-const app = express();
 import SparqlClient from 'sparql-http-client'
 import cors from 'cors'
+
+const app = express();
 
 
 let endpointUrl = 'http://localhost:3030/NvCentral/sparql';
@@ -25,7 +25,8 @@ const structJSON = {
         Line_type: "Line_type",
         Generation: "Generation",
         Zygosity: "Zygosity",
-        Lab_of_origin: "Lab_of_origin"
+        Lab_of_origin: "Lab_of_origin",
+        Status: "Status",
     },
     Genetic_modifications: {
         Tag_type: "Tag_type",
@@ -236,7 +237,7 @@ PREFIX edam:      <http://edamontology.org/>
 PREFIX bao:       <http://www.bioassayontology.org/bao#>
 PREFIX s:         <http://ircan.org/schema/>
 PREFIX dcterms:   <http://purl.org/dc/terms/>
-SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation 
+SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
 ?Chromosomes_number ?Locus_of_insertion ?Mutated_region
@@ -254,7 +255,8 @@ WHERE {
       obo:RO_0000086/rdfs:label ?Line_type;
       obo:NCIT_C42628/rdfs:label ?Lab_of_origin;
       obo:RO_0002350/rdfs:label ?Generation;
-      dcterms:source ?Publication.
+      dcterms:source ?Publication;
+      geno:status/rdfs:label ?Status.
 
       ?exp obo:RO_0004009 ?tool;
       obo:RO_0002234 ?gene.
@@ -771,6 +773,10 @@ const AddExistingNodes = async (field, value) => {
             nodeType: 'obo:OBI_0003250', internData: true,
             schemaData: false
         },
+        Status: {
+            nodeType: 'efo:EFO_0001742', internData: false,
+            schemaData: true
+        },
         Molecular_tools: {
             nodeType: 'obo:FBcv_0003007', internData: false,
             schemaData: false
@@ -816,6 +822,7 @@ const AddExistingNodes = async (field, value) => {
     PREFIX bao:       <http://www.bioassayontology.org/bao#>
     PREFIX s:         <http://ircan.org/schema/>
     PREFIX dcterms:   <http://purl.org/dc/terms/>
+    PREFIX efo:       <http://www.ebi.ac.uk/efo/>
     SELECT *
     WHERE {
           ?node (rdf:type | rdfs:subClassOf)+ ${json[field].nodeType}.
@@ -892,6 +899,7 @@ app.get("/add", async (req, res) => {
     json.Summary.Generation = await AddExistingNodes('Generation', '')
     json.Summary.Zygosity = await AddExistingNodes('Zygosity', '')
     json.Summary.Lab_of_origin = await AddExistingNodes('Lab_of_origin', '')
+    json.Summary.Status = await AddExistingNodes('Status', '')
     json.Genetic_modifications.Molecular_tools = await AddExistingNodes('Molecular_tools', '')
     json.Genetic_modifications.Vector_description = 'textarea'
     json.Genetic_modifications.Construction_description = 'textarea'

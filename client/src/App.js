@@ -192,7 +192,8 @@ function Line() {
                 Line_type: "",
                 Generation: "",
                 Zygosity: "",
-                Lab_of_origin: ""
+                Lab_of_origin: "",
+                Status: ""
             },
             Genetic_modifications: {
                 Tag_type: "",

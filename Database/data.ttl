@@ -1,193 +1,324 @@
-@prefix bao:     <http://www.bioassayontology.org/bao#> .
-@prefix data:    <http://ircan.org/data/> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix edam:    <http://edamontology.org/> .
-@prefix geno:    <http://www.geneontology.org/formats/oboInOwl#> .
-@prefix obo:     <http://purl.obolibrary.org/obo/> .
-@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix s:       <http://ircan.org/schema/> .
-@prefix taxon:   <http://purl.uniprot.org/taxonomy/> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@base <http://ircan.org/data/mutants/> .
+@prefix bao:   <http://www.bioassayontology.org/bao#> .
+@prefix data:  <http://ircan.org/data/> .
+@prefix edam:  <http://edamontology.org/> .
+@prefix geno:  <http://www.geneontology.org/formats/oboInOwl#> .
+@prefix go:    <http://purl.obolibrary.org/obo/GO_> .
+@prefix obo:   <http://purl.obolibrary.org/obo/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s:     <http://ircan.org/schema/> .
+@prefix taxon: <http://purl.uniprot.org/taxonomy/> .
+@prefix terms: <http://purl.org/dc/terms/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-data:AdultLethal2
-    a               s:Lethality ;
-    rdfs:label      "100%" ;
-    obo:RO_0002092  s:AdultStage ;
-    bao:BAO_0002874 obo:NCIT_C48570 ;
-    bao:BAO_0095007 100 .
+<MutantGenotyping>
+    a               edam:data_1583 ;
+    obo:BAO_0002817 <MeltPrimerForward>, <MeltPrimerReverse> .
 
-data:LineMHT2
-    a                obo:OBI_1000048 ;
-    rdfs:label       "MHT" ;
-    obo:GENO_0000608 obo:GENO_0000135 ;
-    obo:IAO_0000118  "mCherry line" ;
-    obo:NCIT_C42628  data:LabRottingerLab2 ;
-    obo:RO_0000053   data:Characteristic2 ;
-    obo:RO_0000086   s:Reporter ;
-    obo:RO_0002350   data:GenerationF02 ;
-    obo:RO_0002354   data:Experience2 ;
-    dcterms:source   data:PublicationPublicationdemoi2 ;
-    geno:id          2 .
-
-data:AdultFecondity2
+<AdultFecondity2>
     a               s:Fecundity ;
     rdfs:label      "0%" ;
     obo:RO_0002092  s:AdultStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0 .
 
-data:Cas9Exp2
-    a               obo:OBI_0003133 ;
-    s:constructionDescription
-                    "sgRNA were synthesized in vitro via the Megashortscript T7 kit (Invitrogen) using the following oligos: 5'TAGGCGTGGGTTCATATCATCGGC, 5' AAACGCCGATGATATGAACCCACG The reaction mixture (500 ng/ml Cas9 enzyme [PNA Bio CP01] and 150 ng/ml of the sgRNA) was incubated at 37°C for 15min prior to injection. Genomic DNA from embryos or aboral pieces of F1 polyps was extracted using a Tris/EDTA/proteinase K buffer. Primers for melt curve analysis are: 5'CACGCGTTACACTCGGCAATCG (forward) and 5'TCTTCTTTGCTTGAAGCGTTCCG (reverse). Primers for sequencing are: 5'TCCCAAATACCTGACGAAACCAT (forward) and 5'CGTTTACGTTTCTTGTCGGAGTT(reverse)." ;
-    s:mutationType  "Mutant genotyping was first done via melt-curve analysis after PCR amplification of a 90bp region on a BioRad CFX96 RealRime PCR machine. Mutations were confirmed by sequencing a 500bp region around the mutation." ;
-    s:reagentsAndProtocols
-                    "The presence/absence of cnidocysts was used for sorting animals at primary polyp stage (12dpf) into sibling control (NvPOU4+/+ and NvPOU4+/-) and mutants (NvPOU4-/-)" ;
-    obo:RO_0002234  data:POU4 ;
-    obo:RO_0002404  data:KnockDown2 ;
-    obo:RO_0004009  data:sgRNA2, obo:FBcv_0003008 ;
-    bao:BAO_0095003 data:MutantGenotyping, data:MutantSequencing .
+<AdultLethal2>
+    a               s:Lethality ;
+    rdfs:label      "100%" ;
+    obo:RO_0002092  s:AdultStage ;
+    bao:BAO_0002874 obo:NCIT_C48570 ;
+    bao:BAO_0095007 100 .
 
-data:Characteristic2
-    a              obo:OBI_0600043 ;
-    rdfs:label     "" ;
-    obo:RO_0000053 data:TagFluorescenceRed2 ;
-    obo:RO_0000086 s:Reporter .
-
-data:EmbryoLethal1
+<EmbryoLethal1>
     a               s:Lethality ;
     rdfs:label      "0.1%" ;
     obo:RO_0002092  s:EmbryoStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0.1 .
 
-data:EmbryoLethal2
+<EmbryoLethal2>
     a               s:Lethality ;
     rdfs:label      "0%" ;
     obo:RO_0002092  s:EmbryoStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0 .
 
-data:Exp1
-    a              obo:OBI_0003131 ;
-    rdfs:label     "Fluorescence protein induction" ;
-    s:vectorDescription
-                   "1.6-KB fragment of MyHC1 promoter region upstream of the start codon and an mCherry reporter gene, flanked bu inverted binding sites of meganuclease I-SceI" ;
-    obo:RO_0002234 data:MyHC1 ;
-    obo:RO_0002404 data:KnockIn1 ;
-    obo:RO_0004009 data:pCRII-TOPO, obo:FBcv_0000480 .
-
-data:Experience2
-    a                      obo:OBI_0001154 ;
-    s:mutationType         "ça a muté" ;
-    s:reagentsAndProtocols "j'ai fais ça ça et ça" ;
-    s:vectorDescription    "Bon vector" ;
-    obo:RO_0002234         data:GeneGene4562 ;
-    obo:RO_0004009         data:Vectorpcrii2, obo:FBcv_0000146 .
-
-data:F2
-    a              obo:NCIT_C88214 ;
-    rdfs:label     "F2" ;
-    obo:RO_0002156 data:F1 ;
-    obo:RO_0002374 taxon:45351 .
-
-data:FluorescenceTag1
-    a               bao:BAO_0170002 ;
-    rdfs:label      "mCherry fluorescence tag" ;
-    s:cellLocated   obo:UBERON_0002095 ;
-    s:regionLocated obo:CL_0000187 ;
-    s:subLocated    s:NA ;
-    obo:RO_0000053  data:EmbryoLethal1, data:Perturbation1, data:Regeneration1, data:SwimPerturbation1 ;
-    obo:RO_0000086  obo:PATO_0000018, obo:PATO_0000322 .
-
-data:GeneGene4562
-    a                  obo:SO_0000704 ;
-    rdfs:label         "Gene456" ;
-    s:hasEnsemblID     s:NA ;
-    s:hasGenBankNumber s:NA ;
-    s:hasGenomeVersion s:NA ;
-    s:hasNvERTxID      data:NvERTxID1652 ;
-    obo:BAO_0002817    data:SequenceAUGAUGAUGAUG2 ;
-    obo:BFO_0000050    s:NA ;
-    obo:BFO_0000051    s:NA ;
-    obo:RO_0002231     data:Locus42 ;
-    obo:RO_0002525     s:NA .
-
-data:GenerationF02
-    a          obo:NCIT_C88214 ;
-    rdfs:label "F0" .
-
-data:LabRottingerLab2
-    a          obo:OBI_0003250 ;
-    rdfs:label "Rottinger Lab" .
-
-data:LarvalLethal2
+<LarvalLethal2>
     a               s:Lethality ;
     rdfs:label      "0%" ;
     obo:RO_0002092  s:LarvalStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0 .
 
-data:Line2
+<PhenotypeLethalityAdultStage2>
+    a              s:Lethality ;
+    rdfs:label     "100" ;
+    obo:RO_0002092 s:AdultStage .
+
+<PhenotypeLethalityEmbryoStage2>
+    a              s:Lethality ;
+    rdfs:label     "0" ;
+    obo:RO_0002092 s:EmbryoStage .
+
+<PhenotypeLethalityLarvalStage2>
+    a              s:Lethality ;
+    rdfs:label     "0.1" ;
+    obo:RO_0002092 s:LarvalStage .
+
+<Perturbation1>
+    a              s:Perturbation ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:Metamorphosis .
+
+<Perturbation2>
+    a              s:Perturbation ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:Metamorphosis .
+
+<PhenotypePostGrowthMetamorphosis2>
+    a              s:PostGrowth ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:Metamorphosis .
+
+<PhenotypeRegenerationAdultStage2>
+    a              s:Regeneration ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:AdultStage .
+
+<Regeneration1>
+    a              s:Regeneration ;
+    rdfs:label     "Normal" ;
+    obo:RO_0002092 s:AdultStage .
+
+<PhenotypeSwimPerturbationLarvalStage2>
+    a              s:SwimPerturbation ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:LarvalStage .
+
+<SwimPerturbation1>
+    a              s:SwimPerturbation ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:LarvalStage .
+
+<SwimPerturbation2>
+    a              s:SwimPerturbation ;
+    rdfs:label     "No" ;
+    obo:RO_0002092 s:LarvalStage .
+
+<MHCGenomeVersion>
+    a          obo:NCIT_C164815 ;
+    rdfs:label "Nemve1" .
+
+<PublicationPublicationdemoi2>
+    a             obo:NCIT_C48471 ;
+    rdfs:label    "Publication de moi" ;
+    terms:creator "Me" ;
+    terms:date    "2024-05-31" ;
+    terms:source  "http://nature.com" ;
+    rdfs:seeAlso  <Line1> .
+
+<publication1>
+    a             obo:NCIT_C48471 ;
+    rdfs:label    "A muscle-specific transgenic reporter line of the sea anemone, Nematostella vectensis" ;
+    terms:creator "Eduard Renfer, Annette Amon-Hassenzahl, Patrick R. H. Steinmetz, and Ulrich Technau" ;
+    terms:date    "2010-01-05"^^xsd:Date ;
+    terms:source  <https://pubmed.ncbi.nlm.nih.gov/20018670/> ;
+    rdfs:seeAlso  <Line1> .
+
+<publication2>
+    a            obo:NCIT_C48471 ;
+    rdfs:label   "NvPOU4/Brain3 functions as a terminal selector gene in the nervous system of the cnidarian Nematostella vectensis" ;
+    terms:creator
+                 "Océane Tournière, David Dolan, Gemma Sian Richards, Kartik Sunagar, Yaara Y Columbus-Shenkar, Yehu Moran, Fabian Rentzsch" ;
+    terms:date   "2021-03-31"^^xsd:Date ;
+    terms:source <https://pubmed.ncbi.nlm.nih.gov/20018670/> ;
+    rdfs:seeAlso <Line2>, <Line3> .
+
+<F1>
+    a              obo:NCIT_C88214 ;
+    rdfs:label     "F1" ;
+    obo:RO_0002156 taxon:45351 .
+
+<F2>
+    a              obo:NCIT_C88214 ;
+    rdfs:label     "F2" ;
+    obo:RO_0002156 <F1> ;
+    obo:RO_0002374 taxon:45351 .
+
+<GenerationF02>
+    a          obo:NCIT_C88214 ;
+    rdfs:label "F0" .
+
+<KnockIn1>
+    a              obo:OBI_0001149 ;
+    rdfs:label     "Reporter line" ;
+    obo:RO_0000053 <FluorescenceTag1> ;
+    obo:RO_0000086 s:Reporter .
+
+<Experience2>
+    a                      obo:OBI_0001154 ;
+    s:mutationType         "ça a muté" ;
+    s:reagentsAndProtocols "j'ai fais ça ça et ça" ;
+    s:vectorDescription    "Bon vector" ;
+    obo:RO_0002234         <GeneGene4562> ;
+    obo:RO_0004009         <Vectorpcrii2>, obo:FBcv_0000146 .
+
+<KnockDown2>
+    a              obo:OBI_0002625 ;
+    rdfs:label     "Functional constitutive line (loss of function)" ;
+    obo:RO_0000053 <PhenotypeLine2> ;
+    obo:RO_0000086 s:Functional .
+
+<Exp1>
+    a              obo:OBI_0003131 ;
+    rdfs:label     "Fluorescence protein induction" ;
+    s:vectorDescription
+                   "1.6-KB fragment of MyHC1 promoter region upstream of the start codon and an mCherry reporter gene, flanked bu inverted binding sites of meganuclease I-SceI" ;
+    obo:RO_0002234 <MyHC1> ;
+    obo:RO_0002404 <KnockIn1> ;
+    obo:RO_0004009 <pCRII-TOPO>, obo:FBcv_0000480 .
+
+<Cas9Exp2>
+    a               obo:OBI_0003133 ;
+    s:constructionDescription
+                    "sgRNA were synthesized in vitro via the Megashortscript T7 kit (Invitrogen) using the following oligos: 5'TAGGCGTGGGTTCATATCATCGGC, 5' AAACGCCGATGATATGAACCCACG The reaction mixture (500 ng/ml Cas9 enzyme [PNA Bio CP01] and 150 ng/ml of the sgRNA) was incubated at 37°C for 15min prior to injection. Genomic DNA from embryos or aboral pieces of F1 polyps was extracted using a Tris/EDTA/proteinase K buffer. Primers for melt curve analysis are: 5'CACGCGTTACACTCGGCAATCG (forward) and 5'TCTTCTTTGCTTGAAGCGTTCCG (reverse). Primers for sequencing are: 5'TCCCAAATACCTGACGAAACCAT (forward) and 5'CGTTTACGTTTCTTGTCGGAGTT(reverse)." ;
+    s:mutationType  "Mutant genotyping was first done via melt-curve analysis after PCR amplification of a 90bp region on a BioRad CFX96 RealRime PCR machine. Mutations were confirmed by sequencing a 500bp region around the mutation." ;
+    s:reagentsAndProtocols
+                    "The presence/absence of cnidocysts was used for sorting animals at primary polyp stage (12dpf) into sibling control (NvPOU4+/+ and NvPOU4+/-) and mutants (NvPOU4-/-)" ;
+    obo:RO_0002234  <POU4> ;
+    obo:RO_0002404  <KnockDown2> ;
+    obo:RO_0004009  <sgRNA2>, obo:FBcv_0003008 ;
+    bao:BAO_0095003 <MutantGenotyping>, <MutantSequencing> .
+
+<LabRottingerLab2>
+    a          obo:OBI_0003250 ;
+    rdfs:label "Rottinger Lab" .
+
+<RentzschLab>
+    a          obo:OBI_0003250 ;
+    rdfs:label "Rentzsch lab" .
+
+<TechnauLab>
+    a          obo:OBI_0003250 ;
+    rdfs:label "Technau Lab" .
+
+<synthesis2>
+    a               obo:OBI_0600040 ;
+    bao:BAO_0000308 "Megashortscript T7 kit" ;
+    bao:BAO_0002819 " 5'AAACGCCGATGATATGAACCCACG", "5'TAGGCGTGGGTTCATATCATCGGC" ;
+    bao:BAO_0095013 bao:BAO_0020008 .
+
+<Characteristic2>
+    a              obo:OBI_0600043 ;
+    rdfs:label     "" ;
+    obo:RO_0000053 <TagFluorescenceRed2> ;
+    obo:RO_0000086 s:Reporter .
+
+<MutantSequencing>
+    a               obo:OBI_0600047 ;
+    obo:BAO_0002817 <SequencingPrimerForward>, <SequencingPrimerReverse> .
+
+<Line1>
+    a                obo:OBI_1000048 ;
+    rdfs:label       "MyHC1::mCherry" ;
+    obo:GENO_0000608 obo:GENO_0000135 ;
+    obo:IAO_0000118  "MHC line" ;
+    obo:NCIT_C42628  <TechnauLab> ;
+    obo:RO_0000053   <KnockIn1> ;
+    obo:RO_0000086   s:Reporter ;
+    obo:RO_0002350   <F1> ;
+    obo:RO_0002354   <Exp1> ;
+    terms:source     <publication1> ;
+    geno:id          0 ;
+    geno:status      s:established .
+
+<Line2>
     a                obo:OBI_1000048 ;
     rdfs:label       "NvPOU4-/-" ;
     obo:GENO_0000608 obo:GENO_0000136 ;
     obo:IAO_0000118  "NvPOU4 Homozygous Mutant" ;
-    obo:NCIT_C42628  data:RentzschLab ;
-    obo:RO_0000053   data:KnockDown2 ;
+    obo:NCIT_C42628  <RentzschLab> ;
+    obo:RO_0000053   <KnockDown2> ;
     obo:RO_0000086   s:Functional ;
     obo:RO_0002202   s:NA ;
-    obo:RO_0002350   data:F2 ;
-    obo:RO_0002354   data:Cas9Exp2 ;
-    dcterms:source   data:publication2 ;
-    geno:id          1 .
+    obo:RO_0002350   <F2> ;
+    obo:RO_0002354   <Cas9Exp2> ;
+    terms:source     <publication2> ;
+    geno:id          1 ;
+    geno:status      s:established .
 
-data:Locus42
-    a          obo:SO_0000179 ;
-    rdfs:label "4" .
+<LineMHT2>
+    a                obo:OBI_1000048 ;
+    rdfs:label       "MHT" ;
+    obo:GENO_0000608 obo:GENO_0000135 ;
+    obo:IAO_0000118  "mCherry line" ;
+    obo:NCIT_C42628  <LabRottingerLab2> ;
+    obo:RO_0000053   <Characteristic2> ;
+    obo:RO_0000086   s:Reporter ;
+    obo:RO_0002350   <GenerationF02> ;
+    obo:RO_0002354   <Experience2> ;
+    terms:source     <PublicationPublicationdemoi2> ;
+    geno:id          2 .
 
-data:MHC1Promoter
-    a          obo:SO_0000167 ;
-    rdfs:label "MHC_Promoter" .
+<SequenceAUGAUGAUGAUG2>
+    a          obo:SO_0000104 ;
+    rdfs:label "AUGAUGAUGAUG" .
 
-data:MHCGenomeVersion
-    a          obo:NCIT_C164815 ;
-    rdfs:label "Nemve1" .
-
-data:MeltPrimerForward
+<MeltPrimerForward>
     a               obo:SO_0000121 ;
     bao:BAO_0002819 "5'CACGCGTTACACTCGGCAATCG" .
 
-data:MeltPrimerReverse
+<SequencingPrimerForward>
+    a               obo:SO_0000121 ;
+    bao:BAO_0002819 "5'TCCCAAATACCTGACGAAACCAT" .
+
+<MeltPrimerReverse>
     a               obo:SO_0000132 ;
     bao:BAO_0002819 "5'TCTTCTTTGCTTGAAGCGTTCCG" .
 
-data:MutantGenotyping
-    a               edam:data_1583 ;
-    obo:BAO_0002817 data:MeltPrimerForward, data:MeltPrimerReverse .
+<SequencingPrimerReverse>
+    a               obo:SO_0000132 ;
+    bao:BAO_0002819 "5'CGTTTACGTTTCTTGTCGGAGTT" .
 
-data:MutantSequencing
-    a               obo:OBI_0600047 ;
-    obo:BAO_0002817 data:SequencingPrimerForward, data:SequencingPrimerReverse .
+<MHC1Promoter>
+    a          obo:SO_0000167 ;
+    rdfs:label "MHC_Promoter" .
 
-data:MyHC1
+<Locus42>
+    a          obo:SO_0000179 ;
+    rdfs:label "4" .
+
+<GeneGene4562>
+    a                  obo:SO_0000704 ;
+    rdfs:label         "Gene456" ;
+    s:hasEnsemblID     s:NA ;
+    s:hasGenBankNumber s:NA ;
+    s:hasGenomeVersion s:NA ;
+    s:hasNvERTxID      <NvERTxID1652> ;
+    obo:BAO_0002817    <SequenceAUGAUGAUGAUG2> ;
+    obo:BFO_0000050    s:NA ;
+    obo:BFO_0000051    s:NA ;
+    obo:RO_0002231     <Locus42> ;
+    obo:RO_0002525     s:NA .
+
+<MyHC1>
     a                  obo:SO_0000704 ;
     rdfs:label         "Myosin Heavy Chain 1" ;
     s:hasEnsemblID     s:NA ;
     s:hasGenBankNumber s:NA ;
-    s:hasGenomeVersion data:MHCGenomeVersion ;
+    s:hasGenomeVersion <MHCGenomeVersion> ;
     s:hasNvERTxID      s:NA ;
     obo:BAO_0002817    s:NA ;
     obo:BFO_0000050    s:NA ;
-    obo:BFO_0000051    data:MHC1Promoter ;
+    obo:BFO_0000051    <MHC1Promoter> ;
     obo:RO_0002231     s:NA ;
     obo:RO_0002525     s:NA .
 
-data:NvERTxID1652
+<NvERTxID1652>
     a          obo:SO_0000704 ;
     rdfs:label "165" .
 
-data:POU4
+<POU4>
     a                  obo:SO_0000704 ;
     rdfs:label         "Pit/Oct1/UNC-86 (POU) domain transcription factor POU4/ Brn3" ;
     s:hasEnsemblID     s:NA ;
@@ -200,179 +331,51 @@ data:POU4
     obo:RO_0002231     s:NA ;
     obo:RO_0002525     s:NA .
 
-data:Perturbation1
-    a              s:Perturbation ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:Metamorphosis .
-
-data:Perturbation2
-    a              s:Perturbation ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:Metamorphosis .
-
-data:PhenotypeLethalityAdultStage2
-    a              s:Lethality ;
-    rdfs:label     "100" ;
-    obo:RO_0002092 s:AdultStage .
-
-data:PhenotypeLethalityEmbryoStage2
-    a              s:Lethality ;
-    rdfs:label     "0" ;
-    obo:RO_0002092 s:EmbryoStage .
-
-data:PhenotypeLethalityLarvalStage2
-    a              s:Lethality ;
-    rdfs:label     "0.1" ;
-    obo:RO_0002092 s:LarvalStage .
-
-data:PhenotypeLine2
-    a               bao:BAO_0170002 ;
-    rdfs:label      "Absence of Cnidocysts" ;
-    s:cellLocated   obo:GO_0042151 ;
-    s:regionLocated s:NA ;
-    s:subLocated    s:NA ;
-    obo:RO_0000053  data:AdultFecondity2, data:EmbryoLethal2, data:LarvalLethal2, data:Perturbation2,
-                    data:SwimPerturbation2 ;
-    obo:RO_0000086  obo:PATO_0040060 ;
-    obo:RO_0002492  obo:CLYH_0000047 .
-
-data:PhenotypePostGrowthMetamorphosis2
-    a              s:PostGrowth ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:Metamorphosis .
-
-data:PhenotypeRegenerationAdultStage2
-    a              s:Regeneration ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:AdultStage .
-
-data:PhenotypeSwimPerturbationLarvalStage2
-    a              s:SwimPerturbation ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:LarvalStage .
-
-data:PublicationPublicationdemoi2
-    a               obo:NCIT_C48471 ;
-    rdfs:label      "Publication de moi" ;
-    dcterms:creator "Me" ;
-    dcterms:date    "2024-05-31" ;
-    dcterms:source  "http://nature.com" ;
-    rdfs:seeAlso    data:Line1 .
-
-data:Regeneration1
-    a              s:Regeneration ;
-    rdfs:label     "Normal" ;
-    obo:RO_0002092 s:AdultStage .
-
-data:RentzschLab
-    a          obo:OBI_0003250 ;
-    rdfs:label "Rentzsch lab" .
-
-data:SequenceAUGAUGAUGAUG2
-    a          obo:SO_0000104 ;
-    rdfs:label "AUGAUGAUGAUG" .
-
-data:SequencingPrimerForward
-    a               obo:SO_0000121 ;
-    bao:BAO_0002819 "5'TCCCAAATACCTGACGAAACCAT" .
-
-data:SequencingPrimerReverse
-    a               obo:SO_0000132 ;
-    bao:BAO_0002819 "5'CGTTTACGTTTCTTGTCGGAGTT" .
-
-data:SwimPerturbation1
-    a              s:SwimPerturbation ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:LarvalStage .
-
-data:SwimPerturbation2
-    a              s:SwimPerturbation ;
-    rdfs:label     "No" ;
-    obo:RO_0002092 s:LarvalStage .
-
-data:TagFluorescenceRed2
-    a               bao:BAO_0170002 ;
-    rdfs:label      "Fluorescence Red" ;
-    s:cellLocated   obo:CL_0000540 ;
-    s:regionLocated obo:GO_0043226 ;
-    s:subLocated    s:NA ;
-    obo:RO_0000053  data:PhenotypeLethalityAdultStage2, data:PhenotypeLethalityEmbryoStage2,
-                    data:PhenotypeLethalityLarvalStage2, data:PhenotypePostGrowthMetamorphosis2,
-                    data:PhenotypeRegenerationAdultStage2, data:PhenotypeSwimPerturbationLarvalStage2 .
-
-data:TechnauLab
-    a          obo:OBI_0003250 ;
-    rdfs:label "Technau Lab" .
-
-data:Vectorpcrii2
+<Vectorpcrii2>
     a          obo:SO_0000755 ;
     rdfs:label "pcrii" .
 
-data:mCherry
+<pCRII-TOPO>
+    a               obo:SO_0000755 ;
+    rdfs:label      "pCRII-TOPO" ;
+    obo:BFO_0000051 <MyHC1Promoter>, <mCherry> ;
+    rdfs:seeAlso    <https://www.snapgene.com/plasmids/ta_and_gc_cloning_vectors/pCRII-TOPO_(linearized)> .
+
+<sgRNA2>
+    a               obo:SO_0001998 ;
+    geno:created_by <synthesis2> .
+
+<mCherry>
     a            bao:BAO_0002656 ;
     rdfs:label   "mCherry gene" ;
     rdfs:seeAlso <https://www.fpbase.org/protein/mcherry/> .
 
-data:pCRII-TOPO
-    a               obo:SO_0000755 ;
-    rdfs:label      "pCRII-TOPO" ;
-    obo:BFO_0000051 data:MyHC1Promoter, data:mCherry ;
-    rdfs:seeAlso    <https://www.snapgene.com/plasmids/ta_and_gc_cloning_vectors/pCRII-TOPO_(linearized)> .
+<FluorescenceTag1>
+    a               bao:BAO_0170002 ;
+    rdfs:label      "mCherry fluorescence tag" ;
+    s:cellLocated   obo:UBERON_0002095 ;
+    s:regionLocated obo:CL_0000187 ;
+    s:subLocated    s:NA ;
+    obo:RO_0000053  <EmbryoLethal1>, <Perturbation1>, <Regeneration1>, <SwimPerturbation1> ;
+    obo:RO_0000086  obo:PATO_0000018, obo:PATO_0000322 .
 
-data:publication1
-    a               obo:NCIT_C48471 ;
-    rdfs:label      "A muscle-specific transgenic reporter line of the sea anemone, Nematostella vectensis" ;
-    dcterms:creator "Eduard Renfer, Annette Amon-Hassenzahl, Patrick R. H. Steinmetz, and Ulrich Technau" ;
-    dcterms:date    "2010-01-05"^^xsd:Date ;
-    dcterms:source  <https://pubmed.ncbi.nlm.nih.gov/20018670/> ;
-    rdfs:seeAlso    data:Line1 .
+<PhenotypeLine2>
+    a               bao:BAO_0170002 ;
+    rdfs:label      "Absence of Cnidocysts" ;
+    s:cellLocated   go:0042151 ;
+    s:regionLocated s:NA ;
+    s:subLocated    s:NA ;
+    obo:RO_0000053  <AdultFecondity2>, <EmbryoLethal2>, <LarvalLethal2>, <Perturbation2>, <SwimPerturbation2> ;
+    obo:RO_0000086  obo:PATO_0040060 ;
+    obo:RO_0002492  obo:CLYH_0000047 .
 
-data:publication2
-    a              obo:NCIT_C48471 ;
-    rdfs:label     "NvPOU4/Brain3 functions as a terminal selector gene in the nervous system of the cnidarian Nematostella vectensis" ;
-    dcterms:creator
-                   "Océane Tournière, David Dolan, Gemma Sian Richards, Kartik Sunagar, Yaara Y Columbus-Shenkar, Yehu Moran, Fabian Rentzsch" ;
-    dcterms:date   "2021-03-31"^^xsd:Date ;
-    dcterms:source <https://pubmed.ncbi.nlm.nih.gov/20018670/> ;
-    rdfs:seeAlso   data:Line2, data:Line3 .
-
-data:sgRNA2
-    a               obo:SO_0001998 ;
-    geno:created_by data:synthesis2 .
-
-data:synthesis2
-    a               obo:OBI_0600040 ;
-    bao:BAO_0000308 "Megashortscript T7 kit" ;
-    bao:BAO_0002819 " 5'AAACGCCGATGATATGAACCCACG", "5'TAGGCGTGGGTTCATATCATCGGC" ;
-    bao:BAO_0095013 bao:BAO_0020008 .
-
-data:F1
-    a              obo:NCIT_C88214 ;
-    rdfs:label     "F1" ;
-    obo:RO_0002156 taxon:45351 .
-
-data:KnockDown2
-    a              obo:OBI_0002625 ;
-    rdfs:label     "Functional constitutive line (loss of function)" ;
-    obo:RO_0000053 data:PhenotypeLine2 ;
-    obo:RO_0000086 s:Functional .
-
-data:KnockIn1
-    a              obo:OBI_0001149 ;
-    rdfs:label     "Reporter line" ;
-    obo:RO_0000053 data:FluorescenceTag1 ;
-    obo:RO_0000086 s:Reporter .
-
-data:Line1
-    a                obo:OBI_1000048 ;
-    rdfs:label       "MyHC1::mCherry" ;
-    obo:GENO_0000608 obo:GENO_0000135 ;
-    obo:IAO_0000118  "MHC line" ;
-    obo:NCIT_C42628  data:TechnauLab ;
-    obo:RO_0000053   data:KnockIn1 ;
-    obo:RO_0000086   s:Reporter ;
-    obo:RO_0002350   data:F1 ;
-    obo:RO_0002354   data:Exp1 ;
-    dcterms:source   data:publication1 ;
-    geno:id          0 .
+<TagFluorescenceRed2>
+    a               bao:BAO_0170002 ;
+    rdfs:label      "Fluorescence Red" ;
+    s:cellLocated   obo:CL_0000540 ;
+    s:regionLocated go:0043226 ;
+    s:subLocated    s:NA ;
+    obo:RO_0000053  <PhenotypeLethalityAdultStage2>, <PhenotypeLethalityEmbryoStage2>, <PhenotypeLethalityLarvalStage2>,
+                    <PhenotypePostGrowthMetamorphosis2>, <PhenotypeRegenerationAdultStage2>,
+                    <PhenotypeSwimPerturbationLarvalStage2> .
 

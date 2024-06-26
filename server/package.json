@@ -14,7 +14,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "sparql-client": "^0.2.0",
     "sparql-http-client": "^3.0.0"
   },
   "devDependencies": {

@@ -1,10 +1,64 @@
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix edam:    <http://edamontology.org/> .
-@prefix obo:     <http://purl.obolibrary.org/obo/> .
-@prefix owl:     <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix s:       <http://ircan.org/schema/> .
+@base <http://ircan.org/data/> .
+@prefix edam:  <http://edamontology.org/> .
+@prefix go:    <http://purl.obolibrary.org/obo/GO_> .
+@prefix obo:   <http://purl.obolibrary.org/obo/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s:     <http://ircan.org/schema/> .
+@prefix terms: <http://purl.org/dc/terms/> .
+@prefix efo:   <http://www.ebi.ac.uk/efo/> .
+
+s:cellLocated
+    a                  rdf:Property ;
+    rdfs:label         "cell located in" ;
+    rdfs:subPropertyOf obo:RO_0001025 .
+
+s:constructionDescription
+    a                  rdf:Property ;
+    rdfs:label         "has construction description" ;
+    rdfs:subPropertyOf terms:description .
+
+s:hasEnsemblID
+    a          rdf:Property ;
+    rdfs:label "has Ensembl ID" .
+
+s:hasGenBankNumber
+    a          rdf:Property ;
+    rdfs:label "has GenBank number" .
+
+s:hasGenomeVersion
+    a          rdf:Property ;
+    rdfs:label "has Genome Version" .
+
+s:hasNvERTxID
+    a          rdf:Property ;
+    rdfs:label "has NvERTx ID" .
+
+s:mutationType
+    a                  rdf:Property ;
+    rdfs:label         "has mutation type" ;
+    rdfs:subPropertyOf terms:description .
+
+s:reagentsAndProtocols
+    a                  rdf:Property ;
+    rdfs:label         "has reagents and protocols" ;
+    rdfs:subPropertyOf terms:description .
+
+s:regionLocated
+    a                  rdf:Property ;
+    rdfs:label         "region located in" ;
+    rdfs:subPropertyOf obo:RO_0001025 .
+
+s:subLocated
+    a                  rdf:Property ;
+    rdfs:label         "sub-located in" ;
+    rdfs:subPropertyOf obo:RO_0001025 .
+
+s:vectorDescription
+    a                  rdf:Property ;
+    rdfs:label         "has vector description" ;
+    rdfs:subPropertyOf terms:description .
 
 s:AdultStage
     a               owl:Class ;
@@ -45,7 +99,7 @@ s:Metamorphosis
     a               owl:Class ;
     rdfs:label      "Metamorphosis" ;
     rdfs:subClassOf obo:UBERON_0000105 ;
-    owl:sameAs      obo:GO_0007552 .
+    owl:sameAs      go:0007552 .
 
 s:NA
     a          owl:Class ;
@@ -65,13 +119,13 @@ s:Perturbation
 s:PostGrowth
     a               owl:Class ;
     rdfs:label      "Post-Growth" ;
-    rdfs:subClassOf obo:GO_0060560, obo:PATO_0001507 .
+    rdfs:subClassOf go:0060560, obo:PATO_0001507 .
 
 s:Regeneration
     a               owl:Class ;
     rdfs:label      "Regeneration" ;
     rdfs:subClassOf obo:PATO_0001236 ;
-    owl:sameAs      obo:GO_0031099, obo:PATO_0001433 .
+    owl:sameAs      go:0031099, obo:PATO_0001433 .
 
 s:Reporter
     a               owl:Class ;
@@ -81,61 +135,49 @@ s:Reporter
 s:SwimPerturbation
     a               owl:Class ;
     rdfs:label      "Swim perturbation" ;
-    rdfs:subClassOf obo:GO_0036268, obo:PATO_0001507 .
+    rdfs:subClassOf go:0036268, obo:PATO_0001507 .
 
 s:Wild
     a               owl:Class ;
     rdfs:label      "Wild" ;
     rdfs:subClassOf obo:NCIT_C62195 .
 
-s:cellLocated
-    a                  rdf:Property ;
-    rdfs:label         "cell located in" ;
-    rdfs:subPropertyOf obo:RO_0001025 .
+s:ToDo
+    a               owl:Class ;
+    rdfs:label      "To do" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:constructionDescription
-    a                  rdf:Property ;
-    rdfs:label         "has construction description" ;
-    rdfs:subPropertyOf dcterms:description .
+s:Initiated
+    a               owl:Class ;
+    rdfs:label      "Initiated" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:hasEnsemblID
-    a          rdf:Property ;
-    rdfs:label "has Ensembl ID" .
+s:sgRNAGeno
+    a               owl:Class ;
+    rdfs:label      "sgRNA + Genotyping primers designed" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:hasGenBankNumber
-    a          rdf:Property ;
-    rdfs:label "has GenBank number" .
+s:validated
+    a               owl:Class ;
+    rdfs:label      "Validated in vitro" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:hasGenomeVersion
-    a          rdf:Property ;
-    rdfs:label "has Genome Version" .
+s:injected
+    a               owl:Class ;
+    rdfs:label      "Injected awaiting genotyping" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:hasNvERTxID
-    a          rdf:Property ;
-    rdfs:label "has NvERTx ID" .
+s:potentialMutants
+    a               owl:Class ;
+    rdfs:label      "Potential mutants (F0/F1) identified" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:mutationType
-    a                  rdf:Property ;
-    rdfs:label         "has mutation type" ;
-    rdfs:subPropertyOf dcterms:description .
+s:genotyped
+    a               owl:Class ;
+    rdfs:label      "Genotyped" ;
+    rdfs:subClassOf efo:EFO_0001742 .
 
-s:reagentsAndProtocols
-    a                  rdf:Property ;
-    rdfs:label         "has reagents and protocols" ;
-    rdfs:subPropertyOf dcterms:description .
-
-s:regionLocated
-    a                  rdf:Property ;
-    rdfs:label         "region located in" ;
-    rdfs:subPropertyOf obo:RO_0001025 .
-
-s:subLocated
-    a                  rdf:Property ;
-    rdfs:label         "sub-located in" ;
-    rdfs:subPropertyOf obo:RO_0001025 .
-
-s:vectorDescription
-    a                  rdf:Property ;
-    rdfs:label         "has vector description" ;
-    rdfs:subPropertyOf dcterms:description .
-
+s:established
+    a               owl:Class ;
+    rdfs:label      "Established" ;
+    rdfs:subClassOf efo:EFO_0001742 .

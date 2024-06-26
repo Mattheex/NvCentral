@@ -1,0 +1,60 @@
+@base <http://ircan.org/account/> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xs:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix wac:  <http://www.w3.org/ns/auth/acl#> .
+@prefix s:    <http://ircan.org/schema/> .
+
+<Administrator>
+    a         foaf:Person ;
+    foaf:name "Admin User" .
+
+<Visitor>
+    a         foaf:Person ;
+    foaf:name "Visitor" .
+
+<LabRottingerLab>
+    a           foaf:Group ;
+    foaf:member <TeamMemberRottingerLab> ;
+    foaf:name   "Rottinger Lab" .
+
+<RentzschLab>
+    a         foaf:Group ;
+    foaf:name "Rentzsch lab" .
+
+<TechnauLab>
+    a         foaf:Group ;
+    foaf:name "Technau Lab" .
+
+<TeamMemberRottingerLabMatthieu>
+    a         foaf:Person ;
+    foaf:name "Matthieu" .
+
+<AdminAccess>
+    a            wac:Authorization ;
+    wac:agent    <Administrator> ;
+    wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
+    wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                 s:ToDo .
+
+<TeamAccess>
+    a              wac:Authorization ;
+    wac:agentClass foaf:Group ;
+    wac:agent      <Team> ;
+    wac:mode       wac:Read ;
+    wac:accessTo   s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                   s:ToDo .
+
+<MemberRottingerLabMatthieuAccess>
+    a            wac:Authorization ;
+    wac:agent    <TeamMemberRottingerLabMatthieu> ;
+    wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
+    wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                 s:ToDo .
+
+<VisitorAccess>
+    a            wac:Authorization ;
+    wac:agent    <Visitor> ;
+    wac:mode     wac:Read ;
+    wac:accessTo s:established .
