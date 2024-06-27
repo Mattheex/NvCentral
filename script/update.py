@@ -34,8 +34,9 @@ def saveRDF(file, base, sparql_query):
         'bao': "http://www.bioassayontology.org/bao#",
         's': "http://ircan.org/schema/",
         'edam': "http://edamontology.org/",
-        'data': "http://ircan.org/data/",
-        'taxon': "http://purl.uniprot.org/taxonomy/"
+        'data': "http://ircan.org/data/mutants/",
+        'taxon': "http://purl.uniprot.org/taxonomy/",
+        'account':"http://ircan.org/account/"
     }
 
     if file != "ontologies.ttl":
@@ -71,7 +72,7 @@ queries = {
                 """
     },
     'schema.ttl': {
-        'namespace': 'data',
+        'namespace': 's',
         'query': """
                 PREFIX s: <http://ircan.org/schema/>
                 CONSTRUCT {
@@ -82,6 +83,18 @@ queries = {
                 }
                 """
     },
+    'account.ttl': {
+            'namespace': 'account',
+            'query': """
+                    PREFIX ac: <http://ircan.org/account/>
+                    CONSTRUCT {
+                      ?x ?y ?z
+                    } WHERE {
+                      FILTER (strstarts(str(?x), str(ac:)))
+                      ?x ?y ?z.
+                    }
+                    """
+        },
     'ontologies.ttl': {
         'namespace': None,
         'query': """

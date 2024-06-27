@@ -16,18 +16,18 @@ function DropDown({sub, field}) {
                 {Object.entries(Object.entries(sub)).map(([index, [field, links]]) => (
                     <div key={index} className={index !== sub.length - 1 ? 'm-1 me-4' : 'm-1'}>
                         <p className='h7 fs-5 mb-0 me-4 text-nowrap'>{field}</p>
-                        <hr className="dropdown-divider m-0" role={"separator"}/>
-                        {Object.entries(Object.entries(links)).map(([index,[label, link]]) => (
-                            <NavDropdown.Item key={index} className='p-0 mt-2' as={Link} to={link}>{label}</NavDropdown.Item>))}
+                        <hr className="dropdown-divider m-0"/>
+                        {Object.entries(Object.entries(links)).map(([index, [label, link]]) => (
+                            <NavDropdown.Item key={index} className='p-0 mt-2' as={Link}
+                                              to={link}>{label}</NavDropdown.Item>))}
                     </div>
                 ))}
             </div>
         </NavDropdown>
-
     )
 }
 
-function Header() {
+function Header({username, setUsername}) {
     const location = useLocation();
     const isHome = location.pathname === '/';
     const links = {
@@ -75,13 +75,21 @@ function Header() {
                     <Navbar.Brand as={Link} to="/" className="align-items-center">NvCentral</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Nav className="collapse navbar-collapse mb-lg-0 mb-2">
-                        {Object.entries(Object.entries(links)).map(([index,[label, sub]]) => (
+                        {Object.entries(Object.entries(links)).map(([index, [label, sub]]) => (
                             <DropDown key={index} sub={sub} field={label}/>
                         ))}
-                        <Nav.Link as={Link} to="/signIn">Sign In</Nav.Link>
                     </Nav>
                     <Nav className="ms-auto me-2">
-
+                        {username === null &&
+                            <Nav.Link as={Link} to={`/signIn`} state={{prev: location.pathname}}>Log In</Nav.Link>}
+                        {username !== null &&
+                            <NavDropdown title={username} id="basic-nav-dropdown">
+                                <NavDropdown.Item className='' as={Link} onClick={() => {
+                                    localStorage.removeItem('username');
+                                    localStorage.removeItem('token');
+                                    setUsername(null)
+                                }}>Log out</NavDropdown.Item>
+                            </NavDropdown>}
                     </Nav>
                     <InputGroup className={isHome ? '' : 'm-0'}
                                 style={{width: 'initial', transition: 'margin 1s ', marginRight: '-295px'}}>

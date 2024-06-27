@@ -2,13 +2,15 @@ import express from 'express';
 import SparqlClient from 'sparql-http-client'
 import cors from 'cors'
 
+import jwt from 'jsonwebtoken'
+
 const app = express();
 
 
-let endpointUrl = 'http://localhost:3030/NvCentral/sparql';
-let user = 'admin'
-let password = 'nemato'
-let client = new SparqlClient({endpointUrl, user, password})
+const endpointUrl = 'http://localhost:3030/NvCentral/sparql';
+const user = 'admin'
+const secretKEY = 'nemato'
+const client = new SparqlClient({endpointUrl, user, secretKEY})
 const queryType = {
     "query": "application/sparql-query",
     "update": "application/sparql-update"
@@ -16,6 +18,36 @@ const queryType = {
 
 app.use(express.json())
 app.use(cors())
+
+app.post("/login", async (req, res) => {
+    const {username, password} = req.body;
+
+    const query = `
+    PREFIX ac:   <http://ircan.org/account/>
+    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX s:    <http://ircan.org/schema/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX sAc:  <http://ircan.org/schema/account/>
+    PREFIX wac:  <http://www.w3.org/ns/auth/acl#>
+    PREFIX geno: <http://www.geneontology.org/formats/oboInOwl#>
+
+    SELECT ?id ?account WHERE {
+      ?account foaf:accountName '${username}';
+               sAc:password     '${password}'.
+    }`
+
+    let data = await request(query, 'query')
+
+    console.log(data)
+
+    if (Object.keys(data).length === 0) {
+        res.status(401).json({error: 'Invalid credentials'})
+    } else {
+        const token = jwt.sign({node: data['account'][0].split('/').pop()}, secretKEY)
+        res.json({token, username});
+    }
+})
 
 const structJSON = {
     Summary: {
@@ -73,38 +105,75 @@ const structJSON = {
     }
 }
 
-const searchData = async (filter) => {
+const searchData = async (filter, token) => {
+
+    let account;
+    if (token == null) {
+        account = 'Visitor'
+    } else {
+        jwt.verify(token, secretKEY, (err, node) => {
+            if (err) {
+                return [{}]
+            }
+            account = node.node
+        })
+    }
+
+    console.log(account)
+
     const query = `
-    PREFIX : <http://ircan.org/data/>
+    PREFIX : <http://ircan.org/data/mutants>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX obo: <http://purl.obolibrary.org/obo/>
     PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
     PREFIX up:        <http://purl.uniprot.org/core/>
     PREFIX s:         <http://ircan.org/schema/>
-    SELECT ?field ?ID ?Name ?Type ?Zygosity ?Generation ?Tag ?Tool ?Lab WHERE {
-      ?line rdf:type ?field;
-            obo:RO_0002354 ?exp;
-            rdfs:label ?Name;
-            geno:id ?ID;
-            obo:RO_0002354/obo:RO_0002234/rdfs:label ?gene_name;
-            obo:RO_0000053/obo:RO_0000053 ?phen;
-            obo:GENO_0000608/rdfs:label ?Zygosity;
-            obo:RO_0000086/rdfs:label ?Type;
-            obo:NCIT_C42628/rdfs:label ?Lab;
-            obo:RO_0002350/rdfs:label ?Generation.
-            
-    ?phen rdfs:label ?Tag;
-           s:cellLocated/rdfs:label ?cell_label.
-
-    ?exp obo:RO_0004009 ?molecule_tool.
-    ?molecule_tool (a | rdfs:subClassOf) obo:FBcv_0003007;
-        rdfs:label ?Tool.
+    PREFIX ac: <http://ircan.org/account/>
+    PREFIX wac:     <http://www.w3.org/ns/auth/acl#>
+    SELECT ?field ?ID ?Name ?Type ?Zygosity ?Generation ?Tag ?Tool ?Lab ?Status ?modes WHERE {
+        ?access a         wac:Authorization ;
+             wac:agent ac:${account}.
         
-        ${filter}
+        {
+        ?line rdf:type ?field;
+                obo:RO_0002354 ?exp;
+                rdfs:label ?Name;
+                geno:id ?ID;
+                geno:status ?accessTo;
+                geno:status/rdfs:label ?Status;
+                obo:RO_0002354/obo:RO_0002234/rdfs:label ?gene_name;
+                obo:RO_0000053/obo:RO_0000053 ?phen;
+                obo:GENO_0000608/rdfs:label ?Zygosity;
+                obo:RO_0000086/rdfs:label ?Type;
+                obo:NCIT_C42628/rdfs:label ?Lab;
+                obo:RO_0002350/rdfs:label ?Generation.
+                
+        ?phen rdfs:label ?Tag;
+               s:cellLocated/rdfs:label ?cell_label.
+    
+        ?exp obo:RO_0004009 ?molecule_tool.
+        ?molecule_tool (a | rdfs:subClassOf) obo:FBcv_0003007;
+            rdfs:label ?Tool.
+            
+            ${filter}
+         ?access wac:accessTo ?accessTo.
+            
+        } UNION {
+          ?access wac:mode/rdfs:label ?modes.
+        } 
     }`
 
+    //console.log(query)
+
     let data = await request(query, 'query')
+
+    console.log(data)
+    let rights = data['modes']
+    delete data['modes']
+
+    console.log(data)
+    console.log(rights)
 
 
     let transposedArray = Object.entries(data).reduce((acc, [key, values]) => {
@@ -114,6 +183,8 @@ const searchData = async (filter) => {
         });
         return acc;
     }, [{}]);
+
+    //console.log(transposedArray)
 
     if (Object.keys(transposedArray[0]).length !== 0) {
         for (let key in transposedArray) {
@@ -127,6 +198,11 @@ const searchData = async (filter) => {
             delete row['field'];
         }
     }
+
+
+    transposedArray = {data: transposedArray, rights: rights}
+
+    console.log(transposedArray)
 
     return transposedArray
 }
@@ -170,7 +246,7 @@ app.post("/post/omics", (req, res) => {
     })).catch(err => console.log(err));
 })
 
-app.post("/post/option", (req, res) => {
+app.post("/post/mutants", (req, res) => {
     let string = ''
     for (let key in req.body) {
         if (key === '?Type') {
@@ -186,14 +262,14 @@ app.post("/post/option", (req, res) => {
         }
     }
 
-    searchData(string).then((data => {
+    searchData(string, req.headers['authorization']).then((data => {
         res.json(data);
     })).catch(err => console.log(err));
 })
 
 app.get("/api/option", async (req, res) => {
     const query = `
-    PREFIX : <http://ircan.org/data/>
+    PREFIX : <http://ircan.org/data/mutants/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX obo: <http://purl.obolibrary.org/obo/>
     PREFIX s:         <http://ircan.org/schema/>
@@ -227,7 +303,7 @@ app.get("/api/option", async (req, res) => {
 app.get("/line/:id", async (req, res) => {
     console.time("query");
 
-    const query = `PREFIX : <http://ircan.org/data/>
+    const query = `PREFIX : <http://ircan.org/data/mutants/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX obo:       <http://purl.obolibrary.org/obo/>
@@ -663,7 +739,7 @@ app.post("/post/add", async (req, res) => {
         Date: {select: false, value: '2024-05-31'},
         Creator: {select: false, value: 'Me'},
         Source: {select: false, value: 'http://nature.com'},
-        'Associated lines': {select: true, value: 'http://ircan.org/data/Line1'}
+        'Associated lines': {select: true, value: 'http://ircan.org/data/mutants//Line1'}
     }
 
     //let test = req.body
@@ -723,7 +799,7 @@ app.post("/post/add", async (req, res) => {
 
     query = `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX : <http://ircan.org/data/>
+    PREFIX : <http://ircan.org/data/mutants/>
     PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX obo:       <http://purl.obolibrary.org/obo/>
     PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
@@ -812,7 +888,7 @@ const AddExistingNodes = async (field, value) => {
         return {}
     }
 
-    let query = `PREFIX a: <http://ircan.org/data/>
+    let query = `PREFIX a: <http://ircan.org/data/mutants/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX obo:       <http://purl.obolibrary.org/obo/>
@@ -846,7 +922,7 @@ const AddExistingNodes = async (field, value) => {
 
 app.get("/search/:value", async (req, res) => {
     const query = `
-    PREFIX a: <http://ircan.org/data/>
+    PREFIX a: <http://ircan.org/data/mutants/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX obo:       <http://purl.obolibrary.org/obo/>

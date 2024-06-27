@@ -1,31 +1,38 @@
 @base <http://ircan.org/account/> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xs:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix wac:  <http://www.w3.org/ns/auth/acl#> .
-@prefix s:    <http://ircan.org/schema/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xs:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix wac:     <http://www.w3.org/ns/auth/acl#> .
+@prefix s:       <http://ircan.org/schema/> .
+@prefix mutants: <http://ircan.org/data/mutants/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#>.
+@prefix sAc:     <http://ircan.org/schema/account/> .
+@prefix geno:    <http://www.geneontology.org/formats/oboInOwl#> .
+
+
+sAc:password
+    a          rdf:Property ;
+    rdfs:label "has password" .
 
 <Administrator>
-    a         foaf:Person ;
-    foaf:name "Admin User" .
+    a                foaf:Person ;
+    foaf:accountName "admin" ;
+    sAc:password     "admin" ;
+    geno:id          0 ;
+    foaf:name        "Admin User" .
 
 <Visitor>
     a         foaf:Person ;
     foaf:name "Visitor" .
 
 <LabRottingerLab>
-    a           foaf:Group ;
-    foaf:member <TeamMemberRottingerLabMatthieu> ;
-    foaf:name   "Rottinger Lab" .
-
-<RentzschLab>
-    a         foaf:Group ;
-    foaf:name "Rentzsch lab" .
-
-<TechnauLab>
-    a         foaf:Group ;
-    foaf:name "Technau Lab" .
+    a                   foaf:Group ;
+    foaf:member         <TeamMemberRottingerLabMatthieu> ;
+    foaf:name           "Rottinger Lab" ;
+    foaf:accountName    "RottingerTeam" ;
+    sAc:password        "nemato" ;
+    owl:equivalentClass mutants:LabRottingerLab2 .
 
 <TeamMemberRottingerLabMatthieu>
     a         foaf:Person ;
@@ -38,10 +45,10 @@
     wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
                  s:ToDo .
 
-<TeamAccess>
+<LabRottingerLabAccess>
     a              wac:Authorization ;
     wac:agentClass foaf:Group ;
-    wac:agent      <Team> ;
+    wac:agent      <LabRottingerLab> ;
     wac:mode       wac:Read ;
     wac:accessTo   s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
                    s:ToDo .
@@ -57,4 +64,4 @@
     a            wac:Authorization ;
     wac:agent    <Visitor> ;
     wac:mode     wac:Read ;
-    wac:accessTo s:established .
+    wac:accessTo s:genotyped .

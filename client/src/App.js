@@ -6,19 +6,28 @@ import Header from './components/header'
 import Table from "./components/table";
 import NoMatch from "./components/no-match";
 
-import {Routes, Route, useParams} from "react-router-dom";
+import {Routes, Route, useParams, useNavigate,useLocation } from "react-router-dom";
 import Main from "./components/main";
 import axios from 'axios';
 import Home from "./components/Home";
+import Label from "./components/Label";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 
 function App() {
     const routing = {
         'OBI_1000048': 'transgenic'
     }
+    const [username, setUsername] = useState(localStorage.getItem('username'))
+
     return (
         <div className="App">
             <Routes>
-                <Route path="/" element={<Header/>}>
+                <Route path="/" element={<Header username={username} setUsername={setUsername}/>}>
                     <Route path="/" element={<Home routing={routing}/>}/>
                     <Route path="/transgenic" element={<Transgenic routing={routing}/>}/>
                     <Route path="/transgenic/:id" element={<Line/>}/>
@@ -26,8 +35,82 @@ function App() {
                     <Route path="*" element={<NoMatch/>}/>
                     <Route path="/all/:value" element={<SearchAll routing={routing}/>}/>
                     <Route path="/omics" element={<Omics routing={routing}/>}/>
+                    <Route path="/signIn" element={<Account setUsername={setUsername}/>}/>
                 </Route>
             </Routes>
+        </div>
+    );
+}
+
+function Account({setUsername}) {
+    const [account, setAccount] = useState({"username": "", "password": ""});
+    //const [token, setToken] = useState('');
+    const [error, setError] = useState(false)
+    const navigate = useNavigate();
+    const { state } = useLocation();
+
+    console.log(state)
+
+    const handleChange = (field, value) => {
+        setAccount(account => ({...account, ...{[field]: value}}))
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        axios.post('/login', account).then(res => {
+            setUsername(res.data.username)
+            localStorage.setItem('token', res.data.token)
+            localStorage.setItem('username', res.data.username)
+            navigate(state.prev)
+        }).catch(() => {
+            setError(true)
+        })
+    }
+
+    return (
+        <div className="d-flex flex-grow-1 justify-content-center align-items-center">
+            <Card className="w-50">
+                <Card.Body>
+                    <Card.Title>Connexion</Card.Title>
+                    <Form className="m-3" onSubmit={handleSubmit}>
+                        <Form.Group as={Row} className="mb-3" controlId="formUsername">
+                            <Form.Label column sm={2}>Username</Form.Label>
+                            <Col sm={10}>
+                                <Label type="text" className={error ? 'border border-danger' : ''}
+                                       value={account['username']}
+                                       k='username'
+                                       placeholder={"username"}
+                                       handleChange={handleChange}/>
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} className="mb-3" controlId="forPassword">
+                            <Form.Label column sm={2}>Password</Form.Label>
+                            <Col sm={10}>
+                                <Label type="password" className={error ? 'border border-danger' : ''}
+                                       value={account['password']}
+                                       k='password'
+                                       placeholder={"password"}
+                                       handleChange={handleChange}/>
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} className={`mb-3 ${error ? 'd-block' : 'd-none'}`}>
+                            <Col sm={{span: 10, offset: 2}}>
+                                <Form.Text>
+                                    bad user/password
+                                </Form.Text>
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} className="mb-3">
+                            <Col sm={{span: 10, offset: 2}}>
+                                <Button variant="primary" type="submit">Submit</Button>
+                            </Col>
+                        </Form.Group>
+                    </Form>
+                </Card.Body>
+            </Card>
         </div>
     );
 }
@@ -103,6 +186,7 @@ function Transgenic({routing}) {
         '?field': 'http://purl.obolibrary.org/obo/OBI_1000048',
         '?Type': ['Reporter', 'Functional', 'Wild']
     });
+    const [rights, setRights] = useState([])
     const [results, setResults] = useState([{}]);
     const [options, setOptions] = useState([
         {
@@ -160,7 +244,15 @@ function Transgenic({routing}) {
     }
 
     useEffect(() => {
-        axios.post('/post/option', selected).then(res => setResults(res.data)).catch((error) => console.error('Error sending data:', error))
+        axios.post('/post/mutants', selected, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem('token'),
+            }
+        }).then(res => {
+            setResults(res.data.data);
+            setRights(res.data.rights)
+        }).catch((error) => console.error('Error sending data:', error))
     }, [selected, setResults]);
 
     useEffect(() => {
@@ -177,7 +269,7 @@ function Transgenic({routing}) {
     return (
         <div className="d-flex flex-row flex-grow-1">
             <Menu section={'Options'} types={options} handleChange={handleChange}></Menu>
-            <Table title={'Transgenic Lines'} results={results} routing={routing}></Table>
+            <Table title={'Transgenic Lines'} results={results} rights={rights} routing={routing}></Table>
         </div>
     );
 }
