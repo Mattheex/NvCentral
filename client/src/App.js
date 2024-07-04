@@ -6,7 +6,7 @@ import Header from './components/header'
 import Table from "./components/table";
 import NoMatch from "./components/no-match";
 
-import {Routes, Route, useParams, useNavigate,useLocation } from "react-router-dom";
+import {Route, Routes, useLocation, useNavigate, useParams} from "react-router-dom";
 import Main from "./components/main";
 import axios from 'axios';
 import Home from "./components/Home";
@@ -34,7 +34,6 @@ function App() {
                     <Route path="/add" element={<Add/>}/>
                     <Route path="*" element={<NoMatch/>}/>
                     <Route path="/all/:value" element={<SearchAll routing={routing}/>}/>
-                    <Route path="/omics" element={<Omics routing={routing}/>}/>
                     <Route path="/signIn" element={<Account setUsername={setUsername}/>}/>
                 </Route>
             </Routes>
@@ -47,9 +46,7 @@ function Account({setUsername}) {
     //const [token, setToken] = useState('');
     const [error, setError] = useState(false)
     const navigate = useNavigate();
-    const { state } = useLocation();
-
-    console.log(state)
+    const {state} = useLocation();
 
     const handleChange = (field, value) => {
         setAccount(account => ({...account, ...{[field]: value}}))
@@ -134,7 +131,7 @@ function Omics({routing}) {
     }
 
     useEffect(() => {
-        axios.post('/post/omics', selected).then(res => setResults(res.data)).catch((error) => console.error('Error sending data:', error))
+        axios.post('/search/omics', selected).then(res => setResults(res.data)).catch((error) => console.error('Error sending data:', error))
     }, [selected, setResults]);
 
     return (
@@ -170,7 +167,7 @@ function SearchAll({routing}) {
     }
 
     useEffect(() => {
-        axios.post('/post/searchAll', selected).then(res => setResults(res.data)).catch((error) => console.error('Error sending data:', error))
+        axios.post('/search/all', selected).then(res => setResults(res.data)).catch((error) => console.error('Error sending data:', error))
     }, [selected, setResults]);
 
     return (
@@ -244,7 +241,7 @@ function Transgenic({routing}) {
     }
 
     useEffect(() => {
-        axios.post('/post/mutants', selected, {
+        axios.post('/search/mutants', selected, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem('token'),
@@ -256,7 +253,7 @@ function Transgenic({routing}) {
     }, [selected, setResults]);
 
     useEffect(() => {
-        fetch("/api/option").then(res => res.json().then(data => {
+        fetch("search/mutants/options").then(res => res.json().then(data => {
             setOptions(options => {
                 const newOptions = [...options]
                 newOptions[6] = {...options[6], options: data.lab_label}
@@ -335,7 +332,7 @@ function Line() {
     const {id} = useParams();
 
     useEffect(() => {
-        fetch(`/line/${id}`).then(res => res.json().then(setInfo))
+        fetch(`/get/line/${id}`).then(res => res.json().then(setInfo))
     }, [id, setInfo]);
 
     return <Main section={'read'} info={info}></Main>;
@@ -344,53 +341,60 @@ function Line() {
 function Add() {
     const [info, setInfo] = useState({
             Summary: {Line_name: '', Line_type: [], Zygosity: []},
-            Phenotype: {Timeline: {}, Other: {}}
+            Phenotype: {Select: {Phenotype: [], Stage: []}, Other: {}}
         }
     );
     const [inputAdd, setInputAdd] = useState({
         Line_name: {},
         Synonym_line_name: {},
-        Line_type: {},
+        Line_type: {select: false, value: ''},
         Generation: {},
         Zygosity: {},
         Lab_of_origin: {},
-        Exp: {select: false, value: ''},
-        Charac: {select: false, value: ''},
+        Status: {},
+        Exp: {select: false, value: null},
+        Charac: {select: false, value: null},
         Tag_type: {},
+        Construction_description: {},
+        Mutation_type: {},
+        Reagents_and_protocols: {},
+        Supplementary_information: {},
         Molecular_tools: {},
-        Vector_name: {},
         Name: {},
         Sequence: {},
         Promoter: {},
         "Ensembl accession number": {},
         Genbank_accession_number: {},
+        "Ensembl_ID": {},
+        "Genbank_ID":{},
         NvERTx_ID: {},
-        "Genome version": {},
         "Chromosome's_number": {},
         Locus_of_insertion: {},
         Mutated_region: {},
         'Sub-localization': {},
         Cell_type: {},
         Region_type: {},
-        Phenotype: []
+        Phenotype: [{}],
+        Version: {},
+        Date_: {},
+        Details: {},
+        Publication: {
+            Publication: [],
+            Collapse: {}
+        }
     });
-    const [selectPhen, setSelectPhen] = useState([])
-    const [selectStage, setSelectStage] = useState([])
-
 
     useEffect(() => {
         fetch(`/add`).then(res => res.json().then(setInfo))
-        fetch(`/add/Stage`).then(res => res.json().then(setSelectStage))
-        fetch(`/add/Phenotype`).then(res => res.json().then(setSelectPhen))
-    }, [setInfo, setSelectStage, setSelectPhen]);
+    }, [setInfo]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        axios.post('/post/add', inputAdd).then().catch((error) => console.error('Error sending data:', error))
+        axios.post('/add/line', inputAdd).then().catch((error) => console.error('Error sending data:', error))
     };
 
     return <Main section={'Submit Data'} info={info} handleSubmit={handleSubmit} inputAdd={inputAdd}
-                 setInputAdd={setInputAdd} selectPhen={selectPhen} selectStage={selectStage}></Main>;
+                 setInputAdd={setInputAdd}></Main>;
 }
 
 export default App;

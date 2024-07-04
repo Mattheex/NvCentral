@@ -1,44 +1,19 @@
-import {useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
-import {Fragment} from "react";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
 import TimeLine from "./TimeLine";
-import ListGroup from "react-bootstrap/ListGroup";
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Option from "./Option";
 import Label from "./Label";
 import Collapse from 'react-bootstrap/Collapse';
 
-
-function SearchResultList({result, k, handleChange}) {
-    return (
-        <ListGroup className="shadow rounded position-absolute z-1" variant="flush">
-            {(result.map((item, key) => (
-                <ListGroup.Item key={key} action
-                                onClick={() => handleChange(k, item.label, item.node)}>{item.label}</ListGroup.Item>
-            )))}
-        </ListGroup>
-    )
-}
-
 function SimpleLabel({info, k, setInputAdd}) {
     const [inputValue, setInputValue] = useState('')
-    const [result, setResult] = useState([]);
     const [other, setOther] = useState(false);
-
-    const Search = (field, value) => {
-        handleChangeValue(field, value)
-        if (value.length > 0) {
-            fetch(`/add/${field}/${value}`).then(res => res.json().then(setResult))
-        } else {
-            setResult([])
-        }
-    }
 
     const handleChangeSelect = (field, node) => {
         setInputAdd(inputAdd => ({...inputAdd, ...{[field]: {select: true, value: node}}}))
@@ -46,49 +21,44 @@ function SimpleLabel({info, k, setInputAdd}) {
     }
 
     const handleChangeValue = (field, label) => {
+        console.log(`${field}: ${label}`);
         setInputValue(label)
         setInputAdd(inputAdd => ({...inputAdd, ...{[field]: {select: false, value: label}}}))
     }
 
-    const handleChange = (field, label, node) => {
-        handleChangeSelect(field, node)
-        setInputValue(label)
-        setResult([])
-    }
-
-    const handleBlur = (e) => {
-        if (e.relatedTarget === null || e.relatedTarget.className !== 'list-group-item list-group-item-action') {
-            setResult([])
-        }
-    }
-
     let label;
+
     if (Array.isArray(info)) {
         label = <>
             <Option options={info} field={k} handleChange={handleChangeSelect}/>
             <Collapse in={other}>
-                    <div style={{marginTop: '0.5rem'}}>
-                        <Label value={inputValue} k={k} onChange={handleChangeValue}/>
-                    </div>
+                <div style={{marginTop: '0.5rem'}}>
+                    <Label value={inputValue} k={k} handleChange={handleChangeValue}/>
+                </div>
             </Collapse>
         </>
-    } else if (info === 'date') {
-        label = <Label value={inputValue} k={k} handleChange={handleChangeValue} type={"data"}/>
-    } else if (info === 'textarea') {
+    } else if (typeof info === 'object' && info.collapse === true) {
+        label = <Option options={info.value} field={k} handleChange={handleChangeSelect}/>
+    } else if (info === 'date' || (typeof info === 'object' && info.type === 'date')) {
+        label = <Label value={inputValue} k={k} handleChange={handleChangeValue} type={"date"}/>
+    } else if (info === 'textarea' || (typeof info === 'object' && info.type === 'textarea')) {
         label = <Label value={inputValue} k={k} handleChange={handleChangeValue} rows={6} as={'textarea'}/>;
     } else {
-        label = <>
-            <Label value={inputValue} k={k} handleChange={Search} handleBlur={handleBlur}></Label>
-            {result.length > 0 &&
-                <SearchResultList result={result} k={k} handleChange={handleChange}></SearchResultList>}
-        </>
+        label = <Label value={inputValue} k={k} handleChange={handleChangeValue}/>
     }
 
     return label
 }
 
-function Field({info, section, k, setInputAdd}) {
+function Field({info, section, k, setInputAdd, inputAdd}) {
     let field;
+    const [collapse, setCollapse] = useState(true);
+    useEffect(() => {
+        if (section === 'Submit Data' && typeof info === 'object' && !Array.isArray(info) && info.collapse !== true) {
+            setCollapse(inputAdd[info.collapse.field].value === info.collapse.value)
+        }
+        console.log(inputAdd)
+    }, [info, inputAdd, section]);
     if (section === 'Submit Data') {
         field = <SimpleLabel info={info} k={k} setInputAdd={setInputAdd}></SimpleLabel>
     } else {
@@ -105,63 +75,76 @@ function Field({info, section, k, setInputAdd}) {
 
     return (
         <>
-            <dt className="col-sm-3">{k.replaceAll("_", " ")}</dt>
-            <dd className="col-sm-9">{field}</dd>
+            <dt className={`col-sm-3 ${collapse ? 'collapse.show' : 'collapse'}`}>{k.replaceAll("_", " ")}</dt>
+            <dd className={`col-sm-9 ${collapse ? 'collapse.show' : 'collapse'}`}>{field}</dd>
         </>
     );
 }
 
-function Phenotype({index, inputAdd, setInputAdd, selectPhen, selectStage}) {
-    const [phen, setPhen] = useState({stage: '', phenotype: '', value: ''})
+function Phenotype({index, inputAdd, setInputAdd, info}) {
     const [inputValue, setInputValue] = useState('')
 
     useEffect(() => {
-        const items = {...inputAdd}
-        items['Phenotype'][index] = phen
-        setInputAdd(items)
-    }, [phen]);
+        setInputAdd(prevInputAdd => {
+            const updatedItems = {...prevInputAdd};
+            if (info['Stage'][0] !== undefined){
+                updatedItems['Phenotype'][index] = {stage: info['Stage'][0].node, phenotype: info['Phenotype'][0].node, value: ''};
+            }
+            return updatedItems
+        });
+    }, [index, setInputAdd,info]);
 
     const handleChange = (field, value) => {
-        setPhen(phen => ({...phen, ...{[field.toLowerCase()]: value}}))
         if (field === 'value') {
             setInputValue(value)
         }
+        setInputAdd(prevInputAdd => {
+            const updatedItems = {...prevInputAdd};
+            if (updatedItems['Phenotype'][index] === {}) {
+                updatedItems['Phenotype'][index] = {stage: '', phenotype: '', value: ''}
+            }
+            updatedItems['Phenotype'][index][field.toLowerCase()] = value;
+            return updatedItems
+        });
     }
 
     return (
         <InputGroup className="mb-3">
-            <Option options={selectPhen} field={'Stage'} handleChange={handleChange}></Option>
-            <Option options={selectStage} field={'Phenotype'} handleChange={handleChange}></Option>
-            <Label value={inputValue} k={'value'} onChange={handleChange}/>
+            <Option options={info['Phenotype']} field={'Phenotype'} handleChange={handleChange}></Option>
+            <Option options={info['Stage']} field={'Stage'} handleChange={handleChange}></Option>
+            <InputGroup style={{position: 'relative', flex: '1 1 auto', width: '1%', minWidth: 0}}>
+                <Label type="number" value={inputValue} k={'value'} handleChange={handleChange}/>
+                {inputAdd['Phenotype'][index]['phenotype'] === "http://ircan.org/schema/Lethality" &&
+                    <InputGroup.Text id="basic-addon2">%</InputGroup.Text>}
+            </InputGroup>
         </InputGroup>
     )
 }
 
-function DLRow({info, section, inputAdd, setInputAdd}) {
+function DLRow({info, section, setInputAdd, inputAdd}) {
     return (<dl className="row align-self-center">
         {Object.keys(info).map((key, index) => (
             info[key] !== 'add' &&
-            <Field key={index} info={info[key]} section={section} k={key} inputAdd={inputAdd}
-                   setInputAdd={setInputAdd}></Field>
+            <Field key={index} info={info[key]} section={section} k={key}
+                   setInputAdd={setInputAdd} inputAdd={inputAdd}></Field>
         ))}
     </dl>)
 }
 
 
-function CardComponent({info, header, section, inputAdd, setInputAdd, selectPhen, selectStage}) {
+function CardComponent({info, header, section, inputAdd, setInputAdd}) {
     let body = []
-    const [phen, setPhen] = useState(1);
-
     if (header === "Phenotype") {
-        body.push(<DLRow key={body.length} info={info['Other']} section={section} inputAdd={inputAdd}
-                         setInputAdd={setInputAdd}></DLRow>)
+        body.push(
+            <DLRow key={body.length} info={info['Other']} section={section}
+                   setInputAdd={setInputAdd}></DLRow>)
         if (section === "Submit Data") {
             body.push(<Fragment key={body.length}>
-                {[...Array(phen)].map((key, index) => (
-                    <Phenotype key={index} index={index} inputAdd={inputAdd} setInputAdd={setInputAdd}
-                               selectStage={selectStage} selectPhen={selectPhen}></Phenotype>
+                {Object.keys(inputAdd.Phenotype).map((_, index) => (
+                    <Phenotype key={index} index={index} inputAdd={inputAdd} setInputAdd={setInputAdd} info={info['Select']}></Phenotype>
                 ))}
-                <Button className="shadow" variant="primary" onClick={() => setPhen(phen + 1)}>+</Button>
+                <Button className="shadow" variant="primary"
+                        onClick={() => setInputAdd({...inputAdd, Phenotype: inputAdd.Phenotype.concat({})})}>+</Button>
             </Fragment>)
         } else {
             body.push(<Container key={body.length} className={"p-0 m-0"}>
@@ -176,7 +159,9 @@ function CardComponent({info, header, section, inputAdd, setInputAdd, selectPhen
             </Container>)
         }
     } else {
-        body.push(<DLRow key={body.length} info={info} section={section} setInputAdd={setInputAdd}/>)
+        body.push(
+            <DLRow key={body.length} info={info} section={section}
+                   setInputAdd={setInputAdd} inputAdd={inputAdd}/>)
         if (header === "Summary" && section !== 'Submit Data') {
             body.push(<Image
                 key={body.length}

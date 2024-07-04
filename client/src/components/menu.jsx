@@ -9,7 +9,6 @@ import CheckBox from "./CheckBox";
 
 
 function Search({types, handleChange}) {
-    console.log(types)
     return (<ListGroup.Item className="flex-column m-2 bg-transparent border-0">
             {types.map((field, index) => (
                 ((field.type === 'checkbox' || field.type === 'switch') &&

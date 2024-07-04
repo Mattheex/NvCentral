@@ -31,6 +31,14 @@ s:hasGenomeVersion
     a          rdf:Property ;
     rdfs:label "has Genome Version" .
 
+s:hasGenomeDate
+    a          rdf:Property ;
+    rdfs:label "has Genome Date" .
+
+s:hasGenomeDetails
+    a          rdf:Property ;
+    rdfs:label "has Genome Details" .
+
 s:hasNvERTxID
     a          rdf:Property ;
     rdfs:label "has NvERTx ID" .
@@ -137,9 +145,14 @@ s:SwimPerturbation
     rdfs:label      "Swim perturbation" ;
     rdfs:subClassOf go:0036268, obo:PATO_0001507 .
 
-s:Wild
+s:WildLab
     a               owl:Class ;
-    rdfs:label      "Wild" ;
+    rdfs:label      "Wild-type lab" ;
+    rdfs:subClassOf obo:NCIT_C62195 .
+
+s:StrainLab
+    a               owl:Class ;
+    rdfs:label      "Strain lab" ;
     rdfs:subClassOf obo:NCIT_C62195 .
 
 s:ToDo
@@ -181,3 +194,78 @@ s:established
     a               owl:Class ;
     rdfs:label      "Established" ;
     rdfs:subClassOf efo:EFO_0001742 .
+
+s:GenomeV1
+    a               owl:Class ;
+    rdfs:label      "Génome V1" ;
+    rdfs:subClassOf obo:NCIT_C164815 .
+
+s:GenomeV2
+    a               owl:Class ;
+    rdfs:label      "Génome V2" ;
+    rdfs:subClassOf obo:NCIT_C164815 .
+
+s:Epithelial
+    a               owl:Class ;
+    rdfs:label      "Epithelial" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Cnidocyte
+    a               owl:Class ;
+    rdfs:label      "Cnidocyte" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Neuronal
+    a               owl:Class ;
+    rdfs:label      "Neuronal" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Gland
+    a               owl:Class ;
+    rdfs:label      "Gland" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Muscle
+    a               owl:Class ;
+    rdfs:label      "Muscle" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Germline
+    a               owl:Class ;
+    rdfs:label      "Germline" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Stem
+    a               owl:Class ;
+    rdfs:label      "Stem" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Ectoderm
+    a               owl:Class ;
+    rdfs:label      "Ectoderm" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:Endoderm
+    a               owl:Class ;
+    rdfs:label      "Endoderm" ;
+    rdfs:subClassOf obo:GO_0110165 .
+
+s:NucleiMembrane
+    a               owl:Class ;
+    rdfs:label      "Nuclei membrane" ;
+    rdfs:subClassOf obo:CARO_0000000 .
+
+s:CellMembrane
+    a               owl:Class ;
+    rdfs:label      "Cell membrane" ;
+    rdfs:subClassOf obo:CARO_0000000 .
+
+s:Nuclei
+    a               owl:Class ;
+    rdfs:label      "Nuclei" ;
+    rdfs:subClassOf obo:CARO_0000000 .
+
+s:Cytoplasm
+    a               owl:Class ;
+    rdfs:label      "Cytoplasm" ;
+    rdfs:subClassOf obo:CARO_0000000 .

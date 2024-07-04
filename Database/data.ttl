@@ -7,6 +7,7 @@
 @prefix obo:   <http://purl.obolibrary.org/obo/> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix s:     <http://ircan.org/schema/> .
+@prefix en:    <http://ircan.org/data/entities/> .
 @prefix taxon: <http://purl.uniprot.org/taxonomy/> .
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
@@ -17,35 +18,35 @@
 
 <AdultFecondity2>
     a               s:Fecundity ;
-    rdfs:label      "0%" ;
+    rdfs:label      "0" ;
     obo:RO_0002092  s:AdultStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0 .
 
 <AdultLethal2>
     a               s:Lethality ;
-    rdfs:label      "100%" ;
+    rdfs:label      "100" ;
     obo:RO_0002092  s:AdultStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 100 .
 
 <EmbryoLethal1>
     a               s:Lethality ;
-    rdfs:label      "0.1%" ;
+    rdfs:label      "0.1" ;
     obo:RO_0002092  s:EmbryoStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0.1 .
 
 <EmbryoLethal2>
     a               s:Lethality ;
-    rdfs:label      "0%" ;
+    rdfs:label      "0" ;
     obo:RO_0002092  s:EmbryoStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0 .
 
 <LarvalLethal2>
     a               s:Lethality ;
-    rdfs:label      "0%" ;
+    rdfs:label      "0" ;
     obo:RO_0002092  s:LarvalStage ;
     bao:BAO_0002874 obo:NCIT_C48570 ;
     bao:BAO_0095007 0 .
@@ -67,47 +68,43 @@
 
 <Perturbation1>
     a              s:Perturbation ;
-    rdfs:label     "No" ;
+    rdfs:label     "1" ;
     obo:RO_0002092 s:Metamorphosis .
 
 <Perturbation2>
     a              s:Perturbation ;
-    rdfs:label     "No" ;
+    rdfs:label     "1" ;
     obo:RO_0002092 s:Metamorphosis .
 
 <PhenotypePostGrowthMetamorphosis2>
     a              s:PostGrowth ;
-    rdfs:label     "No" ;
+    rdfs:label     "1" ;
     obo:RO_0002092 s:Metamorphosis .
 
 <PhenotypeRegenerationAdultStage2>
     a              s:Regeneration ;
-    rdfs:label     "No" ;
+    rdfs:label     "3" ;
     obo:RO_0002092 s:AdultStage .
 
 <Regeneration1>
     a              s:Regeneration ;
-    rdfs:label     "Normal" ;
+    rdfs:label     "1" ;
     obo:RO_0002092 s:AdultStage .
 
 <PhenotypeSwimPerturbationLarvalStage2>
     a              s:SwimPerturbation ;
-    rdfs:label     "No" ;
+    rdfs:label     "2" ;
     obo:RO_0002092 s:LarvalStage .
 
 <SwimPerturbation1>
     a              s:SwimPerturbation ;
-    rdfs:label     "No" ;
+    rdfs:label     "1" ;
     obo:RO_0002092 s:LarvalStage .
 
 <SwimPerturbation2>
     a              s:SwimPerturbation ;
-    rdfs:label     "No" ;
+    rdfs:label     "1" ;
     obo:RO_0002092 s:LarvalStage .
-
-<MHCGenomeVersion>
-    a          obo:NCIT_C164815 ;
-    rdfs:label "Nemve1" .
 
 <PublicationPublicationdemoi2>
     a             obo:NCIT_C48471 ;
@@ -190,17 +187,6 @@
     obo:RO_0004009  <sgRNA2>, obo:FBcv_0003008 ;
     bao:BAO_0095003 <MutantGenotyping>, <MutantSequencing> .
 
-<LabRottingerLab2>
-    a          obo:OBI_0003250 ;
-    rdfs:label "Rottinger Lab" .
-
-<RentzschLab>
-    a          obo:OBI_0003250 ;
-    rdfs:label "Rentzsch lab" .
-
-<TechnauLab>
-    a          obo:OBI_0003250 ;
-    rdfs:label "Technau Lab" .
 
 <synthesis2>
     a               obo:OBI_0600040 ;
@@ -223,7 +209,7 @@
     rdfs:label       "MyHC1::mCherry" ;
     obo:GENO_0000608 obo:GENO_0000135 ;
     obo:IAO_0000118  "MHC line" ;
-    obo:NCIT_C42628  <TechnauLab> ;
+    obo:NCIT_C42628  en:TechnauLab ;
     obo:RO_0000053   <KnockIn1> ;
     obo:RO_0000086   s:Reporter ;
     obo:RO_0002350   <F1> ;
@@ -237,7 +223,7 @@
     rdfs:label       "NvPOU4-/-" ;
     obo:GENO_0000608 obo:GENO_0000136 ;
     obo:IAO_0000118  "NvPOU4 Homozygous Mutant" ;
-    obo:NCIT_C42628  <RentzschLab> ;
+    obo:NCIT_C42628  en:RentzschLab ;
     obo:RO_0000053   <KnockDown2> ;
     obo:RO_0000086   s:Functional ;
     obo:RO_0002202   s:NA ;
@@ -252,13 +238,14 @@
     rdfs:label       "MHT" ;
     obo:GENO_0000608 obo:GENO_0000135 ;
     obo:IAO_0000118  "mCherry line" ;
-    obo:NCIT_C42628  <LabRottingerLab2> ;
+    obo:NCIT_C42628  en:LabRottingerLab2 ;
     obo:RO_0000053   <Characteristic2> ;
     obo:RO_0000086   s:Reporter ;
     obo:RO_0002350   <GenerationF02> ;
     obo:RO_0002354   <Experience2> ;
     terms:source     <PublicationPublicationdemoi2> ;
-    geno:id          2 .
+    geno:id          2 ;
+    geno:status      s:genotyped .
 
 <SequenceAUGAUGAUGAUG2>
     a          obo:SO_0000104 ;
@@ -294,6 +281,8 @@
     s:hasEnsemblID     s:NA ;
     s:hasGenBankNumber s:NA ;
     s:hasGenomeVersion s:NA ;
+    s:hasGenomeDate    s:NA ;
+    s:hasGenomeDetails s:NA ;
     s:hasNvERTxID      <NvERTxID1652> ;
     obo:BAO_0002817    <SequenceAUGAUGAUGAUG2> ;
     obo:BFO_0000050    s:NA ;
@@ -306,7 +295,9 @@
     rdfs:label         "Myosin Heavy Chain 1" ;
     s:hasEnsemblID     s:NA ;
     s:hasGenBankNumber s:NA ;
-    s:hasGenomeVersion <MHCGenomeVersion> ;
+    s:hasGenomeVersion s:GenomeV1 ;
+    s:hasGenomeDate    "2024-05-31"^^xsd:date ;
+    s:hasGenomeDetails "Détail Genome V1" ;
     s:hasNvERTxID      s:NA ;
     obo:BAO_0002817    s:NA ;
     obo:BFO_0000050    s:NA ;
@@ -324,6 +315,8 @@
     s:hasEnsemblID     s:NA ;
     s:hasGenBankNumber s:NA ;
     s:hasGenomeVersion s:NA ;
+    s:hasGenomeDate    "NA" ;
+    s:hasGenomeDetails "NA" ;
     s:hasNvERTxID      s:NA ;
     obo:BAO_0002817    s:NA ;
     obo:BFO_0000050    s:NA ;

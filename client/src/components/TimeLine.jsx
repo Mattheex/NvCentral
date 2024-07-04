@@ -4,7 +4,7 @@ import * as d3 from "d3";
 function TimeLine({header, info}) {
     const width = 800;
     let height = 70;
-    if (header === "Title"){
+    if (header === "Title") {
         height = 100
     }
     const margin = {top: 20, right: 40, bottom: 20, left: 40};
@@ -16,8 +16,8 @@ function TimeLine({header, info}) {
         .range([margin.left, innerWidth])
 
     const colorScale = d3.scaleLinear()
-        .domain([0, 1])
-        .range(['green', 'red']);
+        .domain([0, 0.5, 1])
+        .range(['green', 'orange', 'red']);
 
     const tooltip = useRef(null)
     const tooltipText = useRef(null)
@@ -48,15 +48,13 @@ function TimeLine({header, info}) {
         setLethal(null)
     }
 
-    //console.log(header, info)
-
     return (
         <svg id="svgRef" className="" viewBox={`0 0 ${width} ${height}`}>
             {header === "Title" ? (<>
                     {info.map((item, index) =>
                         <text
                             key={index}
-                            transform={'translate( ' + (xScale(index) + 10) + ' , ' + (height / 2 + 45) + '),' + 'rotate(-45)'}
+                            transform={`translate( ${xScale(index) + 10} ,${height / 2 + 45}),rotate(-45)`}
                             style={{textAnchor: "start"}}>{item}</text>
                     )}
                 </>) :
