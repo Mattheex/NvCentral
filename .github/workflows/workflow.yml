@@ -24,3 +24,5 @@ jobs:
           context: .
           push: true
           tags: ohzout/nvcentral:latest
+          env:
+            ADMIN_PASSWORD=${{secrets.ADMIN_PASSWORD}}
