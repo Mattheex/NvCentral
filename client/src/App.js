@@ -54,12 +54,17 @@ function Account({setUsername}) {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post('/login', account).then(res => {
+        axios.post('/auth/login', account).then(res => {
             setUsername(res.data.username)
             localStorage.setItem('token', res.data.token)
             localStorage.setItem('username', res.data.username)
-            navigate(state.prev)
-        }).catch(() => {
+            if (state === null) {
+                navigate('/')
+            } else {
+                navigate(state.prev)
+            }
+        }).catch((e) => {
+            console.log(e)
             setError(true)
         })
     }

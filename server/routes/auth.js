@@ -2,6 +2,7 @@ import config from "../constants.js";
 import jwt from 'jsonwebtoken'
 import express from 'express';
 import {request} from "../global.js";
+import bcrypt from 'bcrypt';
 
 const router = express.Router();
 
@@ -18,17 +19,23 @@ router.post("/login", (req, res) => {
     PREFIX wac:  <http://www.w3.org/ns/auth/acl#>
     PREFIX geno: <http://www.geneontology.org/formats/oboInOwl#>
 
-    SELECT ?id ?account WHERE {
+    SELECT ?id ?account ?password WHERE {
       ?account foaf:accountName '${username}';
-               sAc:password     '${password}'.
+               sAc:password     ?password.
     }`
 
     request(query, 'query').then(data => {
+        console.log(data)
         if (Object.keys(data).length === 0) {
             res.status(401).json({error: 'Invalid credentials'})
         } else {
-            const token = jwt.sign({node: data['account'][0].split('/').pop()}, config.secretKEY)
-            res.json({token, username});
+            let result = bcrypt.compareSync(password, data.password[0])
+            if (result) {
+                const token = jwt.sign({node: data['account'][0].split('/').pop()}, config.secretKEY)
+                res.json({token, username});
+            } else {
+                res.status(401).json({error: 'Invalid credentials'})
+            }
         }
     }).catch(error => console.log(error))
 })

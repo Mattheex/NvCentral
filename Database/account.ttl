@@ -18,8 +18,7 @@ sAc:password
 <Administrator>
     a                foaf:Person ;
     foaf:accountName "admin" ;
-    sAc:password     "admin" ;
-    geno:id          0 ;
+    sAc:password     "$2b$12$LM.ZqyZzv7r6ankTnIKFweCi67DHNB9b2LB8LZdZwDaoblDSueEZK" ;
     foaf:name        "Admin User" .
 
 <Visitor>
@@ -31,7 +30,7 @@ sAc:password
     foaf:member         <TeamMemberRottingerLabMatthieu> ;
     foaf:name           "Rottinger Lab" ;
     foaf:accountName    "RottingerTeam" ;
-    sAc:password        "nemato" ;
+    sAc:password        "$2b$12$Kapsp5FM8aXBXEp26kjb0eGTWcbQCk40bwoKJNv1VKBQYL5pELkuy" ;
     owl:equivalentClass mutants:LabRottingerLab2 .
 
 <TeamMemberRottingerLabMatthieu>
