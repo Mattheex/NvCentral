@@ -18,14 +18,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Prepare secret .env file
-        run: echo "${{ secrets.SECRET_ENV_FILE_CONTENTS }}" > .env
-
       - name: Build and push Docker image
         run: |
-          DOCKER_BUILDKIT=1
-          docker build $(for i in `cat .env`; do out+="--build-arg $i " ; done; echo $out;out="") --secret id=env_file,src=.env -t ohzout/nvcentral:latest .
+          docker build --build-arg secretKEY=${{ secrets.secretKEY }} -t ohzout/nvcentral:latest .
           docker push ohzout/nvcentral:latest
-
-      - name: Clean up .env file
-        run: rm .env

@@ -10,16 +10,13 @@ RUN apk update && \
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
-RUN --mount=type=secret,id=env_file \
-    cat /run/secrets/env_file > /app/.env
+#RUN --mount=type=secret,id=env_file \
+#    cat /run/secrets/env_file > /app/.env
 
-
-RUN set -a && . /app/.env && set a+
-
-RUN echo "${secretKEY}"
-
+ENV secretKEY ${secretKEY}
 ENV NODE_ENV development
 
+RUN echo "${secretKEY}"
 RUN echo "${NODE_ENV}"
 
 # Set up SSH
