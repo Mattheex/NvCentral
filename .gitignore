@@ -3,4 +3,4 @@
 /client/node_modules/
 /Database/ontologies.ttl
 /apache-jena-fuseki-5.0.0
-.env
+server/.env

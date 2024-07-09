@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "set NODE_ENV=test&&node --test --watch --env-file=../.env",
-    "start": "set NODE_ENV=development&&node --env-file=../.env server",
-    "dev": "set NODE_ENV=development&&nodemon --env-file=../.env server"
+    "test": "set NODE_ENV=test&&node --test --watch",
+    "start": "set NODE_ENV=development&&node server",
+    "dev": "set NODE_ENV=development&&nodemon server"
   },
   "keywords": [],
   "author": "",
