@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors'
 import SparqlClient from 'sparql-http-client'
 //import dotenv from 'dotenv'
+import fs from 'fs'
+
+//fs.readFileSync('/run/secrets/app_cert_key', 'utf8')
 
 
 const app = express();
@@ -12,14 +15,36 @@ const port = 5000;
 app.use(express.json())
 app.use(cors())
 
+let secretKEY;
+try {
+    fs.accessSync('/run/secrets/secretKEY')
+    secretKEY = fs.readFileSync('/run/secrets/secretKEY','utf8')
+    secretKEY = secretKEY.trim()
+} catch (err) {
+    console.log('use env var')
+    secretKEY = process.env.secretKEY
+}
+
+/*
+try {
+
+} catch (err) {
+    //
+
+    if (err.code === 'ENOENT') {
+        console.error('File not found:', 'path');
+    } else {
+        console.error('An error occurred while reading the file:', err.message);
+    }
+}*/
 console.log(`NODE_ENV=${process.env.NODE_ENV}`);
-console.log(`secretKEY=${process.env.secretKEY}`);
+console.log(`secretKEY=${secretKEY}`);
 
 
 export const client =  new SparqlClient({
     endpointUrl: config.endpointUrl[process.env.NODE_ENV],
     user: config.user,
-    password: process.env.secretKEY,
+    password: secretKEY,
 });
 
 

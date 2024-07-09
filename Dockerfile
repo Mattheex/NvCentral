@@ -10,13 +10,13 @@ RUN apk update && \
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
-#RUN --mount=type=secret,id=env_file \
-#    cat /run/secrets/env_file > /app/.env
+RUN --mount=type=secret,id=secretKEY \
+    ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
 
-ENV secretKEY ${secretKEY}
+#ENV secretKEY ${secretKEY}
 ENV NODE_ENV development
 
-RUN echo "${secretKEY}"
+RUN echo "${ADMIN_PASSWORD}"
 RUN echo "${NODE_ENV}"
 
 # Set up SSH
@@ -44,7 +44,7 @@ COPY server /app/server
 # Supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-ENV ADMIN_PASSWORD ${secretKEY}
+#ENV ADMIN_PASSWORD ${secretKEY}
 
 # Expose necessary ports
 EXPOSE 3000 5000 3030 22
