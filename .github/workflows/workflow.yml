@@ -24,7 +24,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           DOCKER_BUILDKIT=1
-          docker build --env-file=.env --secret id=env_file,src=.env -t ohzout/nvcentral:latest .
+          docker build $(for i in `cat .env`; do out+="--build-arg $i " ; done; echo $out;out="") --secret id=env_file,src=.env -t ohzout/nvcentral:latest .
           docker push ohzout/nvcentral:latest
 
       - name: Clean up .env file
