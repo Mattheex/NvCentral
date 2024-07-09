@@ -10,6 +10,8 @@ RUN apk update && \
 RUN --mount=type=secret,id=env_file \
     cat /run/secrets/env_file > .env
 
+RUN export $(cat .env | xargs)
+
 # Set up SSH
 RUN mkdir /var/run/sshd && \
     echo 'root:root' | chpasswd && \
@@ -36,7 +38,7 @@ COPY server /app/server
 # Supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-ENV ADMIN_PASSWORD ${ADMIN_PASSWORD}
+ENV ADMIN_PASSWORD ${secretKEY}
 
 # Expose necessary ports
 EXPOSE 3000 5000 3030 22
