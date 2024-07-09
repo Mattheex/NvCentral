@@ -13,11 +13,13 @@ RUN mkdir -p /app/client /app/server /var/log/supervisor
 RUN --mount=type=secret,id=env_file \
     cat /run/secrets/env_file > /app/.env
 
-RUN export $(cat /app/.env| xargs)
 
-RUN echo ${secretKEY}
+RUN set -a \
+    . /app/.env
 
-RUN export NODE_ENV=development
+RUN echo "${secretKEY}"
+
+ENV NODE_ENV development
 
 # Set up SSH
 RUN mkdir /var/run/sshd && \
