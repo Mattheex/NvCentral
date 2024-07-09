@@ -11,7 +11,7 @@ RUN apk update && \
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
 RUN --mount=type=secret,id=secretKEY \
-    ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
+    export ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
 
 #ENV secretKEY ${secretKEY}
 ENV NODE_ENV development
