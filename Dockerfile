@@ -15,6 +15,10 @@ RUN --mount=type=secret,id=env_file \
 
 RUN export $(cat /app/.env| xargs)
 
+RUN echo ${secretKEY}
+
+RUN export NODE_ENV=development
+
 # Set up SSH
 RUN mkdir /var/run/sshd && \
     echo 'root:root' | chpasswd && \

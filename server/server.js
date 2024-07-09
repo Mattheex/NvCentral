@@ -1,13 +1,13 @@
 import express from 'express';
 import cors from 'cors'
 import SparqlClient from 'sparql-http-client'
-import dotenv from 'dotenv'
+//import dotenv from 'dotenv'
 
 
 const app = express();
 const port = 5000;
 
-dotenv.config()
+//dotenv.config()
 
 app.use(express.json())
 app.use(cors())
