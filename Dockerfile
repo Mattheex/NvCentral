@@ -20,10 +20,6 @@ ENV ADMIN_PASSWORD=${secretKEY}
 ENV secretKEY=${secretKEY}
 ENV NODE_ENV development
 
-RUN echo ${secretKEY}
-RUN echo "${ADMIN_PASSWORD}"
-RUN echo "${NODE_ENV}"
-
 # Set up SSH
 RUN mkdir /var/run/sshd && \
     echo 'root:root' | chpasswd && \
