@@ -10,13 +10,15 @@ RUN apk update && \
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
-RUN --mount=type=secret,id=secretKEY \
-    export ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
+RUN --mount=type=secret,id=secretKEY
 
-#ENV secretKEY ${secretKEY}
+RUN export ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
+
+ENV ADMIN_PASSWORD ${secretKEY}
+ENV secretKEY ${secretKEY}
 ENV NODE_ENV development
 
-RUN echo "${$(cat /run/secrets/secretKEY)}"
+RUN echo ${secretKEY}
 RUN echo "${ADMIN_PASSWORD}"
 RUN echo "${NODE_ENV}"
 
