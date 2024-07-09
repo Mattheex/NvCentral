@@ -16,6 +16,7 @@ RUN --mount=type=secret,id=secretKEY \
 #ENV secretKEY ${secretKEY}
 ENV NODE_ENV development
 
+RUN echo "${$(cat /run/secrets/secretKEY)}"
 RUN echo "${ADMIN_PASSWORD}"
 RUN echo "${NODE_ENV}"
 
