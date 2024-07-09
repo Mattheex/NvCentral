@@ -7,6 +7,9 @@ USER root
 RUN apk update && \
     apk add --no-cache supervisor nodejs npm openssh
 
+# Create directories for client, server, and supervisor logs
+RUN mkdir -p /app/client /app/server /var/log/supervisor
+
 RUN --mount=type=secret,id=env_file \
     cat /run/secrets/env_file > /app/.env
 
@@ -19,8 +22,7 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
     ssh-keygen -A
 
-# Create directories for client, server, and supervisor logs
-RUN mkdir -p /app/client /app/server /var/log/supervisor
+
 
 # Copy and build client
 COPY client/package*.json /app/client/
