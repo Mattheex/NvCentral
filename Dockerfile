@@ -14,12 +14,13 @@ RUN --mount=type=secret,id=env_file \
     cat /run/secrets/env_file > /app/.env
 
 
-RUN set -a \
-    . /app/.env
+RUN set -a && . /app/.env && set a+
 
 RUN echo "${secretKEY}"
 
 ENV NODE_ENV development
+
+RUN echo "${NODE_ENV}"
 
 # Set up SSH
 RUN mkdir /var/run/sshd && \
