@@ -19,10 +19,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ohzout/nvcentral:latest
-          build-args: |
-            ADMIN_PASSWORD=${{secrets.ADMIN_PASSWORD}}
+        env:
+          DOCKER_BUILDBOT: 1
+        run: |
+          docker build --secret id=env_file,src=.env -t ohzout/nvcentral:latest .
+          docker push ohzout/nvcentral:latest

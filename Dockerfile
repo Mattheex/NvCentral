@@ -7,6 +7,9 @@ USER root
 RUN apk update && \
     apk add --no-cache supervisor nodejs npm openssh
 
+RUN --mount=type=secret,id=env_file \
+    cat /run/secrets/env_file > .env
+
 # Set up SSH
 RUN mkdir /var/run/sshd && \
     echo 'root:root' | chpasswd && \
