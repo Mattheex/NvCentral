@@ -193,7 +193,7 @@ export const JSONToSPARQL = (id, newData) => {
             nodeType: 'owl:Class',
             NA: true,
             subClassOf: 'obo:CARO_0000000',
-            nodeName: 'Sub',
+            nodeName: 'SubLocal',
             prefix: 's:',
         },
         Cell_type: {
@@ -207,7 +207,7 @@ export const JSONToSPARQL = (id, newData) => {
         Region_type: {
             property: 's:regionLocated',
             nodeType: 'owl:Class',
-            subClassOf: 'obo:UBERON_0000061',
+            subClassOf: 'obo:UBERON_0036215',
             nodeName: 'RegionType',
             prefix: 's:',
             NA: true,
@@ -347,7 +347,7 @@ router.post("/line/", async (req, res) => {
 const AddExistingNodes = async (field, value) => {
     const json = {
         Line_type: {
-            nodeType: 'obo:MCO_0000383', internData: false,
+            nodeType: 'obo:NCIT_C25360', internData: false,
             schemaData: true
         },
         Generation: {
@@ -387,7 +387,7 @@ const AddExistingNodes = async (field, value) => {
             schemaData: true
         },
         Region_type: {
-            nodeType: 'obo:UBERON_0000061', internData: false,
+            nodeType: 'obo:UBERON_0036215', internData: false,
             schemaData: true
         },
         Version: {
@@ -401,7 +401,6 @@ const AddExistingNodes = async (field, value) => {
     };
 
     if (!json.hasOwnProperty(field)) {
-        //res.json({})
         return {}
     }
 
@@ -418,7 +417,7 @@ const AddExistingNodes = async (field, value) => {
     PREFIX efo:       <http://www.ebi.ac.uk/efo/>
     SELECT *
     WHERE {
-          ?node (rdf:type | rdfs:subClassOf)+ ${json[field].nodeType}.
+          ?node (rdf:type | rdfs:subClassOf) ${json[field].nodeType}.
           ?node rdfs:label ?label
           ${json[field].internData ? 'FILTER(strstarts(str(?node), str(a:)))' : ''}
           ${json[field].schemaData ? 'FILTER(strstarts(str(?node), str(s:)))' : ''}
@@ -433,58 +432,8 @@ const AddExistingNodes = async (field, value) => {
         data = []
     }
     data.push({node: 'Autre', label: 'Autre'})
-    //console.log(data)
     return data
 }
-
-/*router.get("/search/:value", async (req, res) => {
-    const query = `
-    PREFIX a: <http://ircan.org/data/mutants/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX up:        <http://purl.uniprot.org/core/>
-    PREFIX edam:      <http://edamontology.org/>
-    PREFIX bao:       <http://www.bioassayontology.org/bao#>
-    PREFIX s:         <http://ircan.org/schema/>
-    PREFIX dcterms:   <http://purl.org/dc/terms/>
-    SELECT ?id ?field ?label
-    WHERE {
-          ?node rdf:type ?field;
-                geno:id ?id;
-                rdfs:label ?label.
-          FILTER(strstarts(str(?node), str(a:))).
-          FILTER(regex(lcase(?label), lcase("${req.params.value}")))
-    } ORDER BY (?label) LIMIT 5`;
-
-    request(query, 'query').then(data => {
-        console.log(data)
-        if (Object.keys(data).length !== 0) {
-            data = data.id.map((id, index) => ({
-                id: id,
-                label: data.label[index],
-                field: data.field[index].split('/').pop()
-            }));
-        } else {
-            data = []
-        }
-
-        res.json(data);
-    }).catch(err => console.log(err));
-})*/
-
-/*router.get("/:field", async (req, res) => {
-    AddExistingNodes(req.params.field, '').then((data => {
-        res.json(data);
-    }))
-})
-
-/*router.get("/add/:field/:value", async (req, res) => {
-    AddExistingNodes(req.params.field, req.params.value).then((data => {
-        res.json(data);
-    }))
-})*/
 
 router.get("/", async (req, res) => {
     const json = JSON.parse(JSON.stringify(config.structJSON));
@@ -502,6 +451,10 @@ router.get("/", async (req, res) => {
     json.Genetic_modifications.Construction_description = 'textarea'
     json.Genetic_modifications.Mutation_type = 'textarea'
     json.Genetic_modifications.Reagents_and_protocols = 'textarea'
+
+    json.Phenotype.Other['Sub-localization'] = await AddExistingNodes('Sub-localization', '')
+    json.Phenotype.Other['Cell_type'] = await AddExistingNodes('Cell_type', '')
+    json.Phenotype.Other['Region_type'] = await AddExistingNodes('Region_type', '')
 
     json.Phenotype.Select = {}
     json.Phenotype.Select.Phenotype = await AddExistingNodes('Stage', '')

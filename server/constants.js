@@ -45,7 +45,7 @@ export default {
             "Other": {
                 "Sub-localization": "sub_label",
                 "Cell_type": "cell_label",
-                "Region_type": "region_label",
+                "Sub-body localization": "region_label",
                 "Supplementary_information": "supp_info"
             },
             "Timeline": {

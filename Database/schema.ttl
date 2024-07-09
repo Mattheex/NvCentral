@@ -83,7 +83,13 @@ s:EmbryoStage
 s:Fecundity
     a               owl:Class ;
     rdfs:label      "Fecundity" ;
-    rdfs:subClassOf obo:PATO_0001434 ;
+    rdfs:subClassOf obo:PATO_0000001;
+    owl:sameAs      obo:PATO_0000273 .
+
+s:Developmental
+    a               owl:Class ;
+    rdfs:label      "Developmental" ;
+    rdfs:subClassOf obo:PATO_0000001;
     owl:sameAs      obo:PATO_0000273 .
 
 s:Functional
@@ -100,7 +106,7 @@ s:LarvalStage
 s:Lethality
     a               owl:Class ;
     rdfs:label      "Lethality" ;
-    rdfs:subClassOf obo:PATO_0000169 ;
+    rdfs:subClassOf obo:PATO_0000001 ;
     owl:sameAs      obo:PATO_0000718 .
 
 s:Metamorphosis
@@ -121,19 +127,19 @@ s:NvERTxID
 s:Perturbation
     a               owl:Class ;
     rdfs:label      "Perturbation" ;
-    rdfs:subClassOf obo:PATO_0000057 ;
+    rdfs:subClassOf obo:PATO_0000001;
     owl:sameAs      obo:PATO_0001507 .
 
 s:PostGrowth
     a               owl:Class ;
     rdfs:label      "Post-Growth" ;
-    rdfs:subClassOf go:0060560, obo:PATO_0001507 .
+    rdfs:subClassOf go:0060560, obo:PATO_0000001 .
 
 s:Regeneration
     a               owl:Class ;
     rdfs:label      "Regeneration" ;
     rdfs:subClassOf obo:PATO_0001236 ;
-    owl:sameAs      go:0031099, obo:PATO_0001433 .
+    owl:sameAs      go:0031099,obo:PATO_0000001 .
 
 s:Reporter
     a               owl:Class ;
@@ -143,17 +149,17 @@ s:Reporter
 s:SwimPerturbation
     a               owl:Class ;
     rdfs:label      "Swim perturbation" ;
-    rdfs:subClassOf go:0036268, obo:PATO_0001507 .
+    rdfs:subClassOf go:0036268,obo:PATO_0000001 .
 
 s:WildLab
     a               owl:Class ;
     rdfs:label      "Wild-type lab" ;
-    rdfs:subClassOf obo:NCIT_C62195 .
+    rdfs:subClassOf obo:NCIT_C25360.
 
 s:StrainLab
     a               owl:Class ;
     rdfs:label      "Strain lab" ;
-    rdfs:subClassOf obo:NCIT_C62195 .
+    rdfs:subClassOf obo:NCIT_C25360 .
 
 s:ToDo
     a               owl:Class ;
@@ -269,3 +275,28 @@ s:Cytoplasm
     a               owl:Class ;
     rdfs:label      "Cytoplasm" ;
     rdfs:subClassOf obo:CARO_0000000 .
+
+s:Tentacles
+    a               owl:Class ;
+    rdfs:label      "Tentacles" ;
+    rdfs:subClassOf obo:UBERON_0036215 .
+
+s:Head
+    a               owl:Class ;
+    rdfs:label      "Head" ;
+    rdfs:subClassOf obo:UBERON_0036215 .
+
+s:BodyWall
+    a               owl:Class ;
+    rdfs:label      "Body Wall" ;
+    rdfs:subClassOf obo:UBERON_0036215 .
+
+s:Mesenteries
+    a               owl:Class ;
+    rdfs:label      "Mesenteries" ;
+    rdfs:subClassOf obo:UBERON_0036215 .
+
+s:Physa
+    a               owl:Class ;
+    rdfs:label      "Physa" ;
+    rdfs:subClassOf obo:UBERON_0036215 .

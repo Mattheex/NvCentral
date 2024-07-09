@@ -21,11 +21,11 @@ ENV secretKEY=${secretKEY}
 ENV NODE_ENV development
 
 # Set up SSH
-RUN mkdir /var/run/sshd && \
-    echo 'root:root' | chpasswd && \
-    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    ssh-keygen -A
+#RUN mkdir /var/run/sshd && \
+#    echo 'root:root' | chpasswd && \
+#    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+#    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+#    ssh-keygen -A
 
 
 
@@ -48,7 +48,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 #ENV ADMIN_PASSWORD ${secretKEY}
 
 # Expose necessary ports
-EXPOSE 3000 5000 3030 22
+EXPOSE 3000 5000 3030
 
 # Set entrypoint for Fuseki and command to start supervisor
 ENTRYPOINT ["sh", "/docker-entrypoint.sh"]
