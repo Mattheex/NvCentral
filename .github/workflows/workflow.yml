@@ -18,9 +18,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Prepare secret .env file
+        run: echo "${{ secrets.SECRET_ENV_FILE_CONTENTS }}" > .env
+
       - name: Build and push Docker image
         env:
           DOCKER_BUILDBOT: 1
         run: |
           docker build --secret id=env_file,src=.env -t ohzout/nvcentral:latest .
           docker push ohzout/nvcentral:latest
+
+      - name: Clean up .env file
+        run: rm .env

@@ -8,9 +8,9 @@ RUN apk update && \
     apk add --no-cache supervisor nodejs npm openssh
 
 RUN --mount=type=secret,id=env_file \
-    cat /run/secrets/env_file > .env
+    cat /run/secrets/env_file > /app/.env
 
-RUN export $(cat .env | xargs)
+RUN export $(cat /app/.env| xargs)
 
 # Set up SSH
 RUN mkdir /var/run/sshd && \
