@@ -352,20 +352,19 @@ function Add() {
     const [inputAdd, setInputAdd] = useState({
         Line_name: {},
         Synonym_line_name: {},
-        Line_type: {select: false, value: ''},
+        Line_type: {},
         Generation: {},
         Zygosity: {},
         Lab_of_origin: {},
         Status: {},
         Exp: {select: false, value: null},
         Charac: {select: false, value: null},
-        Tag_type: {},
+        Tag_type: {select: false, value: 'NA'},
         Construction_description: {},
         Mutation_type: {},
         Reagents_and_protocols: {},
-        Supplementary_information: {},
         Molecular_tools: {},
-        Name: {},
+        Name: {select: false, value: null},
         Sequence: {},
         Promoter: {},
         "Ensembl accession number": {},
@@ -395,7 +394,13 @@ function Add() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        axios.post('/add/line', inputAdd).then().catch((error) => console.error('Error sending data:', error))
+        console.log(inputAdd)
+        axios.post('/add/line', inputAdd,{
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem('token'),
+            }
+        }).then().catch((error) => console.error('Error sending data:', error))
     };
 
     return <Main section={'Submit Data'} info={info} handleSubmit={handleSubmit} inputAdd={inputAdd}

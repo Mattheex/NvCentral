@@ -43,6 +43,10 @@ s:hasNvERTxID
     a          rdf:Property ;
     rdfs:label "has NvERTx ID" .
 
+s:visibility
+    a          rdf:Property ;
+    rdfs:label "has visibility" .
+
 s:mutationType
     a                  rdf:Property ;
     rdfs:label         "has mutation type" ;
@@ -200,6 +204,16 @@ s:established
     a               owl:Class ;
     rdfs:label      "Established" ;
     rdfs:subClassOf efo:EFO_0001742 .
+
+s:Unseen
+    a               owl:Class ;
+    rdfs:label      "Unseen" ;
+    rdfs:subClassOf obo:NCIT_C48173 .
+
+s:Seen
+    a               owl:Class ;
+    rdfs:label      "Seen" ;
+    rdfs:subClassOf obo:NCIT_C48173 .
 
 s:GenomeV1
     a               owl:Class ;

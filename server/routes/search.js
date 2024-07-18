@@ -1,23 +1,10 @@
-import jwt from 'jsonwebtoken'
-import config from "../constants.js";
-import {request} from "../global.js";
+import {request, verifiyAccount} from "../global.js";
 import express from 'express';
 const router = express.Router();
 
 const searchData = async (filter, token) => {
 
-    let account;
-    if (token == null) {
-        account = 'Visitor'
-    } else {
-        jwt.verify(token, config.secretKEY, (err, node) => {
-            if (err) {
-                return [{}]
-            }
-            account = node.node
-        })
-    }
-
+    const account = verifiyAccount(token)
     console.log(account)
 
     const query = `
@@ -57,6 +44,7 @@ const searchData = async (filter, token) => {
                 
             ${filter}
             ?access wac:accessTo ?accessTo.
+            ?line s:visibility s:Seen.
         } UNION {
             ?access wac:mode/rdfs:label ?modes.
         } 

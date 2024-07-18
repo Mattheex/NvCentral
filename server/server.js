@@ -2,7 +2,12 @@ import express from 'express';
 import cors from 'cors'
 import SparqlClient from 'sparql-http-client'
 import dotenv from 'dotenv'
-import fs from 'fs'
+import nodemailer from "nodemailer";
+import config from "./constants.js";
+import addRoutes from './routes/add.js';
+import searchRoutes from './routes/search.js';
+import authRoutes from './routes/auth.js';
+import getRoutes from './routes/get.js';
 
 //fs.readFileSync('/run/secrets/app_cert_key', 'utf8')
 
@@ -20,18 +25,24 @@ console.log(`NODE_ENV=${process.env.NODE_ENV}`);
 console.log(`secretKEY=${process.env.secretKEY}`);
 
 
-export const client =  new SparqlClient({
+export const client = new SparqlClient({
     endpointUrl: config.endpointUrl[process.env.NODE_ENV],
     user: config.user,
     password: process.env.secretKEY,
 });
 
+console.log(process.env.smtpPass)
 
-import addRoutes from './routes/add.js';
-import searchRoutes from './routes/search.js';
-import authRoutes from './routes/auth.js';
-import getRoutes from './routes/get.js';
-import config from "./constants.js";
+export const transporter = nodemailer.createTransport({
+    host: "smtp.office365.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: 'fm111310@etu.unice.fr',
+        pass: process.env.smtpPass,
+    }
+});
+
 
 app.use('/add', addRoutes);
 app.use('/search', searchRoutes);

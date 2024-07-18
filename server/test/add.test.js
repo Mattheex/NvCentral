@@ -1,9 +1,8 @@
 // test/add.test.js
-//import sinon from 'sinon';
 import {before, describe, it} from 'node:test';
 import assert from 'node:assert';
 import {request} from "../global.js";
-import {findID, JSONToSPARQL} from "../routes/add.js";
+import {changeVisibilityNode, findID, JSONToSPARQL, sendEmail} from "../routes/add.js";
 
 
 describe('SPARQL Client Tests', function () {
@@ -58,12 +57,62 @@ describe('SPARQL Client Tests', function () {
             "Date_": {},
             "Details": {},
             "Ensembl_ID": {"select": false, "value": "45868"},
-            "Genbank_ID":{},
+            "Genbank_ID": {},
             "Title": {"select": false, "value": "Bonne publi"},
             "Date": {"select": false, "value": "1999-04-23"},
             "Creator": {"select": false, "value": "MatMat"},
             "Source": {"select": false, "value": "nature.com"},
             "Reagents_and_protocols": {"select": false, "value": ""}
+        },
+        minimum: {
+            Line_name: {select: false, value: 'bgbgb'},
+            Synonym_line_name: {},
+            Line_type: {select: true, value: 'http://ircan.org/schema/Functional'},
+            Generation: {
+                select: true,
+                value: 'http://ircan.org/data/entities/F0'
+            },
+            Zygosity: {
+                select: true,
+                value: 'http://purl.obolibrary.org/obo/GENO_0000134'
+            },
+            Lab_of_origin: {select: true, value: 'http://ircan.org/data/entities/RentzschLab'},
+            Status: {select: true, value: 'http://ircan.org/schema/established'},
+            Exp: {select: false, value: null},
+            Charac: {select: false, value: null},
+            Tag_type: {select: false, value: 'NA'},
+            Construction_description: {},
+            Mutation_type: {},
+            Reagents_and_protocols: {},
+            Molecular_tools: {
+                select: true,
+                value: 'http://purl.obolibrary.org/obo/FBcv_0003008'
+            },
+            Name: {select: false, value: 'gene34'},
+            Sequence: {},
+            Promoter: {},
+            'Ensembl accession number': {},
+            Genbank_accession_number: {},
+            Ensembl_ID: {},
+            Genbank_ID: {},
+            NvERTx_ID: {},
+            "Chromosome's_number": {},
+            Locus_of_insertion: {},
+            Mutated_region: {},
+            'Sub-localization': {select: true, value: 'http://ircan.org/schema/CellMembrane'},
+            Cell_type: {select: true, value: 'http://ircan.org/schema/Cnidocyte'},
+            Region_type: {select: true, value: 'http://ircan.org/schema/BodyWall'},
+            Phenotype: [
+                {
+                    stage: 'http://ircan.org/schema/Developmental',
+                    phenotype: 'http://ircan.org/schema/AdultStage',
+                    value: ''
+                }
+            ],
+            Version: {select: true, value: 'http://ircan.org/schema/GenomeV1'},
+            Date_: {},
+            Details: {},
+            Publication: {select: true, value: 'Autre'}
         }
     }
     const queries = (id) => {
@@ -99,9 +148,46 @@ describe('SPARQL Client Tests', function () {
                       obo:NCIT_C42628/rdfs:label ?Lab_of_origin;
                       obo:RO_0002350/rdfs:label ?Generation;
                       dcterms:source ?Publication;
-                      geno:status/rdfs:label ?Status.
+                      geno:status/rdfs:label ?Status;
+                      s:visibility s:Seen.
                 }`,
                 output: 7
+            },
+            search: {
+                query: `
+                PREFIX : <http://ircan.org/data/mutants>
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX obo: <http://purl.obolibrary.org/obo/>
+                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
+                PREFIX up:        <http://purl.uniprot.org/core/>
+                PREFIX s:         <http://ircan.org/schema/>
+                PREFIX ac: <http://ircan.org/account/>
+                PREFIX wac:     <http://www.w3.org/ns/auth/acl#>
+                SELECT ?field ?ID ?Name ?Type ?Zygosity ?Generation ?Tag ?Tool ?Lab ?Status WHERE {
+                        ?line rdf:type ?field;
+                                obo:RO_0002354 ?exp;
+                                rdfs:label ?Name;
+                                geno:id ?ID;
+                                geno:status ?accessTo;
+                                geno:status/rdfs:label ?Status;
+                                obo:RO_0002354/obo:RO_0002234/rdfs:label ?gene_name;
+                                obo:RO_0000053/obo:RO_0000053 ?phen;
+                                obo:GENO_0000608/rdfs:label ?Zygosity;
+                                obo:RO_0000086/rdfs:label ?Type;
+                                obo:NCIT_C42628/rdfs:label ?Lab;
+                                obo:RO_0002350/rdfs:label ?Generation.
+                                
+                        ?phen rdfs:label ?Tag;
+                               s:cellLocated/rdfs:label ?cell_label.
+                    
+                        ?exp obo:RO_0004009 ?molecule_tool.
+                        ?molecule_tool (a | rdfs:subClassOf) obo:FBcv_0003007;
+                            rdfs:label ?Tool.
+                            
+                        ?line s:visibility s:Seen.
+                }`,
+                output: 10
             },
             exp: {
                 query: `
@@ -146,7 +232,7 @@ describe('SPARQL Client Tests', function () {
                       optional{?exp s:reagentsAndProtocols ?reagents_and_protocols}
                       optional{?exp s:vectorDescription ?Vector_description}
                 }`,
-                output: {'all': 6}
+                output: {'all': 6, 'minimum':4}
             },
             gene: {
                 query: `
@@ -187,7 +273,7 @@ describe('SPARQL Client Tests', function () {
                       s:hasGenBankNumber/rdfs:label ?Genbank_accession_number;
                       s:hasNvERTxID/rdfs:label ?NvERTx_ID.
                 }`,
-                output: {'all': 12}
+                output: 12
             },
             charac: {
                 query: `
@@ -219,7 +305,7 @@ describe('SPARQL Client Tests', function () {
                     optional {?charac obo:RO_0000086 s:Functional.
                     ?charac rdfs:label ?supp_info}
                 }`,
-                output: 1
+                output: {'all': 1, 'minimum':0}
             },
             location: {
                 query: `
@@ -277,14 +363,14 @@ describe('SPARQL Client Tests', function () {
                          ?line geno:id ${id};
                           dcterms:source ?Publication.
                           
-                          ?Publication rdfs:label ?Publication_title;
-                          dcterms:date ?Publication_date;
+                          ?Publication rdfs:label ?Publication_title.
+                          optional{?Publication dcterms:date ?Publication_date;
                           dcterms:creator ?Publication_creator;
                           dcterms:source ?Publication_source;
                           rdfs:seeAlso/geno:id ?Publication_id;
-                          rdfs:seeAlso/rdfs:label ?Publication_name.
+                          rdfs:seeAlso/rdfs:label ?Publication_name.}
                     }`,
-                output: 6
+                output: {'all': 6, 'minimum':1}
             },
             phen: {
                 query: `
@@ -325,8 +411,9 @@ describe('SPARQL Client Tests', function () {
     before(async () => {
         const query = `
         PREFIX : <http://ircan.org/data/mutants>
+        PREFIX ac: <http://ircan.org/account/>
         DELETE {?x ?y ?z} WHERE {
-            FILTER(strstarts(str(?x), str(:)))
+            FILTER(strstarts(str(?x), str(:)) || strstarts(str(?x), str(ac:)))
           ?x ?y ?z
         }`;
 
@@ -349,13 +436,120 @@ describe('SPARQL Client Tests', function () {
         assert.strictEqual(await findID(), 6)
     })
 
-    Object.keys(jsons).forEach((key) => {
-        describe(`Tests input ${key}`, () => {
+    describe('Send email tests', () => {
+        before(async () => {
+            let query = `
+            BASE <http://ircan.org/account/> 
+            PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+            PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#> 
+            PREFIX xs:      <http://www.w3.org/2001/XMLSchema#> 
+            PREFIX foaf:    <http://xmlns.com/foaf/0.1/> 
+            PREFIX wac:     <http://www.w3.org/ns/auth/acl#> 
+            PREFIX s:       <http://ircan.org/schema/> 
+            PREFIX mutants: <http://ircan.org/data/mutants/> 
+            PREFIX owl:     <http://www.w3.org/2002/07/owl#>
+            PREFIX sAc:     <http://ircan.org/schema/account/> 
+            PREFIX geno:    <http://www.geneontology.org/formats/oboInOwl#> 
+            INSERT DATA {
+            
+            sAc:password
+                a          rdf:Property ;
+                rdfs:label "has password" .
+            
+            sAc:director
+                a          rdf:Property ;
+                rdfs:label "has director" .
+            
+            <Administrator>
+                a                foaf:Person ;
+                foaf:accountName "admin" ;
+                sAc:password     "$2b$12$LM.ZqyZzv7r6ankTnIKFweCi67DHNB9b2LB8LZdZwDaoblDSueEZK" ;
+                foaf:name        "Admin User" .
+            
+            <Visitor>
+                a         foaf:Person ;
+                foaf:name "Visitor" .
+            
+            <EricRottinger>
+                a                foaf:Person ;
+                foaf:accountName "Rottinger" ;
+                foaf:mbox        "matthieuferaud31@gmail.com" ;
+                sAc:password     '$2b$12$8vIpFKlARJfvfX4FwvFt4OsZySTs0IB7qisdjNAEi/Cl/T/lPSK6q' ;
+                foaf:name        "Admin User" .
+            
+            <LabRottingerLab>
+                a                   foaf:Group ;
+                foaf:member         <TeamMemberRottingerLabMatthieu> ;
+                sAc:director        <EricRottinger> ;
+                foaf:name           "Rottinger Lab" ;
+                foaf:accountName    "RottingerTeam" ;
+                sAc:password        '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
+                owl:equivalentClass mutants:LabRottingerLab2 .
+            
+            <TeamMemberRottingerLabMatthieu>
+                a         foaf:Person ;
+                foaf:name "Matthieu" .
+            
+            <AdminAccess>
+                a            wac:Authorization ;
+                wac:agent    <Administrator> ;
+                wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
+                wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                             s:ToDo .
+            
+            <EricRottingerAccess>
+                a            wac:Authorization ;
+                wac:agent    <EricRottinger> ;
+                wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
+                wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                             s:ToDo .
+            
+            <LabRottingerLabAccess>
+                a              wac:Authorization ;
+                wac:agentClass foaf:Group ;
+                wac:agent      <LabRottingerLab> ;
+                wac:mode       wac:Read ;
+                wac:accessTo   s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                               s:ToDo .
+            
+            <MemberRottingerLabMatthieuAccess>
+                a            wac:Authorization ;
+                wac:agent    <TeamMemberRottingerLabMatthieu> ;
+                wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
+                wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
+                             s:ToDo .
+            
+            <VisitorAccess>
+                a            wac:Authorization ;
+                wac:agent    <Visitor> ;
+                wac:mode     wac:Read ;
+                wac:accessTo s:genotyped .
+
+            }
+            `
+            //console.log(query)
+            await request(query, 'update').catch((e) => console.log(Error(`ADD ERR ${e}`)))
+        })
+        it('send email nobody', async () => {
             const id = 2
+            let account = 'Rottinger'
+            let res = await sendEmail(account, id)
+            assert.strictEqual(res, 'no director')
+        })
+        it('send email Director', async () => {
+            const id = 2
+            let account = 'LabRottingerLab'
+            let res = await sendEmail(account, id)
+            assert.strictEqual(res.response.includes('OK'), true)
+        })
+    })
+
+    Object.keys(jsons).forEach((key,id) => {
+        describe(`Tests input ${key}`, () => {
             const q = queries(id)
             before(async () => {
                 let query = JSONToSPARQL(id, jsons[key]);
-                console.log(query)
+                //console.log(query)
                 await request(query, 'update').catch((e) => console.log(Error(`ADD ERR ${e}`)))
             })
             Object.keys(q).forEach((node) => {
@@ -365,7 +559,17 @@ describe('SPARQL Client Tests', function () {
                     if (typeof output === 'object') {
                         output = output[key]
                     }
-                    assert.equal(Object.keys(data).length, output, JSON.stringify(data, null, 3))
+                    if (node === 'line') {
+                        assert.strictEqual(Object.keys(data).length, 0, JSON.stringify(data, null, 3))
+                        await changeVisibilityNode(id)
+                        data = await request(q[node].query, 'query')
+                        output = q[node].output;
+                    }
+                    if (node === "search"){
+                        assert.strictEqual(Object.keys(data.Name).length, id+1, JSON.stringify(data, null, 3))
+                    } else {
+                        assert.strictEqual(Object.keys(data).length, output, JSON.stringify(data, null, 3))
+                    }
                 })
             })
         })

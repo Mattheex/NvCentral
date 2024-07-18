@@ -80,12 +80,12 @@ export const queryLine = (id) => `PREFIX : <http://ircan.org/data/mutants/>
           s:cellLocated/rdfs:label ?cell_label;
           s:regionLocated/rdfs:label ?region_label.
     
-          ?Publication rdfs:label ?Publication_title;
-          dcterms:date ?Publication_date;
+          ?Publication rdfs:label ?Publication_title.
+          optional{?Publication dcterms:date ?Publication_date;
           dcterms:creator ?Publication_creator;
           dcterms:source ?Publication_source;
           rdfs:seeAlso/geno:id ?Publication_id;
-          rdfs:seeAlso/rdfs:label ?Publication_name.
+          rdfs:seeAlso/rdfs:label ?Publication_name.}
       } UNION {
            ?phenotypes rdf:type/rdfs:label ?phen_type;
                         rdfs:label ?phen_label;

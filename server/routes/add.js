@@ -1,6 +1,8 @@
 import express from 'express';
-import {request} from "../global.js";
+import {request, verifiyAccount} from "../global.js";
 import config from "../constants.js";
+import {transporter} from "../server.js";
+//import {transporter} from "../server.js";
 
 const router = express.Router();
 
@@ -43,7 +45,8 @@ export const JSONToSPARQL = (id, newData) => {
         Generation: {
             property: 'obo:RO_0002350', NA: false,
             nodeType: 'obo:NCIT_C88214',
-            nodeName: 'Generation'
+            nodeName: 'Generation',
+            prefix: 'en:'
         },
         Zygosity: {
             property: 'obo:GENO_0000608', NA: false
@@ -174,8 +177,8 @@ export const JSONToSPARQL = (id, newData) => {
         Source: {
             property: 'dcterms:source', NA: false,
         },
-        Ensembl_ID: {property: 's:hasEnsemblID',nodeType: 'obo:SO_0000704',nodeName:'Ensembl'},
-        Genbank_ID: {property: 's:hasGenBankNumber',nodeType: 'obo:SO_0000704',nodeName:'GenBank'},
+        Ensembl_ID: {property: 's:hasEnsemblID', nodeType: 'obo:SO_0000704', nodeName: 'Ensembl'},
+        Genbank_ID: {property: 's:hasGenBankNumber', nodeType: 'obo:SO_0000704', nodeName: 'GenBank'},
         Version: {
             property: 's:hasGenomeVersion',
             nodeType: 'owl:Class',
@@ -214,7 +217,13 @@ export const JSONToSPARQL = (id, newData) => {
         },
         "Associated lines": {
             property: 'rdfs:seeAlso', NA: false,
-        }
+        },
+        Publication: {
+            property: 'dcterms:source',
+            nodeType: 'obo:NCIT_C48471 ',
+            nodeName: 'Publication',
+            NA: true,
+        },
     };
 
     function nullCase(parentNode, type) {
@@ -297,6 +306,23 @@ export const JSONToSPARQL = (id, newData) => {
         }, {});
     }
 
+    if (newData.hasOwnProperty('Title')) {
+        addProperty(null, subJson(newData, ['Line_name']))
+        newData["Associated lines"] = {
+            select: true,
+            value: "http://ircan.org/data/mutants/" + json.Line_name.nodeID.substring(1)
+        }
+        delete newData.Publication
+    } else if (newData.Publication.value === 'Autre'){
+        newData["Title"] = newData.Publication
+        delete newData.Publication
+    }
+
+    if (newData.hasOwnProperty('Supplementary_information')) {
+        newData['Tag_type'] = newData['Supplementary_information']
+        delete newData['Supplementary_information']
+    }
+
     return `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX : <http://ircan.org/data/mutants/>
@@ -318,7 +344,7 @@ export const JSONToSPARQL = (id, newData) => {
         ${addProperty(json.Line_name.nodeID, subJson(newData, ['Exp', 'Charac']))}
         ${addProperty(json.Exp.nodeID, subJson(newData, ['Name', 'Molecular_tools', 'Vector_name', 'Construction_description', 'Mutation_type', 'Reagents_and_protocols', 'Vector_description']))}
     
-        ${addProperty(json.Name.nodeID, subJson(newData, ['Sequence', 'Promoter', 'Locus_of_insertion', "Chromosome's_number", 'Mutated_region', 'Version',"Date_","Details", "Ensembl_ID", 'Genbank_ID', 'NvERTx_ID']))}
+        ${addProperty(json.Name.nodeID, subJson(newData, ['Sequence', 'Promoter', 'Locus_of_insertion', "Chromosome's_number", 'Mutated_region', 'Version', "Date_", "Details", "Ensembl_ID", 'Genbank_ID', 'NvERTx_ID']))}
         
         ${addProperty(json.Charac.nodeID, subJson(newData, ['Line_type', 'Tag_type']))}
         
@@ -326,20 +352,73 @@ export const JSONToSPARQL = (id, newData) => {
         ${addProperty(json.Tag_type.nodeID, subJson(newData, ['Sub-localization', 'Cell_type', 'Region_type']))}
         
         ${addProperty(json.Title.nodeID, subJson(newData, ['Date', 'Creator', 'Source', 'Associated lines']))}
-        ${json.Title.nodeID} rdfs:seeAlso ${json.Line_name.nodeID}.
+        ${json.Line_name.nodeID} s:visibility s:Unseen.
     }`
 }
 
+export const sendEmail = async (account, ID) => {
+    const query = `
+    PREFIX ac:   <http://ircan.org/account/>
+    PREFIX sAc:  <http://ircan.org/schema/account/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    SELECT ?mail WHERE {
+        ac:${account} sAc:director/foaf:mbox ?mail.
+    }`
+
+    let data = await request(query, 'query')
+
+    if (Object.keys(data).length !== 0) {
+        const mailOptions = {
+            from: 'matthieu.feraud@etu.univ-cotedazur.fr',
+            to: data['mail'][0],
+            subject: 'Please accept the submitted data',
+            text: `Please accept the data : http://localhost:5000/add/accept/${ID}`
+        };
+
+        let status = transporter.sendMail(mailOptions);
+        return status
+    }
+    return 'no director'
+}
+
 router.post("/line/", async (req, res) => {
-
-    console.log(req.body)
-    throw 1 === 2
-    const ID = findID()
+    const ID = await findID()
+    console.log(`ID ${ID}`)
     const query = JSONToSPARQL(ID, req.body)
-
+    console.log(`Query ${query}`)
+    const account = verifiyAccount(req.headers['authorization'])
+    console.log(`Compte ${account}`)
+    sendEmail(account, ID).then(r => {
+        console.log(r)
+    })
     request(query, 'update').then(data => {
         console.log(data)
         res.json(data);
+    }).catch(err => console.log(err));
+})
+
+export const changeVisibilityNode = (id) => {
+    const query = `
+    PREFIX : <http://ircan.org/data/mutants/>
+    PREFIX s:         <http://ircan.org/schema/>
+    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
+    DELETE {
+    ?line s:visibility s:Unseen.
+    } INSERT {
+    ?line s:visibility s:Seen.
+    } WHERE {
+    ?line geno:id ${id};
+          s:visibility s:Unseen.
+    }`
+
+    return request(query, 'update')
+}
+
+router.get('/accept/:node', (req, res) => {
+    const {node} = req.params
+    changeVisibilityNode(node).then(data => {
+        console.log(data)
+        res.send('Data has been accepted')
     }).catch(err => console.log(err));
 })
 
@@ -394,7 +473,7 @@ const AddExistingNodes = async (field, value) => {
             nodeType: 'obo:NCIT_C164815', internData: false,
             schemaData: true
         },
-        "Publication": {
+        Publication: {
             nodeType: 'obo:NCIT_C48471', internData: true,
             schemaData: false
         },
@@ -431,7 +510,12 @@ const AddExistingNodes = async (field, value) => {
     } else {
         data = []
     }
-    data.push({node: 'Autre', label: 'Autre'})
+    if (field === "Publication") {
+        data.unshift({node: 'Autre', label: 'Autre'})
+    } else {
+        data.push({node: 'Autre', label: 'Autre'})
+    }
+
     return data
 }
 
@@ -477,8 +561,6 @@ router.get("/", async (req, res) => {
         Creator: {type: 'text', collapse: {field: 'Publication', value: 'Autre'}},
         Source: {type: 'text', collapse: {field: 'Publication', value: 'Autre'}},
     }
-
-    console.log(json)
 
     res.json(json);
 })

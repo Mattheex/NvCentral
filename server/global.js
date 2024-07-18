@@ -1,5 +1,6 @@
 import config from "./constants.js";
 import {client} from "./server.js";
+import jwt from "jsonwebtoken";
 
 export function request(query, type) {
     const stream = client.query.select(query, {
@@ -27,4 +28,20 @@ export function request(query, type) {
             reject(err)
         })
     })
+}
+
+export function verifiyAccount(token) {
+    let account;
+    if (token == null) {
+        account = 'Visitor'
+    } else {
+        jwt.verify(token, process.env.secretKEY, (err, node) => {
+            if (err) {
+                return [{}]
+            }
+            account = node.node
+        })
+    }
+
+    return account
 }

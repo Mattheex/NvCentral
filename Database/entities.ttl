@@ -1,8 +1,9 @@
 @base <http://ircan.org/data/entities/> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xs:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix obo:  <http://purl.obolibrary.org/obo/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xs:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo:   <http://purl.obolibrary.org/obo/> .
+@prefix taxon: <http://purl.uniprot.org/taxonomy/> .
 
 <LabRottingerLab2>
     a          obo:OBI_0003250 ;
@@ -15,3 +16,18 @@
 <TechnauLab>
     a          obo:OBI_0003250 ;
     rdfs:label "Technau Lab" .
+
+<F1>
+    a              obo:NCIT_C88214 ;
+    rdfs:label     "F1" ;
+    obo:RO_0002156 taxon:45351 .
+
+<F2>
+    a              obo:NCIT_C88214 ;
+    rdfs:label     "F2" ;
+    obo:RO_0002156 <F1> ;
+    obo:RO_0002374 taxon:45351 .
+
+<F0>
+    a          obo:NCIT_C88214 ;
+    rdfs:label "F0" .

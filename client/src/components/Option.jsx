@@ -4,7 +4,6 @@ import {useEffect} from "react";
 function Option({className, options, field, handleChange}) {
     useEffect(() => {
         if (options.length !== 0) {
-            console.log(options[0].node)
             handleChange(field, options[0].node)
         }
     }, []);

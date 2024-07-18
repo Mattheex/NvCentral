@@ -131,21 +131,6 @@
     terms:source <https://pubmed.ncbi.nlm.nih.gov/20018670/> ;
     rdfs:seeAlso <Line2>, <Line3> .
 
-<F1>
-    a              obo:NCIT_C88214 ;
-    rdfs:label     "F1" ;
-    obo:RO_0002156 taxon:45351 .
-
-<F2>
-    a              obo:NCIT_C88214 ;
-    rdfs:label     "F2" ;
-    obo:RO_0002156 <F1> ;
-    obo:RO_0002374 taxon:45351 .
-
-<GenerationF02>
-    a          obo:NCIT_C88214 ;
-    rdfs:label "F0" .
-
 <KnockIn1>
     a              obo:OBI_0001149 ;
     rdfs:label     "Reporter line" ;
@@ -212,11 +197,12 @@
     obo:NCIT_C42628  en:TechnauLab ;
     obo:RO_0000053   <KnockIn1> ;
     obo:RO_0000086   s:Reporter ;
-    obo:RO_0002350   <F1> ;
+    obo:RO_0002350   en:F1 ;
     obo:RO_0002354   <Exp1> ;
     terms:source     <publication1> ;
     geno:id          0 ;
-    geno:status      s:established .
+    geno:status      s:established ;
+    s:visibility     s:Seen .
 
 <Line2>
     a                obo:OBI_1000048 ;
@@ -227,11 +213,12 @@
     obo:RO_0000053   <KnockDown2> ;
     obo:RO_0000086   s:Functional ;
     obo:RO_0002202   s:NA ;
-    obo:RO_0002350   <F2> ;
+    obo:RO_0002350   en:F2 ;
     obo:RO_0002354   <Cas9Exp2> ;
     terms:source     <publication2> ;
     geno:id          1 ;
-    geno:status      s:established .
+    geno:status      s:established ;
+    s:visibility     s:Seen .
 
 <LineMHT2>
     a                obo:OBI_1000048 ;
@@ -245,7 +232,8 @@
     obo:RO_0002354   <Experience2> ;
     terms:source     <PublicationPublicationdemoi2> ;
     geno:id          2 ;
-    geno:status      s:genotyped .
+    geno:status      s:genotyped ;
+    s:visibility     s:Seen .
 
 <SequenceAUGAUGAUGAUG2>
     a          obo:SO_0000104 ;

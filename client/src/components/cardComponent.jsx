@@ -57,7 +57,6 @@ function Field({info, section, k, setInputAdd, inputAdd}) {
         if (section === 'Submit Data' && typeof info === 'object' && !Array.isArray(info) && info.collapse !== true) {
             setCollapse(inputAdd[info.collapse.field].value === info.collapse.value)
         }
-        console.log(inputAdd)
     }, [info, inputAdd, section]);
     if (section === 'Submit Data') {
         field = <SimpleLabel info={info} k={k} setInputAdd={setInputAdd}></SimpleLabel>
@@ -82,7 +81,7 @@ function Field({info, section, k, setInputAdd, inputAdd}) {
 }
 
 function Phenotype({index, inputAdd, setInputAdd, info}) {
-    const [inputValue, setInputValue] = useState('')
+    const [inputValue, setInputValue] = useState(1)
 
     useEffect(() => {
         setInputAdd(prevInputAdd => {
@@ -113,7 +112,7 @@ function Phenotype({index, inputAdd, setInputAdd, info}) {
             <Option options={info['Phenotype']} field={'Phenotype'} handleChange={handleChange}></Option>
             <Option options={info['Stage']} field={'Stage'} handleChange={handleChange}></Option>
             <InputGroup style={{position: 'relative', flex: '1 1 auto', width: '1%', minWidth: 0}}>
-                <Label type="number" value={inputValue} k={'value'} handleChange={handleChange}/>
+                <Label type="number" value={inputValue} k={'value'} handleChange={handleChange} min={1} max={4}/>
                 {inputAdd['Phenotype'][index]['phenotype'] === "http://ircan.org/schema/Lethality" &&
                     <InputGroup.Text id="basic-addon2">%</InputGroup.Text>}
             </InputGroup>
