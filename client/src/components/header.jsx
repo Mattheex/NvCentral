@@ -4,12 +4,13 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import {Outlet, Link} from "react-router-dom";
+import {Link, Outlet, useLocation} from "react-router-dom";
 import InputGroup from 'react-bootstrap/InputGroup';
-import {useLocation} from 'react-router-dom';
+import Alert from 'react-bootstrap/Alert';
+import {useEffect, useState} from "react";
 
 
-function DropDown({sub, field}) {
+function DropDown({sub, field, localStorageValue}) {
     return (
         <NavDropdown title={field} id="basic-nav-dropdown">
             <div className='d-flex p-2'>
@@ -18,8 +19,10 @@ function DropDown({sub, field}) {
                         <p className='h7 fs-5 mb-0 me-4 text-nowrap'>{field}</p>
                         <hr className="dropdown-divider m-0"/>
                         {Object.entries(Object.entries(links)).map(([index, [label, link]]) => (
-                            <NavDropdown.Item key={index} className='p-0 mt-2' as={Link}
-                                              to={link}>{label}</NavDropdown.Item>))}
+                            (label !== "Submit data" || (label === "Submit data" && localStorageValue !== null && localStorageValue.includes('append')))
+                            && <NavDropdown.Item key={index} className='p-0 mt-2' as={Link}
+                                                 to={link}>{label}</NavDropdown.Item>
+                        ))}
                     </div>
                 ))}
             </div>
@@ -27,7 +30,20 @@ function DropDown({sub, field}) {
     )
 }
 
-function Header({username, setUsername}) {
+function Header({username, setUsername, alert}) {
+    const key = 'rights'
+    const [localStorageValue, setLocalStorageValue] = useState(localStorage.getItem(key));
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setLocalStorageValue(localStorage.getItem(key));
+        };
+        window.addEventListener('storage', handleStorageChange);
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [key]);
+
     const location = useLocation();
     const isHome = location.pathname === '/';
     const links = {
@@ -76,7 +92,7 @@ function Header({username, setUsername}) {
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Nav className="collapse navbar-collapse mb-lg-0 mb-2">
                         {Object.entries(Object.entries(links)).map(([index, [label, sub]]) => (
-                            <DropDown key={index} sub={sub} field={label}/>
+                            <DropDown key={index} sub={sub} field={label} localStorageValue={localStorageValue}/>
                         ))}
                     </Nav>
                     <Nav className="ms-auto me-2">
@@ -87,6 +103,8 @@ function Header({username, setUsername}) {
                                 <NavDropdown.Item className='' as={Link} onClick={() => {
                                     localStorage.removeItem('username');
                                     localStorage.removeItem('token');
+                                    localStorage.removeItem('rights');
+                                    window.dispatchEvent(new Event('storage'));
                                     setUsername(null)
                                 }}>Log out</NavDropdown.Item>
                             </NavDropdown>}
@@ -102,6 +120,8 @@ function Header({username, setUsername}) {
                     </InputGroup>
                 </Container>
             </Navbar>
+            <Alert show={alert.show} variant={alert.variant} className={"position-absolute z-3"}
+                   style={{top: '20px', left: '20px'}}>{alert.message}</Alert>
             <Outlet/>
             <Navbar className={isHome ? 'bg-transparent fw-bold' : 'bg-primary fw-bold'} variant="dark">
                 <Nav className="d-flex justify-content-evenly flex-grow-1">

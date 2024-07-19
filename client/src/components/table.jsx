@@ -10,9 +10,10 @@ function Results({title, results, rights, routing}) {
     const [readRight, setReadRight] = useState(true);
 
     useEffect(() => {
+        const rights = localStorage.getItem('rights')
         setReadRight(rights.includes('read'))
         setDeleteRight(rights.includes('write'))
-    }, [rights]);
+    }, []);
 
     return (
         <div className="container-fluid p-0 tableColor">

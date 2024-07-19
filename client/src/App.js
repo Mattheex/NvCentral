@@ -23,27 +23,38 @@ function App() {
         'OBI_1000048': 'transgenic'
     }
     const [username, setUsername] = useState(localStorage.getItem('username'))
+    const defaultAlert = {show: false, message: '', variant: ''}
+    const [alert, setAlert] = useState(defaultAlert)
+
+    useEffect(() => {
+        const timeId = setTimeout(() => {
+            setAlert(defaultAlert)
+        }, 2000)
+
+        return () => {
+            clearTimeout(timeId)
+        }
+    }, [alert]);
 
     return (
         <div className="App">
             <Routes>
-                <Route path="/" element={<Header username={username} setUsername={setUsername}/>}>
+                <Route path="/" element={<Header username={username} setUsername={setUsername} alert={alert}/>}>
                     <Route path="/" element={<Home routing={routing}/>}/>
                     <Route path="/transgenic" element={<Transgenic routing={routing}/>}/>
                     <Route path="/transgenic/:id" element={<Line/>}/>
-                    <Route path="/add" element={<Add/>}/>
+                    <Route path="/add" element={<Add setAlert={setAlert}/>}/>
                     <Route path="*" element={<NoMatch/>}/>
                     <Route path="/all/:value" element={<SearchAll routing={routing}/>}/>
-                    <Route path="/signIn" element={<Account setUsername={setUsername}/>}/>
+                    <Route path="/signIn" element={<Account setUsername={setUsername} setAlert={setAlert}/>}/>
                 </Route>
             </Routes>
         </div>
     );
 }
 
-function Account({setUsername}) {
-    const [account, setAccount] = useState({"username": "", "password": ""});
-    //const [token, setToken] = useState('');
+function Account({setUsername, setAlert}) {
+    const [account, setAccount] = useState({username: "", password: ""});
     const [error, setError] = useState(false)
     const navigate = useNavigate();
     const {state} = useLocation();
@@ -58,11 +69,14 @@ function Account({setUsername}) {
             setUsername(res.data.username)
             localStorage.setItem('token', res.data.token)
             localStorage.setItem('username', res.data.username)
+            localStorage.setItem('rights', res.data.rights)
+            window.dispatchEvent(new Event('storage'));
             if (state === null) {
                 navigate('/')
             } else {
                 navigate(state.prev)
             }
+            setAlert({show: true, message: 'Successfully connected', variant: 'success'})
         }).catch((e) => {
             console.log(e)
             setError(true)
@@ -188,7 +202,7 @@ function Transgenic({routing}) {
         '?field': 'http://purl.obolibrary.org/obo/OBI_1000048',
         '?Type': ['Reporter', 'Functional', 'Wild']
     });
-    const [rights, setRights] = useState([])
+
     const [results, setResults] = useState([{}]);
     const [options, setOptions] = useState([
         {
@@ -253,7 +267,7 @@ function Transgenic({routing}) {
             }
         }).then(res => {
             setResults(res.data.data);
-            setRights(res.data.rights)
+            //setRights(res.data.rights)
         }).catch((error) => console.error('Error sending data:', error))
     }, [selected, setResults]);
 
@@ -271,7 +285,7 @@ function Transgenic({routing}) {
     return (
         <div className="d-flex flex-row flex-grow-1">
             <Menu section={'Options'} types={options} handleChange={handleChange}></Menu>
-            <Table title={'Transgenic Lines'} results={results} rights={rights} routing={routing}></Table>
+            <Table title={'Transgenic Lines'} results={results} routing={routing}></Table>
         </div>
     );
 }
@@ -343,7 +357,7 @@ function Line() {
     return <Main section={'read'} info={info}></Main>;
 }
 
-function Add() {
+function Add({setAlert}) {
     const [info, setInfo] = useState({
             Summary: {Line_name: '', Line_type: [], Zygosity: []},
             Phenotype: {Select: {Phenotype: [], Stage: []}, Other: {}}
@@ -370,7 +384,7 @@ function Add() {
         "Ensembl accession number": {},
         Genbank_accession_number: {},
         "Ensembl_ID": {},
-        "Genbank_ID":{},
+        "Genbank_ID": {},
         NvERTx_ID: {},
         "Chromosome's_number": {},
         Locus_of_insertion: {},
@@ -392,15 +406,43 @@ function Add() {
         fetch(`/add`).then(res => res.json().then(setInfo))
     }, [setInfo]);
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(inputAdd)
-        axios.post('/add/line', inputAdd,{
+
+        const checkValues = (obj) => {
+            for (let key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    if (!checkValues(obj[key])) {
+                        return false;
+                    }
+                } else if (key === 'value' && typeof obj[key] === 'string') {
+                    if (!/^[a-z0-9]+$/i.test((obj[key]))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        if (!checkValues(inputAdd)) {
+            setAlert({show: true, message: 'Some data contains non alphanumeric characters', variant: 'danger'})
+            return
+        }
+        axios.post('/add/line', inputAdd, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem('token'),
             }
-        }).then().catch((error) => console.error('Error sending data:', error))
+        }).then(() => {
+            navigate('/')
+            setAlert({show: true, message: 'Successfully added data', variant: 'success'})
+        }).catch((error) => {
+            console.error('Error sending data:', error)
+            setAlert({show: true, message: 'Error data none added', variant: 'danger'})
+        })
     };
 
     return <Main section={'Submit Data'} info={info} handleSubmit={handleSubmit} inputAdd={inputAdd}
