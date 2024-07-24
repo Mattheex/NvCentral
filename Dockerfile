@@ -5,20 +5,23 @@ USER root
 
 # Install necessary dependencies
 RUN apk update && \
-    apk add --no-cache supervisor nodejs npm openssh apt sudo mutt vim msmtp
+    apk add --no-cache supervisor nodejs npm openssh apt sudo mutt vim msmtp ca-certificates tzdata alpine-conf
 
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
 # Set the locale (French)
-RUN locale-gen fr_FR.UTF-8
-ENV LANG fr_FR.UTF-8
-ENV LANGUAGE fr_FR:fr
-ENV LC_ALL fr_FR.UTF-8
+RUN apk add --no-cache \
+    glibc-i18n
+
+RUN echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen && \
+    locale-gen fr_FR.UTF-8
+
+ENV LANG=fr_FR.UTF-8 \
+    LANGUAGE=fr_FR.UTF-8 \
+    LC_ALL=fr_FR.UTF-8
 
 # Set the timezone to Europe/Paris
-RUN echo "Europe/Paris" > /etc/timezone
-RUN dpkg-reconfigure --frontend noninteractive tzdata
 
 RUN export ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
 
