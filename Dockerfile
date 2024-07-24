@@ -10,17 +10,6 @@ RUN apk update && \
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
-# Set the locale (French)
-RUN apk add --no-cache \
-    glibc-i18n
-
-RUN echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen && \
-    locale-gen fr_FR.UTF-8
-
-ENV LANG=fr_FR.UTF-8 \
-    LANGUAGE=fr_FR.UTF-8 \
-    LC_ALL=fr_FR.UTF-8
-
 # Set the timezone to Europe/Paris
 
 RUN export ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
