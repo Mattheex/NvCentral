@@ -5,7 +5,7 @@ USER root
 
 # Install necessary dependencies
 RUN apk update && \
-    apk add --no-cache supervisor nodejs npm openssh
+    apk add --no-cache supervisor nodejs npm openssh apt apt-get sudo mutt
 
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor

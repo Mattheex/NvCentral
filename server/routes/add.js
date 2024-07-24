@@ -1,8 +1,11 @@
 import express from 'express';
 import {request, verifiyAccount} from "../global.js";
 import config from "../constants.js";
-import {transporter} from "../server.js";
 //import {transporter} from "../server.js";
+//import sendmail from "sendmail"
+//import {transporter} from "../server.js";
+import createSendmail from 'sendmail';
+const sendmail = createSendmail({ silent: false });
 
 const router = express.Router();
 
@@ -369,13 +372,14 @@ export const sendEmail = async (account, ID) => {
 
     if (Object.keys(data).length !== 0) {
         const mailOptions = {
-            from: 'matthieu.feraud@etu.univ-cotedazur.fr',
-            to: data['mail'][0],
+            from: 'no-reply@univ-cotedazur.fr',
+            to: 'matthieu.feraud@etu.univ-cotedazur.fr',
             subject: 'Please accept the submitted data',
             text: `Please accept the data : http://localhost:5000/add/accept/${ID}`
         };
 
-        let status = transporter.sendMail(mailOptions);
+        let status = await sendmail(mailOptions)
+        //let status = transporter.sendMail(mailOptions);
         return status
     }
     return 'no director'
