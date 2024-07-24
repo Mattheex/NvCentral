@@ -5,7 +5,7 @@ USER root
 
 # Install necessary dependencies
 RUN apk update && \
-    apk add --no-cache supervisor nodejs npm openssh apt apt-get sudo mutt
+    apk add --no-cache supervisor nodejs npm openssh apt sudo mutt
 
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
@@ -48,7 +48,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 #ENV ADMIN_PASSWORD ${secretKEY}
 
 # Expose necessary ports
-EXPOSE 3000 5000 3030
+EXPOSE 3000 5000 3030 25
 
 # Set entrypoint for Fuseki and command to start supervisor
 ENTRYPOINT ["sh", "/docker-entrypoint.sh"]
