@@ -5,12 +5,20 @@ USER root
 
 # Install necessary dependencies
 RUN apk update && \
-    apk add --no-cache supervisor nodejs npm openssh apt sudo mutt
+    apk add --no-cache supervisor nodejs npm openssh apt sudo mutt vim msmtp
 
 # Create directories for client, server, and supervisor logs
 RUN mkdir -p /app/client /app/server /var/log/supervisor
 
-#RUN --mount=type=secret,id=secretKEY
+# Set the locale (French)
+RUN locale-gen fr_FR.UTF-8
+ENV LANG fr_FR.UTF-8
+ENV LANGUAGE fr_FR:fr
+ENV LC_ALL fr_FR.UTF-8
+
+# Set the timezone to Europe/Paris
+RUN echo "Europe/Paris" > /etc/timezone
+RUN dpkg-reconfigure --frontend noninteractive tzdata
 
 RUN export ADMIN_PASSWORD=$(cat /run/secrets/secretKEY)
 
