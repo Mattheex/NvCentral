@@ -539,8 +539,8 @@ describe('SPARQL Client Tests', function () {
         it('send email Director', async () => {
             const id = 2
             let account = 'LabRottingerLab'
-            let res = await sendEmail(account, id)
-            console.log(res)
+            //let res = await sendEmail(account, id)
+            //console.log(res)
             //assert.strictEqual(res.response.includes('OK'), true)
         })
     })

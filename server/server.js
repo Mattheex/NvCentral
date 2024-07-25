@@ -33,17 +33,15 @@ export const client = new SparqlClient({
 
 console.log(process.env.smtpPass)
 
-/*export const transporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
-    secure: false,
+export const transporter = nodemailer.createTransport({
+    service:'gmail',
     auth: {
-        user: 'fm111310@etu.unice.fr',
-        pass: process.env.smtpPass,
+        user: 'noreply.nvcentral@gmail.com',
+        pass:  process.env.smtpPass,
     }
-});*/
+});
 
-export const transporter = null
+//export const transporter = null
 
 
 app.use('/add', addRoutes);

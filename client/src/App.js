@@ -42,7 +42,8 @@ function App() {
                 <Route path="/" element={<Header username={username} setUsername={setUsername} alert={alert}/>}>
                     <Route path="/" element={<Home routing={routing}/>}/>
                     <Route path="/transgenic" element={<Transgenic routing={routing}/>}/>
-                    <Route path="/transgenic/:id" element={<Line/>}/>
+                    <Route path="/transgenic/:id" element={<Line section={'read'} setAlert={setAlert}/>}/>
+                    <Route path="/add/accept/:id" element={<Line section={'accept'} setAlert={setAlert}/>}/>
                     <Route path="/add" element={<Add setAlert={setAlert}/>}/>
                     <Route path="*" element={<NoMatch/>}/>
                     <Route path="/all/:value" element={<SearchAll routing={routing}/>}/>
@@ -127,36 +128,6 @@ function Account({setUsername, setAlert}) {
                     </Form>
                 </Card.Body>
             </Card>
-        </div>
-    );
-}
-
-function Omics({routing}) {
-    const [selected, setSelected] = useState({
-        '?field': 'http://purl.obolibrary.org/obo/OBI_1000048',
-    });
-    const [results, setResults] = useState([{}]);
-    const [options, setOptions] = useState([
-        {
-            type: 'label',
-            className: 'mb-3 mt-3',
-            placeholder: 'Line name',
-            field: '?Name'
-        }
-    ]);
-
-    const handleChange = (field, value) => {
-        setSelected(selected => ({...selected, ...{[field]: value}}))
-    }
-
-    useEffect(() => {
-        axios.post('/search/omics', selected).then(res => setResults(res.data)).catch((error) => console.error('Error sending data:', error))
-    }, [selected, setResults]);
-
-    return (
-        <div className="d-flex flex-row flex-grow-1">
-            <Menu section={'Options'} types={options} handleChange={handleChange}></Menu>
-            <Table title={'Omics'} results={results} routing={routing}></Table>
         </div>
     );
 }
@@ -259,6 +230,10 @@ function Transgenic({routing}) {
         setSelected(selected => ({...selected, ...{[field]: value}}))
     }
 
+    const handleDelete = () => {
+
+    }
+
     useEffect(() => {
         axios.post('/search/mutants', selected, {
             headers: {
@@ -290,7 +265,7 @@ function Transgenic({routing}) {
     );
 }
 
-function Line() {
+function Line({setAlert, section}) {
     const [info, setInfo] = useState(
         {
             Summary: {
@@ -349,12 +324,44 @@ function Line() {
         }
     );
     const {id} = useParams();
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        console.log(e.target.textContent);
+        if (e.target.textContent === "Accept") {
+            axios.get(`/add/accept/${id}`).then(res => {
+                navigate('/')
+                setAlert({show: true, message: 'Successfully accepted', variant: 'success'})
+            }).catch((e) => {
+                console.log(e)
+                setAlert({show: true, message: `Problem data not accepted\n${e}`, variant: 'danger'})
+            })
+        }
+        if (e.target.textContent === 'Delete') {
+            axios.get(`/add/deleted/${id}`).then(res => {
+                navigate('/')
+                setAlert({show: true, message: 'Successfully deleted', variant: 'success'})
+            }).catch((e) => {
+                console.log(e)
+                setAlert({
+                    show: true, message: `Problem data not deleted\n${e}`, variant: 'danger'
+                })
+            })
+        }
+    };
 
     useEffect(() => {
-        fetch(`/get/line/${id}`).then(res => res.json().then(setInfo))
+        let visibility;
+        if (section === 'read') {
+            visibility = 'Seen'
+        } else {
+            visibility = 'Unseen'
+        }
+        fetch(`/get/line/${id}&${visibility}`).then(res => res.json().then(setInfo))
     }, [id, setInfo]);
 
-    return <Main section={'read'} info={info}></Main>;
+    return <Main section={section} info={info} handleSubmit={handleChange}></Main>;
 }
 
 function Add({setAlert}) {
@@ -373,7 +380,7 @@ function Add({setAlert}) {
         Status: {},
         Exp: {select: false, value: null},
         Charac: {select: false, value: null},
-        Tag_type: {select: false, value: 'NA'},
+        Tag_type: {select: false, value: null},
         Construction_description: {},
         Mutation_type: {},
         Reagents_and_protocols: {},
@@ -414,12 +421,14 @@ function Add({setAlert}) {
 
         const checkValues = (obj) => {
             for (let key in obj) {
+                //console.log(key)
                 if (typeof obj[key] === 'object' && obj[key] !== null) {
                     if (!checkValues(obj[key])) {
                         return false;
                     }
-                } else if (key === 'value' && typeof obj[key] === 'string') {
-                    if (!/^[a-z0-9]+$/i.test((obj[key]))) {
+                } else if (key === 'value' && typeof obj[key] === 'string' && !obj[key].startsWith('http://') && obj[key].length > 0) {
+                    if (!/^[a-zA-Z0-9]+$/i.test((obj[key]))) {
+                        console.log(obj[key])
                         return false;
                     }
                 }
@@ -429,6 +438,7 @@ function Add({setAlert}) {
 
         if (!checkValues(inputAdd)) {
             setAlert({show: true, message: 'Some data contains non alphanumeric characters', variant: 'danger'})
+            console.log('bad values')
             return
         }
         axios.post('/add/line', inputAdd, {

@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 
-function Results({title, results, rights, routing}) {
+function Results({title, results, rights, routing, handleDelete}) {
     console.log(results);
 
     const [deleteRight, setDeleteRight] = useState(false);
@@ -11,8 +11,10 @@ function Results({title, results, rights, routing}) {
 
     useEffect(() => {
         const rights = localStorage.getItem('rights')
-        setReadRight(rights.includes('read'))
-        setDeleteRight(rights.includes('write'))
+        if (rights !== null) {
+            setReadRight(rights.includes('read'))
+            setDeleteRight(rights.includes('write'))
+        }
     }, []);
 
     return (
@@ -46,7 +48,7 @@ function Results({title, results, rights, routing}) {
                                 }
                                 return <td key={index} className="align-middle">{value}</td>
                             })}
-                            {deleteRight && <td><Button variant="danger">Delete</Button></td>}
+                            {deleteRight && <td><Button variant="danger" onClick={handleDelete}>Delete</Button></td>}
                         </tr>
                     ))}
                     </tbody>

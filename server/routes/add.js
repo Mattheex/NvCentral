@@ -3,9 +3,11 @@ import {request, verifiyAccount} from "../global.js";
 import config from "../constants.js";
 //import {transporter} from "../server.js";
 //import sendmail from "sendmail"
-//import {transporter} from "../server.js";
-import createSendmail from 'sendmail';
-const sendmail = createSendmail({ silent: false });
+import {transporter} from "../server.js";
+import zlib from 'zlib';
+
+//import createSendmail from 'sendmail';
+//const sendmail = createSendmail({ silent: false });
 
 const router = express.Router();
 
@@ -75,7 +77,8 @@ export const JSONToSPARQL = (id, newData) => {
             property: 'obo:RO_0000053', NA: true,
             nodeType: 'bao:BAO_0170002',
             nodeName: 'Tag',
-            nodeID: ''
+            nodeID: '',
+            label: true
         },
         Molecular_tools: {
             property: 'obo:RO_0004009', NA: false,
@@ -104,7 +107,8 @@ export const JSONToSPARQL = (id, newData) => {
             nodeType: 'obo:SO_0000704',
             nodeName: 'Gene',
             NA: false,
-            nodeID: ''
+            nodeID: '',
+            label: true
         },
         Sequence: {
             property: 'obo:BAO_0002817', NA: true,
@@ -271,6 +275,8 @@ export const JSONToSPARQL = (id, newData) => {
 
                             if (item.value !== null) {
                                 string += newNode + " rdfs:label \"" + item.value + "\".\n";
+                            } else if (json[key].hasOwnProperty('label') && json[key]) {
+                                string += newNode + " rdfs:label \"NA\".\n";
                             }
                             if (json[key].hasOwnProperty('subClassOf')) {
                                 string += newNode + " rdfs:subClassOf " + json[key]['subClassOf'] + ".\n";
@@ -316,7 +322,7 @@ export const JSONToSPARQL = (id, newData) => {
             value: "http://ircan.org/data/mutants/" + json.Line_name.nodeID.substring(1)
         }
         delete newData.Publication
-    } else if (newData.Publication.value === 'Autre'){
+    } else if (newData.Publication.value === 'Autre') {
         newData["Title"] = newData.Publication
         delete newData.Publication
     }
@@ -372,17 +378,34 @@ export const sendEmail = async (account, ID) => {
 
     if (Object.keys(data).length !== 0) {
         const mailOptions = {
-            from: 'no-reply@univ-cotedazur.fr',
-            to: 'matthieu.feraud@etu.univ-cotedazur.fr',
-            subject: 'Please accept the submitted data',
-            text: `Please accept the data : http://localhost:5000/add/accept/${ID}`
+            from: 'noreply.nvcentral@gmail.com',
+            to: data['mail'][0],
+            subject: 'Please accept the submitted data from NvCentral',
+            text: `Hello,\n\nPending acceptance http://localhost:3000/add/accept/${ID}\n\nKind regards,\nNvCentral`
         };
 
-        let status = await sendmail(mailOptions)
-        //let status = transporter.sendMail(mailOptions);
+        //let status = await sendmail(mailOptions)
+        let status = transporter.sendMail(mailOptions);
         return status
     }
+    await changeVisibilityNode(ID)
     return 'no director'
+}
+
+const queryDeleteDatabase = (id, query) => {
+    query = query.replace('INSERT', 'DELETE')
+    const deflated = zlib.deflateSync(query).toString('hex')
+    return `
+    PREFIX : <http://ircan.org/data/mutants/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
+    PREFIX schema: <http://schema.org/>
+    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+    INSERT DATA {
+        :DELETE${id} rdf:type schema:DeleteAction;
+                     geno:id ${id};
+                     rdfs:label "${deflated}".
+    }`
 }
 
 router.post("/line/", async (req, res) => {
@@ -390,14 +413,16 @@ router.post("/line/", async (req, res) => {
     console.log(`ID ${ID}`)
     const query = JSONToSPARQL(ID, req.body)
     console.log(`Query ${query}`)
+    const deleteQuery = queryDeleteDatabase(ID, query)
     const account = verifiyAccount(req.headers['authorization'])
     console.log(`Compte ${account}`)
-    sendEmail(account, ID).then(r => {
-        console.log(r)
-    })
+    sendEmail(account, ID).then(r => console.log(r))
     request(query, 'update').then(data => {
         console.log(data)
-        res.json(data);
+        console.log(deleteQuery)
+        request(deleteQuery, 'update').then(data => res.json(data)).catch(err => res.status(400).send({
+            message: err
+        }))
     }).catch(err => console.log(err));
 })
 
@@ -424,6 +449,51 @@ router.get('/accept/:node', (req, res) => {
         console.log(data)
         res.send('Data has been accepted')
     }).catch(err => console.log(err));
+})
+
+router.get('/deleted/:node', (req, res) => {
+    const {node} = req.params
+    let query = `
+    PREFIX : <http://ircan.org/data/mutants/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
+    PREFIX schema: <http://schema.org/>
+    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?queryZip WHERE {
+        ?node rdf:type schema:DeleteAction;
+                     geno:id ${node};
+                     rdfs:label ?queryZip.
+    }`
+
+    request(query, 'query').then(data => {
+        const inflated = zlib.inflateSync(new Buffer.from(data['queryZip'][0], 'hex')).toString();
+        request(inflated, 'update').then(() => {
+            query = `
+            PREFIX : <http://ircan.org/data/mutants/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
+            PREFIX schema: <http://schema.org/>
+            PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+            DELETE {
+                ?node rdf:type schema:DeleteAction.
+                ?node geno:id ${node}.
+                ?node rdfs:label ?zip.
+            } WHERE {
+                ?node rdf:type schema:DeleteAction.
+                ?node geno:id ${node}.
+                ?node rdfs:label ?zip.
+            }`
+            request(query, 'update').then(() => {
+                res.send('Data has been deleted')
+            }).catch(err => res.status(400).send({
+                message: err
+            }))
+        }).catch(err => res.status(400).send({
+            message: err
+        }))
+    }).catch(err => res.status(400).send({
+        message: err
+    }))
 })
 
 

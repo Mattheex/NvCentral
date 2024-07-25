@@ -5,7 +5,7 @@ import express from 'express';
 import {request} from "../global.js";
 const router = express.Router();
 
-export const queryLine = (id) => `PREFIX : <http://ircan.org/data/mutants/>
+export const queryLine = (id,visibility) => `PREFIX : <http://ircan.org/data/mutants/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX obo:       <http://purl.obolibrary.org/obo/>
@@ -69,7 +69,6 @@ export const queryLine = (id) => `PREFIX : <http://ircan.org/data/mutants/>
           s:hasGenBankNumber/rdfs:label ?Genbank_accession_number;
           s:hasNvERTxID/rdfs:label ?NvERTx_ID.
          
-              
           ?charac obo:RO_0000053 ?phen.
           optional{?charac obo:RO_0000086 s:Reporter.
           ?phen rdfs:label ?Tag_type.}
@@ -100,10 +99,11 @@ export const queryLine = (id) => `PREFIX : <http://ircan.org/data/mutants/>
       }
     }`
 
-router.get("/line/:id", async (req, res) => {
+router.get("/line/:id&:visibility", async (req, res) => {
     console.time("query");
+    console.log(req.params)
 
-    request(queryLine(req.params.id), 'query').then(data => {
+    request(queryLine(req.params.id, req.params.visibility), 'query').then(data => {
         console.timeEnd("query");
         console.time("formating");
 
@@ -133,7 +133,7 @@ router.get("/line/:id", async (req, res) => {
                     let pathNew = path + '-' + key
                     if (pathNew.includes('Browsers') && pathNew.includes('text')) {
                         newObj[key] = obj[key]
-                    } else if (pathNew.includes('Browsers') && pathNew.includes('link')) {
+                    } else if (pathNew.includes('Browsers') && pathNew.includes('link') && data[obj[key]] !== undefined) {
                         if (pathNew.includes('0')) {
                             newObj[key] = `https://www.ensembl.org/Multi/Search/Results?q=${data[obj[key]][0]}`
                         } else if (pathNew.includes('1')) {

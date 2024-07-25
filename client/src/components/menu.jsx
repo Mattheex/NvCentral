@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import Nav from 'react-bootstrap/Nav';
 import ListGroup from 'react-bootstrap/ListGroup';
 import {Link} from "react-router-dom";
@@ -81,6 +81,7 @@ function Menu({section, types, handleChange}) {
     let content;
     let title;
     let submitButton;
+    let choice;
 
     if (section === 'Options') {
         content = <Search types={types} handleChange={handleChange}/>
@@ -93,6 +94,12 @@ function Menu({section, types, handleChange}) {
             title = section
             submitButton =
                 <Button className="align-self-center w-50" variant="primary" onClick={handleChange}>Submit</Button>
+        } else if (section === 'accept') {
+            title = types.Summary.Line_name
+            choice = <div className="d-flex align-self-center">
+                <Button className="me-1" variant="primary" onClick={handleChange}>Accept</Button>
+                <Button className="ms-1" variant="danger" onClick={handleChange}>Delete</Button>
+            </div>
         }
     }
 
@@ -106,6 +113,7 @@ function Menu({section, types, handleChange}) {
                     {content}
                 </ListGroup>
                 {submitButton}
+                {choice}
             </div>
         </Nav>
     );
