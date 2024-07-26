@@ -3,7 +3,6 @@ import express from 'express';
 const router = express.Router();
 
 const searchData = async (filter, token) => {
-
     const account = verifiyAccount(token)
     console.log(account)
 
@@ -54,6 +53,10 @@ const searchData = async (filter, token) => {
     let rights = data['modes']
     delete data['modes']
 
+    if (!rights.includes('read')){
+        return {}
+    }
+
     data = Object.entries(data).reduce((acc, [key, values]) => {
         values.forEach((value, index) => {
             acc[index] ||= {};
@@ -70,12 +73,14 @@ const searchData = async (filter, token) => {
                 link: row['ID'],
                 field: row['field'].split('/').pop()
             }
+            if (rights.includes('write')){
+                row['Action'] = row['ID']
+            }
             delete row['ID'];
             delete row['field'];
         }
     }
 
-    data = {data: data, rights: rights}
     return data
 }
 

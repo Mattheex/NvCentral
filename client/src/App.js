@@ -1,6 +1,6 @@
 import './global.scss'
 import './App.css';
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useCallback} from 'react'
 import Menu from './components/menu';
 import Header from './components/header'
 import Table from "./components/table";
@@ -16,48 +16,39 @@ import Card from "react-bootstrap/Card";
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
+import {AlertProvider, useAlert} from "./context/Alert";
 
 function App() {
     const routing = {
         'OBI_1000048': 'transgenic'
     }
     const [username, setUsername] = useState(localStorage.getItem('username'))
-    const defaultAlert = {show: false, message: '', variant: ''}
-    const [alert, setAlert] = useState(defaultAlert)
-
-    useEffect(() => {
-        const timeId = setTimeout(() => {
-            setAlert(defaultAlert)
-        }, 2000)
-
-        return () => {
-            clearTimeout(timeId)
-        }
-    }, [alert]);
 
     return (
         <div className="App">
-            <Routes>
-                <Route path="/" element={<Header username={username} setUsername={setUsername} alert={alert}/>}>
-                    <Route path="/" element={<Home routing={routing}/>}/>
-                    <Route path="/transgenic" element={<Transgenic routing={routing}/>}/>
-                    <Route path="/transgenic/:id" element={<Line section={'read'} setAlert={setAlert}/>}/>
-                    <Route path="/add/accept/:id" element={<Line section={'accept'} setAlert={setAlert}/>}/>
-                    <Route path="/add" element={<Add setAlert={setAlert}/>}/>
-                    <Route path="*" element={<NoMatch/>}/>
-                    <Route path="/all/:value" element={<SearchAll routing={routing}/>}/>
-                    <Route path="/signIn" element={<Account setUsername={setUsername} setAlert={setAlert}/>}/>
-                </Route>
-            </Routes>
+            <AlertProvider>
+                <Routes>
+                    <Route path="/" element={<Header username={username} setUsername={setUsername} alert={alert}/>}>
+                        <Route path="/" element={<Home routing={routing}/>}/>
+                        <Route path="/transgenic" element={<Transgenic routing={routing}/>}/>
+                        <Route path="/transgenic/:id" element={<Line section={'read'}/>}/>
+                        <Route path="/add/accept/:id" element={<Line section={'accept'}/>}/>
+                        <Route path="/add" element={<Add/>}/>
+                        <Route path="*" element={<NoMatch/>}/>
+                        <Route path="/all/:value" element={<SearchAll routing={routing}/>}/>
+                        <Route path="/signIn" element={<Account setUsername={setUsername}/>}/>
+                    </Route>
+                </Routes>
+            </AlertProvider>
         </div>
     );
 }
 
-function Account({setUsername, setAlert}) {
+function Account({setUsername}) {
     const [account, setAccount] = useState({username: "", password: ""});
     const [error, setError] = useState(false)
     const navigate = useNavigate();
+    const {showAlert} = useAlert();
     const {state} = useLocation();
 
     const handleChange = (field, value) => {
@@ -77,9 +68,9 @@ function Account({setUsername, setAlert}) {
             } else {
                 navigate(state.prev)
             }
-            setAlert({show: true, message: 'Successfully connected', variant: 'success'})
-        }).catch((e) => {
-            console.log(e)
+            showAlert('Successfully connected', 'success')
+        }).catch((err) => {
+            console.log(err)
             setError(true)
         })
     }
@@ -219,6 +210,8 @@ function Transgenic({routing}) {
         },
     ]);
 
+    const {showAlert} = useAlert();
+
     const handleChange = (field, value) => {
         if (field === '?Type') {
             if (value.checked) {
@@ -230,21 +223,27 @@ function Transgenic({routing}) {
         setSelected(selected => ({...selected, ...{[field]: value}}))
     }
 
-    const handleDelete = () => {
-
-    }
-
-    useEffect(() => {
+    const searchMutants = useCallback(() => {
         axios.post('/search/mutants', selected, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem('token'),
             }
         }).then(res => {
-            setResults(res.data.data);
-            //setRights(res.data.rights)
-        }).catch((error) => console.error('Error sending data:', error))
-    }, [selected, setResults]);
+            setResults(res.data);
+        }).catch((err) => console.log(err) || showAlert(err.message, 'danger'))
+    },[selected, setResults,showAlert])
+
+    const handleDelete = (e) => {
+        const node = e.target.value
+        axios.get(`/add/deleted/${node}`, {}).then(() => {
+            searchMutants()
+        }).catch((err) => console.log(err) || showAlert(err.message, 'danger'))
+    }
+
+    useEffect(() => {
+        searchMutants()
+    }, [searchMutants]);
 
     useEffect(() => {
         fetch("search/mutants/options").then(res => res.json().then(data => {
@@ -260,12 +259,12 @@ function Transgenic({routing}) {
     return (
         <div className="d-flex flex-row flex-grow-1">
             <Menu section={'Options'} types={options} handleChange={handleChange}></Menu>
-            <Table title={'Transgenic Lines'} results={results} routing={routing}></Table>
+            <Table title={'Transgenic Lines'} results={results} routing={routing} handleDelete={handleDelete}></Table>
         </div>
     );
 }
 
-function Line({setAlert, section}) {
+function Line({section}) {
     const [info, setInfo] = useState(
         {
             Summary: {
@@ -325,29 +324,22 @@ function Line({setAlert, section}) {
     );
     const {id} = useParams();
     const navigate = useNavigate();
+    const {showAlert} = useAlert();
 
     const handleChange = (e) => {
         e.preventDefault();
         console.log(e.target.textContent);
         if (e.target.textContent === "Accept") {
-            axios.get(`/add/accept/${id}`).then(res => {
+            axios.get(`/add/accept/${id}`).then(() => {
                 navigate('/')
-                setAlert({show: true, message: 'Successfully accepted', variant: 'success'})
-            }).catch((e) => {
-                console.log(e)
-                setAlert({show: true, message: `Problem data not accepted\n${e}`, variant: 'danger'})
-            })
+                showAlert('Successfully accepted', 'success')
+            }).catch((err) => console.log(err) || showAlert(err.message, 'danger'))
         }
         if (e.target.textContent === 'Delete') {
             axios.get(`/add/deleted/${id}`).then(res => {
                 navigate('/')
-                setAlert({show: true, message: 'Successfully deleted', variant: 'success'})
-            }).catch((e) => {
-                console.log(e)
-                setAlert({
-                    show: true, message: `Problem data not deleted\n${e}`, variant: 'danger'
-                })
-            })
+                showAlert('Successfully deleted', 'success')
+            }).catch((err) => console.log(err) || showAlert(err.message, 'danger'))
         }
     };
 
@@ -359,12 +351,12 @@ function Line({setAlert, section}) {
             visibility = 'Unseen'
         }
         fetch(`/get/line/${id}&${visibility}`).then(res => res.json().then(setInfo))
-    }, [id, setInfo]);
+    }, [id, setInfo,section]);
 
     return <Main section={section} info={info} handleSubmit={handleChange}></Main>;
 }
 
-function Add({setAlert}) {
+function Add() {
     const [info, setInfo] = useState({
             Summary: {Line_name: '', Line_type: [], Zygosity: []},
             Phenotype: {Select: {Phenotype: [], Stage: []}, Other: {}}
@@ -414,6 +406,7 @@ function Add({setAlert}) {
     }, [setInfo]);
 
     const navigate = useNavigate();
+    const {showAlert} = useAlert();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -437,7 +430,7 @@ function Add({setAlert}) {
         }
 
         if (!checkValues(inputAdd)) {
-            setAlert({show: true, message: 'Some data contains non alphanumeric characters', variant: 'danger'})
+            showAlert('Some data contains non alphanumeric characters', 'danger')
             console.log('bad values')
             return
         }
@@ -448,11 +441,8 @@ function Add({setAlert}) {
             }
         }).then(() => {
             navigate('/')
-            setAlert({show: true, message: 'Successfully added data', variant: 'success'})
-        }).catch((error) => {
-            console.error('Error sending data:', error)
-            setAlert({show: true, message: 'Error data none added', variant: 'danger'})
-        })
+            showAlert('Successfully added data', 'success')
+        }).catch((err) => console.error('Error sending data:', err) || showAlert(err.message, 'danger'))
     };
 
     return <Main section={'Submit Data'} info={info} handleSubmit={handleSubmit} inputAdd={inputAdd}

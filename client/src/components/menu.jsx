@@ -106,7 +106,7 @@ function Menu({section, types, handleChange}) {
     return (
         <Nav className="d-flex flex-column shadow-left z-1 " style={{width: '260px'}}>
             <div className="d-flex flex-column justify-content-between"
-                 style={{position: 'sticky', height: '85vh', top: '56px'}}>
+                 style={{position: 'sticky', top: '56px'}}>
                 <ListGroup variant="flush bg-transparent">
                     <ListGroup.Item className="p-3 h6 border-0 border-bottom bg-transparent m-0">
                         {title} </ListGroup.Item>

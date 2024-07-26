@@ -1,13 +1,8 @@
 import express from 'express';
 import {request, verifiyAccount} from "../global.js";
 import config from "../constants.js";
-//import {transporter} from "../server.js";
-//import sendmail from "sendmail"
 import {transporter} from "../server.js";
 import zlib from 'zlib';
-
-//import createSendmail from 'sendmail';
-//const sendmail = createSendmail({ silent: false });
 
 const router = express.Router();
 
@@ -384,7 +379,6 @@ export const sendEmail = async (account, ID) => {
             text: `Hello,\n\nPending acceptance http://localhost:3000/add/accept/${ID}\n\nKind regards,\nNvCentral`
         };
 
-        //let status = await sendmail(mailOptions)
         let status = transporter.sendMail(mailOptions);
         return status
     }
@@ -451,9 +445,8 @@ router.get('/accept/:node', (req, res) => {
     }).catch(err => console.log(err));
 })
 
-router.get('/deleted/:node', (req, res) => {
-    const {node} = req.params
-    let query = `
+export const deleteNode = async (node) => {
+    const selectQuery = `
     PREFIX : <http://ircan.org/data/mutants/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
@@ -464,36 +457,44 @@ router.get('/deleted/:node', (req, res) => {
                      geno:id ${node};
                      rdfs:label ?queryZip.
     }`
+    const deleteQuery = `
+    PREFIX : <http://ircan.org/data/mutants/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
+    PREFIX schema: <http://schema.org/>
+    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+    DELETE {
+        ?node rdf:type schema:DeleteAction.
+        ?node geno:id ${node}.
+        ?node rdfs:label ?zip.
+    } WHERE {
+        ?node rdf:type schema:DeleteAction.
+        ?node geno:id ${node}.
+        ?node rdfs:label ?zip.
+    }`
+    try {
+        const selectData = await request(selectQuery, 'query')
+        const inflatedData = zlib.inflateSync(new Buffer.from(selectData['queryZip'][0], 'hex')).toString();
+        await request(inflatedData, 'update')
+        await request(deleteQuery, 'update')
+        return {success: true, message: 'Data has been deleted'};
+    } catch (err) {
+        return {success: false, message: err.message || err};
+    }
+}
 
-    request(query, 'query').then(data => {
-        const inflated = zlib.inflateSync(new Buffer.from(data['queryZip'][0], 'hex')).toString();
-        request(inflated, 'update').then(() => {
-            query = `
-            PREFIX : <http://ircan.org/data/mutants/>
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-            PREFIX schema: <http://schema.org/>
-            PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-            DELETE {
-                ?node rdf:type schema:DeleteAction.
-                ?node geno:id ${node}.
-                ?node rdfs:label ?zip.
-            } WHERE {
-                ?node rdf:type schema:DeleteAction.
-                ?node geno:id ${node}.
-                ?node rdfs:label ?zip.
-            }`
-            request(query, 'update').then(() => {
-                res.send('Data has been deleted')
-            }).catch(err => res.status(400).send({
-                message: err
-            }))
-        }).catch(err => res.status(400).send({
-            message: err
-        }))
-    }).catch(err => res.status(400).send({
-        message: err
-    }))
+router.get('/deleted/:node', async (req, res) => {
+    const {node} = req.params
+    const result = await deleteNode(node);
+    console.log(result)
+    if (result.success) {
+        res.send(result.message);
+    } else {
+        console.log(result)
+        res.status(400).send({
+            message: result.message
+        });
+    }
 })
 
 

@@ -1,22 +1,9 @@
 import Table from 'react-bootstrap/Table';
 import {Link} from "react-router-dom";
-import {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 
-function Results({title, results, rights, routing, handleDelete}) {
-    console.log(results);
-
-    const [deleteRight, setDeleteRight] = useState(false);
-    const [readRight, setReadRight] = useState(true);
-
-    useEffect(() => {
-        const rights = localStorage.getItem('rights')
-        if (rights !== null) {
-            setReadRight(rights.includes('read'))
-            setDeleteRight(rights.includes('write'))
-        }
-    }, []);
-
+function Results({title, results, routing, handleDelete}) {
+    //console.log(results);
     return (
         <div className="container-fluid p-0 tableColor">
             <div
@@ -32,23 +19,27 @@ function Results({title, results, rights, routing, handleDelete}) {
                         {Object.keys(results[0]).map((key, index) => (
                             <th key={index} scope="col">{key}</th>
                         ))}
-                        {deleteRight && <th>Action</th>}
                     </tr>
                     </thead>
                     <tbody>
 
-                    {readRight && results.map((row, index) => (
+                    {results.map((row, index) => (
                         <tr key={index}>
                             <td></td>
-                            {Object.values(row).map((value, index) => {
+                            {Object.entries(row).map(([key, value], index) => {
                                 if (typeof value === 'object') {
                                     return <td key={index} className="align-middle"><Link
                                         to={window.origin + '/' + routing[value.field] + '/' + value.link}>{value.label}</Link>
                                     </td>
                                 }
+                                if (key === 'Action') {
+                                    return <td key={index} className="align-middle"><Button variant="danger"
+                                                                                            value={value}
+                                                                                            onClick={handleDelete}>Delete</Button>
+                                    </td>
+                                }
                                 return <td key={index} className="align-middle">{value}</td>
                             })}
-                            {deleteRight && <td><Button variant="danger" onClick={handleDelete}>Delete</Button></td>}
                         </tr>
                     ))}
                     </tbody>

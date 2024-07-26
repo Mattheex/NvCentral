@@ -8,6 +8,7 @@ import {Link, Outlet, useLocation} from "react-router-dom";
 import InputGroup from 'react-bootstrap/InputGroup';
 import Alert from 'react-bootstrap/Alert';
 import {useEffect, useState} from "react";
+import {useAlert} from "../context/Alert";
 
 
 function DropDown({sub, field, localStorageValue}) {
@@ -30,7 +31,8 @@ function DropDown({sub, field, localStorageValue}) {
     )
 }
 
-function Header({username, setUsername, alert}) {
+function Header({username, setUsername}) {
+    const { alert } = useAlert();
     const key = 'rights'
     const [localStorageValue, setLocalStorageValue] = useState(localStorage.getItem(key));
 
@@ -120,8 +122,8 @@ function Header({username, setUsername, alert}) {
                     </InputGroup>
                 </Container>
             </Navbar>
-            <Alert show={alert.show} variant={alert.variant} className={"position-absolute z-3"}
-                   style={{top: '20px', left: '20px'}}>{alert.message}</Alert>
+            {alert && <Alert variant={alert.variant} className={"position-absolute z-3"}
+                   style={{top: '20px', left: '20px'}}>{alert.message}</Alert>}
             <Outlet/>
             <Navbar className={isHome ? 'bg-transparent fw-bold' : 'bg-primary fw-bold'} variant="dark">
                 <Nav className="d-flex justify-content-evenly flex-grow-1">
