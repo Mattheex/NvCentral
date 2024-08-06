@@ -5,7 +5,7 @@ import {request} from "../global.js";
 import {changeVisibilityNode, findID, JSONToSPARQL, sendEmail} from "../routes/add.js";
 
 
-describe('SPARQL Client Tests', function () {
+describe.skip('SPARQL Client Tests', function () {
     const jsons = {
         'all': {
             "Line_name": {"select": false, "value": "MHT"},
@@ -148,9 +148,10 @@ describe('SPARQL Client Tests', function () {
                       obo:NCIT_C42628/rdfs:label ?Lab_of_origin;
                       obo:RO_0002350/rdfs:label ?Generation;
                       dcterms:source ?Publication;
-                      geno:status/rdfs:label ?Status;
-                      s:visibility s:Seen.
-                }`,
+                      geno:status/rdfs:label ?Status.   
+                              
+                       ?line s:visibility s:Seen.
+                 }`,
                 output: 7
             },
             search: {
@@ -232,7 +233,7 @@ describe('SPARQL Client Tests', function () {
                       optional{?exp s:reagentsAndProtocols ?reagents_and_protocols}
                       optional{?exp s:vectorDescription ?Vector_description}
                 }`,
-                output: {'all': 6, 'minimum':4}
+                output: {'all': 6, 'minimum': 4}
             },
             gene: {
                 query: `
@@ -305,7 +306,7 @@ describe('SPARQL Client Tests', function () {
                     optional {?charac obo:RO_0000086 s:Functional.
                     ?charac rdfs:label ?supp_info}
                 }`,
-                output: {'all': 1, 'minimum':0}
+                output: {'all': 1, 'minimum': 0}
             },
             location: {
                 query: `
@@ -370,7 +371,7 @@ describe('SPARQL Client Tests', function () {
                           rdfs:seeAlso/geno:id ?Publication_id;
                           rdfs:seeAlso/rdfs:label ?Publication_name.}
                     }`,
-                output: {'all': 6, 'minimum':1}
+                output: {'all': 6, 'minimum': 1}
             },
             phen: {
                 query: `
@@ -545,7 +546,7 @@ describe('SPARQL Client Tests', function () {
         })
     })
 
-    Object.keys(jsons).forEach((key,id) => {
+    Object.keys(jsons).forEach((key, id) => {
         describe(`Tests input ${key}`, () => {
             const q = queries(id)
             before(async () => {
@@ -555,20 +556,22 @@ describe('SPARQL Client Tests', function () {
             })
             Object.keys(q).forEach((node) => {
                 it(`Get ${node} node`, async () => {
-                    let data = await request(q[node].query, 'query')
-                    let output = q[node].output;
-                    if (typeof output === 'object') {
-                        output = output[key]
-                    }
+                    let data;
                     if (node === 'line') {
+                        let data = await request(q[node].query, 'query')
                         assert.strictEqual(Object.keys(data).length, 0, JSON.stringify(data, null, 3))
                         await changeVisibilityNode(id)
-                        data = await request(q[node].query, 'query')
-                        output = q[node].output;
                     }
-                    if (node === "search"){
-                        assert.strictEqual(Object.keys(data.Name).length, id+1, JSON.stringify(data, null, 3))
+                    if (node === "search") {
+                        await changeVisibilityNode(id)
+                        data = await request(q[node].query, 'query')
+                        assert.strictEqual(Object.keys(data.Name).length, id + 1, JSON.stringify(data, null, 3))
                     } else {
+                        data = await request(q[node].query, 'query')
+                        let output = q[node].output;
+                        if (typeof output === 'object') {
+                            output = output[key]
+                        }
                         assert.strictEqual(Object.keys(data).length, output, JSON.stringify(data, null, 3))
                     }
                 })

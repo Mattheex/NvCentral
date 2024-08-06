@@ -1,6 +1,22 @@
 import config from "./constants.js";
-import {client} from "./server.js";
 import jwt from "jsonwebtoken";
+import SparqlClient from "sparql-http-client";
+import nodemailer from "nodemailer";
+
+export const client = new SparqlClient({
+    endpointUrl: config.endpointUrl[process.env.NODE_ENV],
+    user: config.user,
+    password: process.env.secretKEY,
+});
+
+export const transporter = nodemailer.createTransport({
+    service:'gmail',
+    auth: {
+        user: 'noreply.nvcentral@gmail.com',
+        pass:  process.env.smtpPass,
+    }
+});
+
 
 export function request(query, type) {
     const stream = client.query.select(query, {
@@ -25,6 +41,7 @@ export function request(query, type) {
         })
 
         stream.on('error', err => {
+            console.log(err)
             reject(err)
         })
     })

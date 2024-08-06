@@ -9,6 +9,8 @@
 @prefix owl:     <http://www.w3.org/2002/07/owl#>.
 @prefix sAc:     <http://ircan.org/schema/account/> .
 @prefix geno:    <http://www.geneontology.org/formats/oboInOwl#> .
+@prefix sioc:    <http://rdfs.org/sioc/ns#> .
+@prefix en:      <http://ircan.org/data/entities/> .
 
 
 sAc:password
@@ -20,54 +22,86 @@ sAc:director
     rdfs:label "has director" .
 
 <Administrator>
-    a                foaf:Person ;
-    foaf:accountName "admin" ;
-    sAc:password     "$2b$12$LM.ZqyZzv7r6ankTnIKFweCi67DHNB9b2LB8LZdZwDaoblDSueEZK" ;
-    foaf:name        "Admin User" .
+    a                 sioc:UserAccount ;
+    sioc:name         "admin" ;
+    sAc:password      "$2b$12$LM.ZqyZzv7r6ankTnIKFweCi67DHNB9b2LB8LZdZwDaoblDSueEZK" ;
+    wac:accessControl <AccessAppendNvCentral>, <AccessWriteNvCentral>, <AccessReadNvCentral>, <AccessControlNvCentral> .
+
+<AllGroup>
+    a                 sioc:Usergroup ;
+    sioc:has_member   <Visitor>, <LabRottingerLab> ;
+    wac:accessControl <AllGroupAccess> .
+
+<AllGroupAccess>
+    a              wac:Authorization ;
+    wac:agentClass <AllGroup> ;
+    wac:mode       wac:Read ;
+    wac:accessTo   s:published .
 
 <Visitor>
-    a         foaf:Person ;
-    foaf:name "Visitor" .
+    a sioc:UserAccount .
 
 <EricRottinger>
-    a                foaf:Person ;
-    foaf:accountName "Rottinger" ;
-    foaf:mbox        "matthieuferaud31@gmail.com" ;
-    sAc:password     '$2b$12$8vIpFKlARJfvfX4FwvFt4OsZySTs0IB7qisdjNAEi/Cl/T/lPSK6q' ;
-    foaf:name        "Admin User" .
+    a                 sioc:UserAccount ;
+    sioc:member_of    <LabRottingerLab> ;
+    sioc:name         "Rottinger" ;
+    sioc:email        "matthieuferaud31@gmail.com" ;
+    sAc:password      '$2b$12$8vIpFKlARJfvfX4FwvFt4OsZySTs0IB7qisdjNAEi/Cl/T/lPSK6q' ;
+    wac:accessControl <EricRottingerAccessLine> .
 
-<LabRottingerLab>
-    a                   foaf:Group ;
-    sAc:director        <EricRottinger> ;
-    foaf:name           "Rottinger Lab" ;
-    foaf:accountName    "RottingerTeam" ;
-    sAc:password        '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
-    owl:equivalentClass mutants:LabRottingerLab2 .
-
-<AdminAccess>
-    a            wac:Authorization ;
-    wac:agent    <Administrator> ;
-    wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
-    wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
-                 s:ToDo .
-
-<EricRottingerAccess>
+<EricRottingerAccessLine>
     a            wac:Authorization ;
     wac:agent    <EricRottinger> ;
-    wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
-    wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
-                 s:ToDo .
+    wac:mode     wac:Read, wac:Write ;
+    wac:accessTo en:LabRottingerLab2 .
 
-<LabRottingerLabAccess>
-    a              wac:Authorization ;
-    wac:agentClass foaf:Group ;
-    wac:agent      <LabRottingerLab> ;
-    wac:mode       wac:Read, wac:Append ;
-    wac:accessTo   s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
-                   s:ToDo .
+<LabRottingerLab>
+    a                 sioc:Usergroup ;
+    sioc:member_of    <AllGroup> ;
+    sAc:director      <EricRottinger> ;
+    sioc:has_member   <MatthieuFeraud>, <EricRottinger> ;
+    wac:accessControl <LabRottingerLabAccessLabRottinger2>, <AccessAppendNvCentral> .
 
-<VisitorAccess>
+<LabRottingerLabAccessLabRottinger2>
     a            wac:Authorization ;
-    wac:agent    <Visitor> ;
+    wac:agent    <LabRottingerLab> ;
     wac:mode     wac:Read ;
-    wac:accessTo s:established .
+    wac:accessTo en:LabRottingerLab2 .
+
+<MatthieuFeraud>
+    a                 sioc:UserAccount ;
+    sioc:member_of    <LabRottingerLab> ;
+    foaf:accountName  "RottingerTeam" ;
+    sAc:password      '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
+    wac:accessControl <AccessAppendNvCentral>, <MatthieuFeraudAccessLine1> .
+
+<MatthieuFeraudAccessLine1>
+    a            wac:Authorization ;
+    wac:agent    <MatthieuFeraud>, <EricRottinger> ;
+    wac:mode     wac:Read, wac:Write ;
+    wac:accessTo mutants:Line1 .
+
+
+<AccessAppendNvCentral>
+    a            wac:Authorization ;
+    wac:mode     wac:Append ;
+    wac:accessTo <NvCentral> .
+
+<AccessWriteNvCentral>
+    a            wac:Authorization ;
+    wac:mode     wac:Write ;
+    wac:accessTo <NvCentral> .
+
+<AccessReadNvCentral>
+    a            wac:Authorization ;
+    wac:mode     wac:Read ;
+    wac:accessTo <NvCentral> .
+
+<AccessControlNvCentral>
+    a            wac:Authorization ;
+    wac:mode     wac:Control ;
+    wac:accessTo <NvCentral> .
+
+<NvCentral>
+    a          foaf:Project ;
+    rdfs:label "NvCentral" .

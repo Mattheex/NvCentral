@@ -205,6 +205,11 @@ s:established
     rdfs:label      "Established" ;
     rdfs:subClassOf efo:EFO_0001742 .
 
+s:published
+    a               owl:Class ;
+    rdfs:label      "Published" ;
+    rdfs:subClassOf efo:EFO_0001742 .
+
 s:Unseen
     a               owl:Class ;
     rdfs:label      "Unseen" ;

@@ -1,7 +1,6 @@
 import express from 'express';
-import {request, verifiyAccount} from "../global.js";
+import {request, verifiyAccount,transporter} from "../global.js";
 import config from "../constants.js";
-import {transporter} from "../server.js";
 import zlib from 'zlib';
 
 const router = express.Router();

@@ -201,7 +201,7 @@
     obo:RO_0002354   <Exp1> ;
     terms:source     <publication1> ;
     geno:id          0 ;
-    geno:status      s:established ;
+    geno:status      s:published ;
     s:visibility     s:Seen .
 
 <Line2>
@@ -217,7 +217,7 @@
     obo:RO_0002354   <Cas9Exp2> ;
     terms:source     <publication2> ;
     geno:id          1 ;
-    geno:status      s:established ;
+    geno:status      s:published ;
     s:visibility     s:Seen .
 
 <LineMHT2>
