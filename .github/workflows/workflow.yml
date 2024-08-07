@@ -25,5 +25,5 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build --build-arg secretKEY=${{ secrets.secretKEY }} --build-arg smtpPass=${{secrets.smtPass}} -t ohzout/nvcentral:latest . && history -c
-          docker push ohzout/nvcentral::${{ github.ref == 'refs/heads/master' && 'latest' || 'dev' }}
+          docker push ohzout/nvcentral:${{ github.ref_name == 'master' && 'latest' || 'dev' }}
         
