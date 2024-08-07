@@ -1,112 +1,101 @@
 // test/auth.test.js
 import { describe, it, before } from "node:test";
 import assert from "node:assert";
-import { checkRightsData } from "../routes/auth.js";
+import {getRights } from "../routes/auth.js";
 import { request } from "../global.js";
 
 describe("Auth Client Tests", async function () {
   before(async () => {
-    const query = `
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX xs: <http://www.w3.org/2001/XMLSchema#>
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        PREFIX wac: <http://www.w3.org/ns/auth/acl#>
-        PREFIX s: <http://ircan.org/schema/>
-        PREFIX mutants: <http://ircan.org/data/mutants/>
-        PREFIX owl: <http://www.w3.org/2002/07/owl#>
-        PREFIX sAc: <http://ircan.org/schema/account/>
-        PREFIX geno: <http://www.geneontology.org/formats/oboInOwl#>
-        PREFIX sioc: <http://rdfs.org/sioc/ns#>
-        PREFIX en: <http://ircan.org/data/entities/>
-        BASE <http://ircan.org/account/>
-
-        INSERT DATA {
-            sAc:password a rdf:Property ;
-                rdfs:label "has password" .
-
-            sAc:director a rdf:Property ;
-                rdfs:label "has director" .
-
-            <Administrator> a sioc:UserAccount ;
-                sioc:name "admin" ;
-                sAc:password "$2b$12$LM.ZqyZzv7r6ankTnIKFweCi67DHNB9b2LB8LZdZwDaoblDSueEZK" ;
-                wac:accessControl <AccessAppendNvCentral>, <AccessWriteNvCentral>, <AccessReadNvCentral>, <AccessControlNvCentral> .
-
-            <AllGroup> a sioc:Usergroup ;
-                sioc:has_member <Visitor>, <LabRottingerLab> ;
-                wac:accessControl <AllGroupAccess> .
-
-            <AllGroupAccess> a wac:Authorization ;
-                wac:agentClass <AllGroup> ;
-                wac:mode wac:Read ;
-                wac:accessTo s:published .
-
-            <Visitor> a sioc:UserAccount .
-
-            <EricRottinger> a sioc:UserAccount ;
-                sioc:member_of <LabRottingerLab> ;
-                sioc:name "Rottinger" ;
-                sioc:email "matthieuferaud31@gmail.com" ;
-                sAc:password '$2b$12$8vIpFKlARJfvfX4FwvFt4OsZySTs0IB7qisdjNAEi/Cl/T/lPSK6q' ;
-                wac:accessControl <EricRottingerAccessLine> .
-
-            <EricRottingerAccessLine> a wac:Authorization ;
-                wac:agent <EricRottinger> ;
-                wac:mode wac:Read, wac:Write ;
-                wac:accessTo en:LabRottingerLab2 .
-
-            <LabRottingerLab> a sioc:Usergroup ;
-                sioc:member_of <AllGroup> ;
-                sAc:director <EricRottinger> ;
-                sioc:has_member <MatthieuFeraud>, <EricRottinger> ;
-                wac:accessControl <LabRottingerLabAccessLabRottinger2>, <AccessAppendNvCentral> .
-
-            <LabRottingerLabAccessLabRottinger2> a wac:Authorization ;
-                wac:agent <LabRottingerLab> ;
-                wac:mode wac:Read ;
-                wac:accessTo en:LabRottingerLab2 .
-
-            <MatthieuFeraud> a sioc:UserAccount ;
-                sioc:member_of <LabRottingerLab> ;
-                foaf:accountName "RottingerTeam" ;
-                sAc:password '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
-                wac:accessControl <AccessAppendNvCentral>, <MatthieuFeraudAccessLine1> .
-
-            <MatthieuFeraudAccessLine1> a wac:Authorization ;
-                wac:agent <MatthieuFeraud>, <EricRottinger> ;
-                wac:mode wac:Read, wac:Write ;
-                wac:accessTo mutants:Line1 .
-
-            <AccessAppendNvCentral> a wac:Authorization ;
-                wac:mode wac:Append ;
-                wac:accessTo <NvCentral> .
-
-            <AccessWriteNvCentral> a wac:Authorization ;
-                wac:mode wac:Write ;
-                wac:accessTo <NvCentral> .
-
-            <AccessReadNvCentral> a wac:Authorization ;
-                wac:mode wac:Read ;
-                wac:accessTo <NvCentral> .
-
-            <AccessControlNvCentral> a wac:Authorization ;
-                wac:mode wac:Control ;
-                wac:accessTo <NvCentral> .
-
-            <NvCentral> a foaf:Project ;
-                rdfs:label "NvCentral" .
+    let query = `
+        DELETE {?x ?y ?z} WHERE {
+            FILTER(strstarts(str(?x), str(mut:)) || strstarts(str(?x), str(ac:)))
+          ?x ?y ?z
         }`;
 
     await request(query, "update");
+
+    query = `
+        INSERT DATA {
+            mut:Line1 a obo:OBI_1000048;
+                geno:id 0;
+                obo:NCIT_C42628  en:TechnauLab ;
+                geno:status  s:genotyped.
+
+            mut:Line2 a obo:OBI_1000048;
+                geno:id 1;
+                obo:NCIT_C42628  en:RentzschLab ;
+                geno:status  s:published.
+            
+            mut:Line3 a obo:OBI_1000048;
+                geno:id 2;
+                obo:NCIT_C42628  en:LabRottingerLab2 ;
+                geno:status  s:genotyped.
+        }`;
+
+    await request(query, "update");
+    await new Promise(resolve => setTimeout(resolve, 500))
+
   });
   it("check rights", async () => {
-    let node = "http://ircan.org/data/mutants/Line1";
-    let rights = await checkRightsData(node, "MatthieuFeraud");
-    console.log(rights);
-    assert.notStrictEqual(rights, -1, rights);
-    node = "http://ircan.org/data/mutants/Line3";
-    rights = await checkRightsData(node, "MatthieuFeraud");
-    assert.strictEqual(rights, -1, rights);
+    const query = `
+        INSERT DATA {
+            ac:AllGroup
+                a                 sioc:Usergroup ;
+                wac:accessControl ac:AllGroupAccess .
+
+            ac:AllGroupAccess a wac:Authorization ;
+                wac:agentClass ac:AllGroup ;
+                wac:mode wac:Read ;
+                wac:accessTo s:published .
+
+            ac:Visitor a sioc:UserAccount ;
+                sioc:member_of ac:AllGroup.
+
+            ac:LabRottingerLab a sioc:Usergroup ;
+                sioc:member_of ac:AllGroup ;
+                sAc:hasDirector ac:EricRottinger ;
+                wac:accessControl ac:LabRottingerLabAccessLabRottinger2, ac:AccessAppendNvCentral .
+
+            ac:LabRottingerLabAccessLabRottinger2 a wac:Authorization ;
+                wac:agent ac:LabRottingerLab ;
+                wac:mode wac:Read ;
+                wac:accessTo en:LabRottingerLab2 .
+
+            ac:MatthieuFeraud a sioc:UserAccount ;
+                sioc:member_of ac:LabRottingerLab ;
+                foaf:accountName "RottingerTeam" ;
+                sAc:password '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
+                wac:accessControl ac:MatthieuFeraudAccessLine1 .
+
+            ac:MatthieuFeraudAccessLine1 a wac:Authorization ;
+                wac:agent ac:MatthieuFeraud;
+                wac:mode wac:Read, wac:Write ;
+                wac:accessTo mut:Line1 .
+
+            ac:AccessReadNvCentral
+                a            wac:Authorization ;
+                wac:mode     wac:Read ;
+                wac:accessTo sAc:NvCentral .
+
+            ac:AccessAppendNvCentral
+                a            wac:Authorization ;
+                wac:mode     wac:Append ;
+                wac:accessTo sAc:NvCentral .
+        }`;
+
+    await request(query, "update");
+
+    let node = "http://ircan.org/data/mutants/Line3";
+    let rights = await getRights("MatthieuFeraud", node);
+    assert.deepEqual(rights, [true, false, false, false], rights);
+    rights = await getRights("Visitor");
+    assert.deepEqual(
+      rights,
+      { "http://ircan.org/data/mutants/Line2": [true, false, false, false] },
+      rights.toString()
+    );
+    node = "http://ircan.org/data/mutants/Line1";
+    rights = await getRights("MatthieuFeraud", node);
+    assert.deepEqual(rights, [true, true, false, false], rights);
   });
 });

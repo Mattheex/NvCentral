@@ -6,13 +6,7 @@ import zlib from 'zlib';
 const router = express.Router();
 
 export const findID = async () => {
-    let query = `
-    PREFIX obo: <http://purl.obolibrary.org/obo/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-    
+    let query = ` 
     SELECT (MAX(?id) as ?max) WHERE {
       ?line a obo:OBI_1000048;
             geno:id ?id.
@@ -241,18 +235,16 @@ export const JSONToSPARQL = (id, newData) => {
             if (item.hasOwnProperty('select')) {
                 if (item.select) {
                     if (item.value === 'Autre') {
-                        console.log(`${parentNode} ${json[key]['property']}`)
                         string += nullCase(parentNode, json[key])
                     } else {
                         string += parentNode + ' ' + json[key]['property'] + ' <' + item.value + ">.\n"
                     }
                 } else {
                     if (item.value === '') {
-                        console.log(`${parentNode} ${json[key]['property']}`)
                         string += nullCase(parentNode, json[key])
                     } else {
                         if (json[key].hasOwnProperty('nodeType')) {
-                            let prefix = ':'
+                            let prefix = 'mut:'
                             if (json[key].hasOwnProperty('prefix')) {
                                 prefix = json[key]['prefix']
                             }
@@ -291,7 +283,7 @@ export const JSONToSPARQL = (id, newData) => {
     const addPhenotype = (parentNode, inJson) => {
         let string = ''
         for (let item of inJson['Phenotype']) {
-            let newNode = ":" + json['Phenotype'].nodeName + item.phenotype.split('/').slice(-1) + item.stage.split('/').slice(-1) + id
+            let newNode = "mut:" + json['Phenotype'].nodeName + item.phenotype.split('/').slice(-1) + item.stage.split('/').slice(-1) + id
             string += parentNode + ' ' + json['Phenotype']['property'] + ' ' + newNode + ".\n";
             string += newNode + ' rdf:type ' + ' <' + item.phenotype + '>.\n'
             string += newNode + " rdfs:label '" + item.value + "'.\n";
@@ -313,7 +305,7 @@ export const JSONToSPARQL = (id, newData) => {
         addProperty(null, subJson(newData, ['Line_name']))
         newData["Associated lines"] = {
             select: true,
-            value: "http://ircan.org/data/mutants/" + json.Line_name.nodeID.substring(1)
+            value: "http://ircan.org/data/mutants/" + json.Line_name.nodeID.substring(json.Line_name.nodeID.indexOf(':')+1)
         }
         delete newData.Publication
     } else if (newData.Publication.value === 'Autre') {
@@ -326,19 +318,9 @@ export const JSONToSPARQL = (id, newData) => {
         delete newData['Supplementary_information']
     }
 
+    console.log(newData)
+
     return `
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX : <http://ircan.org/data/mutants/>
-    PREFIX en:     <http://ircan.org/data/entities>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX up:        <http://purl.uniprot.org/core/>
-    PREFIX edam:      <http://edamontology.org/>
-    PREFIX bao:       <http://www.bioassayontology.org/bao#>
-    PREFIX s:         <http://ircan.org/schema/>
-    PREFIX dcterms:   <http://purl.org/dc/terms/>
-    PREFIX owl:   <http://www.w3.org/2002/07/owl#>
     INSERT DATA {
         ${addProperty(null, subJson(newData, ['Line_name']))}
         ${json.Line_name.nodeID} geno:id ${id}.
@@ -361,9 +343,6 @@ export const JSONToSPARQL = (id, newData) => {
 
 export const sendEmail = async (account, ID) => {
     const query = `
-    PREFIX ac:   <http://ircan.org/account/>
-    PREFIX sAc:  <http://ircan.org/schema/account/>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
     SELECT ?mail WHERE {
         ac:${account} sAc:director/foaf:mbox ?mail.
     }`
@@ -389,13 +368,8 @@ const queryDeleteDatabase = (id, query) => {
     query = query.replace('INSERT', 'DELETE')
     const deflated = zlib.deflateSync(query).toString('hex')
     return `
-    PREFIX : <http://ircan.org/data/mutants/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX schema: <http://schema.org/>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     INSERT DATA {
-        :DELETE${id} rdf:type schema:DeleteAction;
+        mut:DELETE${id} rdf:type schema:DeleteAction;
                      geno:id ${id};
                      rdfs:label "${deflated}".
     }`
@@ -421,9 +395,6 @@ router.post("/line/", async (req, res) => {
 
 export const changeVisibilityNode = (id) => {
     const query = `
-    PREFIX : <http://ircan.org/data/mutants/>
-    PREFIX s:         <http://ircan.org/schema/>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
     DELETE {
     ?line s:visibility s:Unseen.
     } INSERT {
@@ -446,22 +417,12 @@ router.get('/accept/:node', (req, res) => {
 
 export const deleteNode = async (node) => {
     const selectQuery = `
-    PREFIX : <http://ircan.org/data/mutants/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX schema: <http://schema.org/>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     SELECT ?queryZip WHERE {
         ?node rdf:type schema:DeleteAction;
                      geno:id ${node};
                      rdfs:label ?queryZip.
     }`
     const deleteQuery = `
-    PREFIX : <http://ircan.org/data/mutants/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX schema: <http://schema.org/>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
     DELETE {
         ?node rdf:type schema:DeleteAction.
         ?node geno:id ${node}.
@@ -557,22 +518,11 @@ const AddExistingNodes = async (field, value) => {
         return {}
     }
 
-    let query = `PREFIX a: <http://ircan.org/data/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX up:        <http://purl.uniprot.org/core/>
-    PREFIX edam:      <http://edamontology.org/>
-    PREFIX bao:       <http://www.bioassayontology.org/bao#>
-    PREFIX s:         <http://ircan.org/schema/>
-    PREFIX dcterms:   <http://purl.org/dc/terms/>
-    PREFIX efo:       <http://www.ebi.ac.uk/efo/>
-    SELECT *
-    WHERE {
+    let query = `
+    SELECT * WHERE {
           ?node (rdf:type | rdfs:subClassOf) ${json[field].nodeType}.
           ?node rdfs:label ?label
-          ${json[field].internData ? 'FILTER(strstarts(str(?node), str(a:)))' : ''}
+          ${json[field].internData ? 'FILTER(strstarts(str(?node), str(data:)))' : ''}
           ${json[field].schemaData ? 'FILTER(strstarts(str(?node), str(s:)))' : ''}
           FILTER(regex(lcase(?label), lcase("${value}")))
     } ORDER BY (?label) LIMIT 20`

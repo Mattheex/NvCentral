@@ -5,17 +5,7 @@ import express from 'express';
 import {request} from "../global.js";
 const router = express.Router();
 
-export const queryLine = (id,visibility) => `PREFIX : <http://ircan.org/data/mutants/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-    PREFIX up:        <http://purl.uniprot.org/core/>
-    PREFIX edam:      <http://edamontology.org/>
-    PREFIX bao:       <http://www.bioassayontology.org/bao#>
-    PREFIX s:         <http://ircan.org/schema/>
-    PREFIX en:     <http://ircan.org/data/entities>
-    PREFIX dcterms:   <http://purl.org/dc/terms/>
+export const queryLine = (id,visibility) => `
     SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID

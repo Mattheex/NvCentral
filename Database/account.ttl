@@ -17,9 +17,13 @@ sAc:password
     a          rdf:Property ;
     rdfs:label "has password" .
 
-sAc:director
+sAc:hasDirector
     a          rdf:Property ;
     rdfs:label "has director" .
+
+sAc:NvCentral
+    a          foaf:Project ;
+    rdfs:label "NvCentral" .
 
 <Administrator>
     a                 sioc:UserAccount ;
@@ -29,7 +33,6 @@ sAc:director
 
 <AllGroup>
     a                 sioc:Usergroup ;
-    sioc:has_member   <Visitor>, <LabRottingerLab> ;
     wac:accessControl <AllGroupAccess> .
 
 <AllGroupAccess>
@@ -39,7 +42,21 @@ sAc:director
     wac:accessTo   s:published .
 
 <Visitor>
-    a sioc:UserAccount .
+    a sioc:UserAccount ;
+    sioc:member_of    <AllGroup>.
+
+<LabRottingerLab>
+    a                 sioc:Usergroup ;
+    sioc:member_of    <AllGroup> ;
+    sAc:hasDirector      <EricRottinger> ;
+    sioc:has_member   <MatthieuFeraud>, <EricRottinger> ;
+    wac:accessControl <LabRottingerLabAccessLabRottinger2>, <AccessAppendNvCentral> .
+
+<LabRottingerLabAccessLabRottinger2>
+    a            wac:Authorization ;
+    wac:agent    <LabRottingerLab> ;
+    wac:mode     wac:Read ;
+    wac:accessTo en:LabRottingerLab2 .
 
 <EricRottinger>
     a                 sioc:UserAccount ;
@@ -53,19 +70,6 @@ sAc:director
     a            wac:Authorization ;
     wac:agent    <EricRottinger> ;
     wac:mode     wac:Read, wac:Write ;
-    wac:accessTo en:LabRottingerLab2 .
-
-<LabRottingerLab>
-    a                 sioc:Usergroup ;
-    sioc:member_of    <AllGroup> ;
-    sAc:director      <EricRottinger> ;
-    sioc:has_member   <MatthieuFeraud>, <EricRottinger> ;
-    wac:accessControl <LabRottingerLabAccessLabRottinger2>, <AccessAppendNvCentral> .
-
-<LabRottingerLabAccessLabRottinger2>
-    a            wac:Authorization ;
-    wac:agent    <LabRottingerLab> ;
-    wac:mode     wac:Read ;
     wac:accessTo en:LabRottingerLab2 .
 
 <MatthieuFeraud>
@@ -85,23 +89,19 @@ sAc:director
 <AccessAppendNvCentral>
     a            wac:Authorization ;
     wac:mode     wac:Append ;
-    wac:accessTo <NvCentral> .
+    wac:accessTo sAc:NvCentral .
 
 <AccessWriteNvCentral>
     a            wac:Authorization ;
     wac:mode     wac:Write ;
-    wac:accessTo <NvCentral> .
+    wac:accessTo sAc:NvCentral .
 
 <AccessReadNvCentral>
     a            wac:Authorization ;
     wac:mode     wac:Read ;
-    wac:accessTo <NvCentral> .
+    wac:accessTo sAc:NvCentral .
 
 <AccessControlNvCentral>
     a            wac:Authorization ;
     wac:mode     wac:Control ;
-    wac:accessTo <NvCentral> .
-
-<NvCentral>
-    a          foaf:Project ;
-    rdfs:label "NvCentral" .
+    wac:accessTo sAc:NvCentral .

@@ -5,7 +5,7 @@ import {request} from "../global.js";
 import {changeVisibilityNode, findID, JSONToSPARQL, sendEmail} from "../routes/add.js";
 
 
-describe.skip('SPARQL Client Tests', function () {
+describe('SPARQL Client Tests', function () {
     const jsons = {
         'all': {
             "Line_name": {"select": false, "value": "MHT"},
@@ -119,17 +119,6 @@ describe.skip('SPARQL Client Tests', function () {
         return {
             line: {
                 query: `
-                PREFIX : <http://ircan.org/data/mutants/>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                PREFIX up:        <http://purl.uniprot.org/core/>
-                PREFIX edam:      <http://edamontology.org/>
-                PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                PREFIX s:         <http://ircan.org/schema/>
-                PREFIX en:     <http://ircan.org/data/entities> 
-                PREFIX dcterms:   <http://purl.org/dc/terms/>
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -156,15 +145,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             search: {
                 query: `
-                PREFIX : <http://ircan.org/data/mutants>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX obo: <http://purl.obolibrary.org/obo/>
-                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                PREFIX up:        <http://purl.uniprot.org/core/>
-                PREFIX s:         <http://ircan.org/schema/>
-                PREFIX ac: <http://ircan.org/account/>
-                PREFIX wac:     <http://www.w3.org/ns/auth/acl#>
                 SELECT ?field ?ID ?Name ?Type ?Zygosity ?Generation ?Tag ?Tool ?Lab ?Status WHERE {
                         ?line rdf:type ?field;
                                 obo:RO_0002354 ?exp;
@@ -192,17 +172,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             exp: {
                 query: `
-                PREFIX : <http://ircan.org/data/mutants/>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                PREFIX up:        <http://purl.uniprot.org/core/>
-                PREFIX edam:      <http://edamontology.org/>
-                PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                PREFIX s:         <http://ircan.org/schema/>
-                PREFIX en:     <http://ircan.org/data/entities> 
-                PREFIX dcterms:   <http://purl.org/dc/terms/>
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -237,17 +206,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             gene: {
                 query: `
-                PREFIX : <http://ircan.org/data/mutants/>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                PREFIX up:        <http://purl.uniprot.org/core/>
-                PREFIX edam:      <http://edamontology.org/>
-                PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                PREFIX s:         <http://ircan.org/schema/>
-                PREFIX en:     <http://ircan.org/data/entities> 
-                PREFIX dcterms:   <http://purl.org/dc/terms/>
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -278,17 +236,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             charac: {
                 query: `
-                PREFIX : <http://ircan.org/data/mutants/>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                PREFIX up:        <http://purl.uniprot.org/core/>
-                PREFIX edam:      <http://edamontology.org/>
-                PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                PREFIX s:         <http://ircan.org/schema/>
-                PREFIX en:     <http://ircan.org/data/entities> 
-                PREFIX dcterms:   <http://purl.org/dc/terms/>
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -310,17 +257,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             location: {
                 query: `
-                PREFIX : <http://ircan.org/data/mutants/>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                PREFIX up:        <http://purl.uniprot.org/core/>
-                PREFIX edam:      <http://edamontology.org/>
-                PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                PREFIX s:         <http://ircan.org/schema/>
-                PREFIX en:     <http://ircan.org/data/entities> 
-                PREFIX dcterms:   <http://purl.org/dc/terms/>
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -342,17 +278,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             publi: {
                 query: `
-                    PREFIX : <http://ircan.org/data/mutants/>
-                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                    PREFIX up:        <http://purl.uniprot.org/core/>
-                    PREFIX edam:      <http://edamontology.org/>
-                    PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                    PREFIX s:         <http://ircan.org/schema/>
-                    PREFIX en:     <http://ircan.org/data/entities> 
-                    PREFIX dcterms:   <http://purl.org/dc/terms/>
                     SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -375,17 +300,6 @@ describe.skip('SPARQL Client Tests', function () {
             },
             phen: {
                 query: `
-                    PREFIX : <http://ircan.org/data/mutants/>
-                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                    PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
-                    PREFIX obo:       <http://purl.obolibrary.org/obo/>
-                    PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
-                    PREFIX up:        <http://purl.uniprot.org/core/>
-                    PREFIX edam:      <http://edamontology.org/>
-                    PREFIX bao:       <http://www.bioassayontology.org/bao#>
-                    PREFIX s:         <http://ircan.org/schema/>
-                    PREFIX en:     <http://ircan.org/data/entities> 
-                    PREFIX dcterms:   <http://purl.org/dc/terms/>
                     SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -411,26 +325,22 @@ describe.skip('SPARQL Client Tests', function () {
     }
     before(async () => {
         const query = `
-        PREFIX : <http://ircan.org/data/mutants>
-        PREFIX ac: <http://ircan.org/account/>
         DELETE {?x ?y ?z} WHERE {
-            FILTER(strstarts(str(?x), str(:)) || strstarts(str(?x), str(ac:)))
+            FILTER(strstarts(str(?x), str(mut:)) || strstarts(str(?x), str(ac:)))
           ?x ?y ?z
         }`;
 
         await request(query, 'update')
+        await new Promise(resolve => setTimeout(resolve, 500))
     });
 
     it('new ID for data', async () => {
         assert.strictEqual(await findID(), 0)
         const query = `
-        PREFIX : <http://ircan.org/data/mutants/>
-        PREFIX obo: <http://purl.obolibrary.org/obo/>
-        PREFIX geno:      <http://www.geneontology.org/formats/oboInOwl#>
         INSERT DATA {
-           :test5 a obo:OBI_1000048;
+            mut:test5 a obo:OBI_1000048;
                 geno:id 5.    
-          :test0 a obo:OBI_1000048;
+            mut:test0 a obo:OBI_1000048;
                 geno:id 0.
         }`
         await request(query, 'update')
@@ -440,19 +350,7 @@ describe.skip('SPARQL Client Tests', function () {
     describe('Send email tests', () => {
         before(async () => {
             let query = `
-            BASE <http://ircan.org/account/> 
-            PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
-            PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#> 
-            PREFIX xs:      <http://www.w3.org/2001/XMLSchema#> 
-            PREFIX foaf:    <http://xmlns.com/foaf/0.1/> 
-            PREFIX wac:     <http://www.w3.org/ns/auth/acl#> 
-            PREFIX s:       <http://ircan.org/schema/> 
-            PREFIX mutants: <http://ircan.org/data/mutants/> 
-            PREFIX owl:     <http://www.w3.org/2002/07/owl#>
-            PREFIX sAc:     <http://ircan.org/schema/account/> 
-            PREFIX geno:    <http://www.geneontology.org/formats/oboInOwl#> 
             INSERT DATA {
-            
             sAc:password
                 a          rdf:Property ;
                 rdfs:label "has password" .
@@ -461,68 +359,67 @@ describe.skip('SPARQL Client Tests', function () {
                 a          rdf:Property ;
                 rdfs:label "has director" .
             
-            <Administrator>
+            ac:Administrator
                 a                foaf:Person ;
                 foaf:accountName "admin" ;
                 sAc:password     "$2b$12$LM.ZqyZzv7r6ankTnIKFweCi67DHNB9b2LB8LZdZwDaoblDSueEZK" ;
                 foaf:name        "Admin User" .
             
-            <Visitor>
+            ac:Visitor
                 a         foaf:Person ;
                 foaf:name "Visitor" .
             
-            <EricRottinger>
+            ac:EricRottinger
                 a                foaf:Person ;
                 foaf:accountName "Rottinger" ;
                 foaf:mbox        "matthieuferaud31@gmail.com" ;
                 sAc:password     '$2b$12$8vIpFKlARJfvfX4FwvFt4OsZySTs0IB7qisdjNAEi/Cl/T/lPSK6q' ;
                 foaf:name        "Admin User" .
             
-            <LabRottingerLab>
+            ac:LabRottingerLab
                 a                   foaf:Group ;
-                foaf:member         <TeamMemberRottingerLabMatthieu> ;
-                sAc:director        <EricRottinger> ;
+                foaf:member         ac:TeamMemberRottingerLabMatthieu ;
+                sAc:director        ac:EricRottinger ;
                 foaf:name           "Rottinger Lab" ;
                 foaf:accountName    "RottingerTeam" ;
-                sAc:password        '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
-                owl:equivalentClass mutants:LabRottingerLab2 .
+                sAc:password        '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi'.
             
-            <TeamMemberRottingerLabMatthieu>
+            ac:TeamMemberRottingerLabMatthieu
                 a         foaf:Person ;
                 foaf:name "Matthieu" .
             
-            <AdminAccess>
+            ac:AdminAccess
                 a            wac:Authorization ;
-                wac:agent    <Administrator> ;
+                wac:agent    ac:Administrator ;
                 wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
                 wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
                              s:ToDo .
             
-            <EricRottingerAccess>
+            ac:EricRottingerAccess
                 a            wac:Authorization ;
-                wac:agent    <EricRottinger> ;
+                wac:agent    ac:EricRottinger ;
                 wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
                 wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
                              s:ToDo .
             
-            <LabRottingerLabAccess>
+            ac:LabRottingerLabAccess
                 a              wac:Authorization ;
                 wac:agentClass foaf:Group ;
-                wac:agent      <LabRottingerLab> ;
+                wac:agent      ac:LabRottingerLab ;
                 wac:mode       wac:Read ;
                 wac:accessTo   s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
                                s:ToDo .
             
-            <MemberRottingerLabMatthieuAccess>
+            ac:MemberRottingerLabMatthieuAccess
                 a            wac:Authorization ;
-                wac:agent    <TeamMemberRottingerLabMatthieu> ;
+                wac:agent    ac:TeamMemberRottingerLabMatthieu ;
                 wac:mode     wac:Read, wac:Write, wac:Append, wac:Control ;
                 wac:accessTo s:established, s:genotyped, s:potentialMutants, s:injected, s:validated, s:sgRNAGeno, s:Initiated,
                              s:ToDo .
             
-            <VisitorAccess>
+            ac:VisitorAccess
                 a            wac:Authorization ;
-                wac:agent    <Visitor> ;
+                wac:agent    ac:Visitor ;
                 wac:mode     wac:Read ;
                 wac:accessTo s:genotyped .
 
