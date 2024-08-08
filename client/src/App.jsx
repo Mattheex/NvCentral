@@ -17,17 +17,21 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { AlertProvider, useAlert } from "./context/Alert";
+import InputGroup from "react-bootstrap/InputGroup";
+import Stack from "react-bootstrap/Stack";
 
 function App() {
   const routing = {
     OBI_1000048: "transgenic",
   };
 
+  const [username, setUsername] = useState(null);
+
   return (
     <div className="App">
       <AlertProvider>
         <Routes>
-          <Route path="/" element={<Header />}>
+          <Route path="/" element={<Header username={username} setUsername={setUsername} />}>
             <Route path="/" element={<Home routing={routing} />} />
             <Route path="/transgenic" element={<Transgenic routing={routing} />} />
             <Route path="/transgenic/:id" element={<Line section={"read"} />} />
@@ -36,7 +40,7 @@ function App() {
             <Route path="*" element={<NoMatch />} />
             <Route path="/all/:value" element={<SearchAll routing={routing} />} />
             <Route path="/signIn" element={<SignIn />} />
-            <Route path="/account" element={<Account />} />
+            <Route path="/account" element={<Account username={username} />} />
           </Route>
         </Routes>
       </AlertProvider>
@@ -44,8 +48,80 @@ function App() {
   );
 }
 
-function Account(){
+function Account({ username }) {
+  const [account, setAccount] = useState({ password: "" });
+  const [teams, setTeams] = useState([
+    { index: 0, name: "Matthieu Feraud" },
+    { index: 1, name: "Mika" },
+  ]);
 
+  const handleChange = (field, value) => {
+    setAccount((account) => ({ ...account, ...{ [field]: value } }));
+  };
+
+  const handleSubmit = (field, value) => {
+    if (value === "delete") {
+      setTeams((teams) => teams.filter((_, index) => index !== field));
+    }
+  };
+
+  const handleChangeTeam = (field, value) => {
+    setTeams(teams.map((team) => (team.index === field ? { ...team, name: value } : team)));
+  };
+
+  return (
+    <Stack gap={3} className="align-items-center justify-content-center">
+      <Card className="w-50 mt-4">
+        <Card.Header>Account information</Card.Header>
+        <Card.Body>
+          <Form.Group className="m-3" as={Row}>
+            <Form.Label column sm={2}>
+              Username
+            </Form.Label>
+            <Col sm={10}>
+              <Label placeholder={username} disabled={true} />
+            </Col>
+          </Form.Group>
+          <Form.Group className="m-3" as={Row}>
+            <Form.Label column sm={2}>
+              Password
+            </Form.Label>
+            <Col sm={10}>
+              <InputGroup>
+                <Label placeholder={"Type current password"} handleChange={handleChange} />
+                <Button variant="outline-primary">✓</Button>
+              </InputGroup>
+            </Col>
+          </Form.Group>
+        </Card.Body>
+      </Card>
+
+      <Card className="w-50">
+        <Card.Header>Manage Team</Card.Header>
+        <Card.Body>
+          {teams.map((value, index) => (
+            <Form.Group key={index} className="m-3" as={Row}>
+              <InputGroup>
+                <Label k={value.index} value={value.name} handleChange={handleChangeTeam} />
+                <Button variant="outline-primary" onClick={() => handleSubmit(value.index, "accept")}>
+                  ✓
+                </Button>
+                <Button variant="outline-danger" onClick={() => handleSubmit(value.index, "delete")}>
+                  ✗
+                </Button>
+              </InputGroup>
+            </Form.Group>
+          ))}
+          <Button
+            variant="primary"
+            onClick={() => setTeams([...teams, { name: "", index: teams.length }])}
+          >
+            +
+          </Button>
+        </Card.Body>
+      </Card>
+    </Stack>
+  );
 }
 
 function SignIn() {
@@ -79,12 +155,12 @@ function SignIn() {
   };
 
   return (
-    <div className="d-flex flex-grow-1 justify-content-center align-items-center">
+    <Stack className="align-items-center justify-content-center">
       <Card className="w-50">
         <Card.Body>
           <Card.Title>Connexion</Card.Title>
           <Form className="m-3" onSubmit={handleSubmit}>
-            <Form.Group as={Row} className="mb-3" controlId="formUsername">
+            <Form.Group as={Row} className="mb-3">
               <Form.Label column sm={2}>
                 Username
               </Form.Label>
@@ -132,7 +208,7 @@ function SignIn() {
           </Form>
         </Card.Body>
       </Card>
-    </div>
+    </Stack>
   );
 }
 

@@ -35,17 +35,17 @@ function DropDown({ sub, field, append }) {
   );
 }
 
-function Header() {
+function Header({ username, setUsername }) {
   const { alert, showAlert } = useAlert();
 
   const token = useOnlineStatus("token");
-  const [username, setUsername] = useState(null);
   const [rights, setRights] = useState({});
 
   useEffect(() => {
     async function fetchData() {
       axios
-        .post('/auth/info',
+        .post(
+          "/auth/info",
           { node: "sAc:NvCentral" },
           {
             headers: {
@@ -115,7 +115,7 @@ function Header() {
     <div className="d-flex flex-column h-100 header">
       <Navbar
         className={isHome ? "bg-transparent fw-bold p-2" : "bg-primary fw-bold p-2"}
-        style={{ position: "fixed", top: 0, zIndex: 2, width: "100%" }}
+        style={{ position: "fixed", top: 0, zIndex: 3, width: "100%" }}
         variant="dark"
       >
         <Container fluid>
@@ -136,8 +136,10 @@ function Header() {
             )}
             {username !== null && (
               <NavDropdown title={username} id="basic-nav-dropdown">
+                <NavDropdown.Item as={Link} to={"/account"}>
+                  Account
+                </NavDropdown.Item>
                 <NavDropdown.Item
-                  className=""
                   as={Link}
                   onClick={() => {
                     localStorage.removeItem("token");
