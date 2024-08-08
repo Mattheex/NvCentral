@@ -1,78 +1,96 @@
 import config from "../constants.js";
-import jwt from 'jsonwebtoken'
-import express from 'express';
-import {request} from "../global.js";
-import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+import express from "express";
+import { request, checkRightsData, verifiyAccount } from "../global.js";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-export const getRights = async (account) => {
-    const query = `
-    PREFIX ac:   <http://ircan.org/account/>
-    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX s:    <http://ircan.org/schema/>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX sAc:  <http://ircan.org/schema/account/>
-    PREFIX wac:  <http://www.w3.org/ns/auth/acl#>
-    PREFIX geno: <http://www.geneontology.org/formats/oboInOwl#>
+export const getRights = async (account, nodeLooking = null) => {
+  let filter = "";
+  if (nodeLooking !== null) {
+    filter = `FILTER(?node = ${nodeLooking})`;
+  }
+  const query = checkRightsData(account, filter);
+  const data = await request(query, "query");
 
-    SELECT ?modes WHERE {
-      ?access a         wac:Authorization ;
-             wac:agent ac:${account}.
-      ?access wac:mode/rdfs:label ?modes.
-    }`
-
-    const data = await request(query, 'query')
-
-    if (!data.hasOwnProperty('modes')) {
-        return []
+  for (const key in data) {
+    if (key !== "node") {
+      for (const [i, value] of data[key].entries()) {
+        if (nodeLooking !== null) {
+          data[key] = value === "true";
+        } else {
+          data[key][i] = value === "true";
+        }
+      }
     }
+  }
+  return data;
+};
 
-    return data['modes']
-}
+export const getUsername = async (account) => {
+  const query = `
+    SELECT ?username WHERE {
+        ac:${account} foaf:accountName ?username.
+    }`;
+  const data = await request(query, "query");
+  return data["username"];
+};
 
-router.get('/rights/:account', (req, res) => {
-    getRights(req.params.account).then(res => {
-        res.json(res)
-    })
-})
+router.post("/info", async (req, res) => {
+  const { node } = req.body;
+  const account = verifiyAccount(req.headers["authorization"]);
+  if (account === "Visitor") {
+    return res.json("no account");
+  }
+  const username = await getUsername(account).catch((err) => {
+    console.log(err);
+    res.status(400).send({
+      message: err,
+    });
+  });
+  const rights = await getRights(account, node).catch((err) => {
+    console.log(err);
+    res.status(400).send({
+      message: err,
+    });
+  });
+
+  if (username !== undefined && rights !== undefined) {
+    res.json({ username, rights });
+  }
+});
 
 router.post("/login", (req, res) => {
-    const {username, password} = req.body;
+  const { username, password } = req.body;
 
-    const query = `
-    PREFIX ac:   <http://ircan.org/account/>
-    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX s:    <http://ircan.org/schema/>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX sAc:  <http://ircan.org/schema/account/>
-    PREFIX wac:  <http://www.w3.org/ns/auth/acl#>
-    PREFIX geno: <http://www.geneontology.org/formats/oboInOwl#>
-
+  const query = `
     SELECT ?id ?account ?password WHERE {
       ?account foaf:accountName '${username}';
                sAc:password     ?password.
-    }`
+    }`;
 
-    request(query, 'query').then(async data => {
-        console.log(data)
-        if (Object.keys(data).length === 0) {
-            res.status(401).json({error: 'Invalid credentials'})
+  request(query, "query")
+    .then(async (data) => {
+      if (Object.keys(data).length === 0) {
+        res.status(401).json({ error: "Invalid username" });
+      } else {
+        const result = bcrypt.compareSync(password, data.password[0]);
+        if (result) {
+          const account = data["account"][0].split("/").pop();
+          const token = jwt.sign({ node: account }, config.secretKEY);
+          res.json(token);
         } else {
-            let result = bcrypt.compareSync(password, data.password[0])
-            if (result) {
-                const account = data['account'][0].split('/').pop()
-                const token = jwt.sign({node: account}, config.secretKEY)
-                const rights = await getRights(account)
-                console.log(rights)
-                res.json({token, username, rights});
-            } else {
-                res.status(401).json({error: 'Invalid credentials'})
-            }
+          res.status(401).json({ error: "Invalid password" });
         }
-    }).catch(error => console.log(error))
-})
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
 
-export default router
+export default router;
