@@ -62,13 +62,13 @@ export function verifiyAccount(token) {
   return account;
 }
 
-export const checkRightsData = (account = "Visitor") => {
+export const checkRightsData = (account = "Visitor", filter='') => {
   const query = `
       SELECT DISTINCT 
-      (EXISTS  {?g wac:mode wac:Read} as ?read) 
-      (EXISTS  {?g wac:mode wac:Write} as ?write)
-      (EXISTS  {?g wac:mode wac:Append} as ?append) 
-      (EXISTS  {?g wac:mode wac:Control} as ?control) 
+      (MAX(?Read) as ?read) 
+      (MAX(?Write) as ?write) 
+      (MAX(?Append) as ?append) 
+      (MAX(?Control) as ?control)
       ?node 
       WHERE {
         ac:${account} sioc:member_of*/wac:accessControl ?g.
@@ -78,9 +78,15 @@ export const checkRightsData = (account = "Visitor") => {
           ?node obo:NCIT_C42628|geno:status ?access.
         } UNION {
           ?g wac:accessTo ?node.
-          FILTER((strstarts(str(?node), str(data:)) || strstarts(str(?node), str(ac:NvCentral))) && !strstarts(str(?node), str(en:)))
+          FILTER((strstarts(str(?node), str(data:)) || strstarts(str(?node), str(sAc:NvCentral))) && !strstarts(str(?node), str(en:)))
         }
-      }`;
+          ${filter}
+
+        BIND(EXISTS { ?g wac:mode wac:Read } AS ?Read)
+        BIND(EXISTS { ?g wac:mode wac:Write } AS ?Write)
+        BIND(EXISTS { ?g wac:mode wac:Append } AS ?Append)
+        BIND(EXISTS { ?g wac:mode wac:Control } AS ?Control)
+      } GROUP BY ?node`;
 
   return query;
 };

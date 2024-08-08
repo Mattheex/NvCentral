@@ -1,7 +1,7 @@
 // test/auth.test.js
 import { describe, it, before } from "node:test";
 import assert from "node:assert";
-import {getRights } from "../routes/auth.js";
+import {getRights, getUsername } from "../routes/auth.js";
 import { request } from "../global.js";
 
 describe("Auth Client Tests", async function () {
@@ -98,4 +98,8 @@ describe("Auth Client Tests", async function () {
     rights = await getRights("MatthieuFeraud", node);
     assert.deepEqual(rights, [true, true, false, false], rights);
   });
+  it ('get username', async () => {
+    const username = await getUsername('MatthieuFeraud')
+    assert.equal(username,'RottingerTeam',username)
+  })
 });

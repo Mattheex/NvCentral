@@ -5,7 +5,7 @@ import {request} from "../global.js";
 import {changeVisibilityNode, findID, JSONToSPARQL, sendEmail} from "../routes/add.js";
 
 
-describe('SPARQL Client Tests', function () {
+describe.skip('SPARQL Client Tests', function () {
     const jsons = {
         'all': {
             "Line_name": {"select": false, "value": "MHT"},

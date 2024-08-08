@@ -57,6 +57,8 @@ export const searchData = async (filter, account) => {
       };
       if (row["write"] === "true") {
         row["Action"] = true;
+      } else {
+        row['Action'] = false
       }
       delete row["write"];
       delete row["ID"];
