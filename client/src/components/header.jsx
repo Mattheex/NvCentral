@@ -43,10 +43,9 @@ function Header() {
   const [rights, setRights] = useState({});
 
   useEffect(() => {
-    function fetchData() {
+    async function fetchData() {
       axios
-        .post(
-          `auth/info`,
+        .post('/auth/info',
           { node: "sAc:NvCentral" },
           {
             headers: {

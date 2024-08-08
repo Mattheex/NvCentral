@@ -58,7 +58,7 @@ export const searchData = async (filter, account) => {
       if (row["write"] === "true") {
         row["Action"] = true;
       } else {
-        row['Action'] = false
+        row["Action"] = false;
       }
       delete row["write"];
       delete row["ID"];
@@ -87,9 +87,7 @@ router.post("search/all/", (req, res) => {
   ];
 
   string += "FILTER (";
-  string += nodes
-    .map((key) => `regex(${key}, '${req.body.Value}')`)
-    .join(" || ");
+  string += nodes.map((key) => `regex(${key}, '${req.body.Value}')`).join(" || ");
   string += ")\n";
 
   const account = verifiyAccount(req.headers["authorization"]);
@@ -123,17 +121,12 @@ router.post("/mutants", (req, res) => {
   for (let key in req.body) {
     if (key === "?Type") {
       string += "FILTER (";
-      string += req.body[key]
-        .map((value) => `${key} = '${value}'`)
-        .join(" || ");
+      string += req.body[key].map((value) => `${key} = '${value}'`).join(" || ");
       string += ")\n";
     } else if (key === "?field") {
       string += `FILTER (${key} = <${req.body[key]}>)\n`;
     } else {
-      if (
-        req.body[key] !== "" &&
-        (req.body[key] !== "Tous" || (key !== "?Lab" && key !== "?cell_label"))
-      ) {
+      if (req.body[key] !== "" && (req.body[key] !== "Tous" || (key !== "?Lab" && key !== "?cell_label"))) {
         string += `FILTER (regex(${key}, '${req.body[key]}'))\n`;
       }
     }

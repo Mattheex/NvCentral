@@ -5,7 +5,7 @@ export function useOnlineStatus(key) {
   const getSnapshot = useCallback(() => {
     const token = localStorage.getItem(key) || defaultValue;
     if (token !== null) {
-      return token
+      return token;
     }
     return null;
   }, [key, defaultValue]);

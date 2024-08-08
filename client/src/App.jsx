@@ -1,22 +1,12 @@
 import "./global.scss";
 import "./App.css";
-import React, {
-  useEffect,
-  useState,
-  useCallback
-} from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Menu from "./components/menu";
 import Header from "./components/header";
 import Table from "./components/table";
 import NoMatch from "./components/no-match";
 
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import Main from "./components/main";
 import axios from "axios";
 import Home from "./components/Home";
@@ -33,95 +23,20 @@ function App() {
     OBI_1000048: "transgenic",
   };
 
-  /*function useLocalStorageState(key, defaultValue = "null") {
-    // Subscribe to changes to the localStorage key
-    const subscribe = (callback) => {
-      const listener = (e) => {
-        console.log(key);
-        if (e.storageArea === localStorage && e.key === key) {
-          callback();
-        }
-      };
-      window.addEventListener("storage", listener);
-      return () => window.removeEventListener("storage", listener);
-    };
-
-    // Get the current state from localStorage
-    const getSnapshot = () => {
-      /*const token = localStorage.getItem("token");
-      console.log(token)
-      if (token !== undefined) {
-        let { data } = await axios.post(`auth/username`, token).catch((err) => {
-          console.log(err);
-        });
-        //console.log(data)
-        if (data !== 'no account') {
-          console.log(data)
-          return data;
-        }
-      }
-      return null;
-      const token = localStorage.getItem(key) || defaultValue;
-      axios
-        .post(`auth/username`, token)
-        .then((data) => {
-          console.log(data);
-          if (data.data !== "no account") {
-            setUsername(data);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      console.log(token);
-      return token;
-    };
-
-    // Synchronize state to the localStorage key
-    return useSyncExternalStore(subscribe, getSnapshot);
-  }*/
-
-  /*const [username, setUsername] = useState(null);
-  const key = useState("token");
-  const token = useOnlineStatus(key={key}, setUsername={setUsername});*/
-
-  //const username = useOnlineStatus("token");
-
-  /*useEffect(() => {
-    axios
-      .post(`auth/username`, token)
-      .then((data) => {
-        if (data !== "no account") {
-          setUsername(data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [token, setUsername]);*/
-
   return (
     <div className="App">
       <AlertProvider>
         <Routes>
           <Route path="/" element={<Header />}>
             <Route path="/" element={<Home routing={routing} />} />
-            <Route
-              path="/transgenic"
-              element={<Transgenic routing={routing} />}
-            />
+            <Route path="/transgenic" element={<Transgenic routing={routing} />} />
             <Route path="/transgenic/:id" element={<Line section={"read"} />} />
-            <Route
-              path="/add/accept/:id"
-              element={<Line section={"accept"} />}
-            />
+            <Route path="/add/accept/:id" element={<Line section={"accept"} />} />
             <Route path="/add" element={<Add />} />
             <Route path="*" element={<NoMatch />} />
-            <Route
-              path="/all/:value"
-              element={<SearchAll routing={routing} />}
-            />
-            <Route path="/signIn" element={<Account />} />
+            <Route path="/all/:value" element={<SearchAll routing={routing} />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/account" element={<Account />} />
           </Route>
         </Routes>
       </AlertProvider>
@@ -129,7 +44,11 @@ function App() {
   );
 }
 
-function Account() {
+function Account(){
+
+}
+
+function SignIn() {
   const [account, setAccount] = useState({ username: "", password: "" });
   const [error, setError] = useState(false);
   const navigate = useNavigate();
@@ -145,9 +64,6 @@ function Account() {
     axios
       .post("/auth/login", account)
       .then((res) => {
-        //setUsername(res.data.username)
-        //localStorage.setItem("token", res.data);
-        console.log(res.data);
         localStorage.setItem("token", res.data);
         if (state === null) {
           navigate("/");
@@ -200,10 +116,7 @@ function Account() {
               </Col>
             </Form.Group>
 
-            <Form.Group
-              as={Row}
-              className={`mb-3 ${error ? "d-block" : "d-none"}`}
-            >
+            <Form.Group as={Row} className={`mb-3 ${error ? "d-block" : "d-none"}`}>
               <Col sm={{ span: 10, offset: 2 }}>
                 <Form.Text>bad user/password</Form.Text>
               </Col>
@@ -259,11 +172,7 @@ function SearchAll({ routing }) {
 
   return (
     <div className="d-flex flex-row flex-grow-1">
-      <Menu
-        section={"Options"}
-        types={options}
-        handleChange={handleChange}
-      ></Menu>
+      <Menu section={"Options"} types={options} handleChange={handleChange}></Menu>
       <Table title={"All"} results={results} routing={routing}></Table>
     </div>
   );
@@ -383,11 +292,7 @@ function Transgenic({ routing }) {
 
   return (
     <div className="d-flex flex-row flex-grow-1">
-      <Menu
-        section={"Options"}
-        types={options}
-        handleChange={handleChange}
-      ></Menu>
+      <Menu section={"Options"} types={options} handleChange={handleChange}></Menu>
       <Table
         title={"Transgenic Lines"}
         results={results}
@@ -488,14 +393,10 @@ function Line({ section }) {
     } else {
       visibility = "Unseen";
     }
-    fetch(`/get/line/${id}&${visibility}`).then((res) =>
-      res.json().then(setInfo)
-    );
+    fetch(`/get/line/${id}&${visibility}`).then((res) => res.json().then(setInfo));
   }, [id, setInfo, section]);
 
-  return (
-    <Main section={section} info={info} handleSubmit={handleChange}></Main>
-  );
+  return <Main section={section} info={info} handleSubmit={handleChange}></Main>;
 }
 
 function Add() {
@@ -591,11 +492,7 @@ function Add() {
         navigate("/");
         showAlert("Successfully added data", "success");
       })
-      .catch(
-        (err) =>
-          console.error("Error sending data:", err) ||
-          showAlert(err.message, "danger")
-      );
+      .catch((err) => console.error("Error sending data:", err) || showAlert(err.message, "danger"));
   };
 
   return (

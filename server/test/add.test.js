@@ -1,124 +1,123 @@
 // test/add.test.js
-import {before, describe, it} from 'node:test';
-import assert from 'node:assert';
-import {request} from "../global.js";
-import {changeVisibilityNode, findID, JSONToSPARQL, sendEmail} from "../routes/add.js";
+import { before, describe, it } from "node:test";
+import assert from "node:assert";
+import { request } from "../global.js";
+import { changeVisibilityNode, findID, JSONToSPARQL, sendEmail } from "../routes/add.js";
 
-
-describe('SPARQL Client Tests', function () {
-    const jsons = {
-        'all': {
-            "Line_name": {"select": false, "value": "MHT"},
-            "Synonym_line_name": {"select": false, "value": "Synonyme MHT"},
-            "Line_type": {"select": true, "value": "http://ircan.org/schema/Reporter"},
-            "Generation": {"select": false, "value": "F3"},
-            "Zygosity": {"select": true, "value": "http://purl.obolibrary.org/obo/GENO_0000402"},
-            "Lab_of_origin": {"select": true, "value": "http://ircan.org/data/entities/RentzschLab"},
-            "Exp": {"select": false, "value": null},
-            "Charac": {"select": false, "value": null},
-            "Molecular_tools": {"select": true, "value": "http://purl.obolibrary.org/obo/FBcv_0003008"},
-            "Vector_name": {"select": false, "value": "Vector poco"},
-            "Name": {"select": false, "value": "POUPOI"},
-            "Sequence": {"select": false, "value": "ABFSE"},
-            "Promoter": {"select": false, "value": "Promoter45"},
-            "NvERTx_ID": {"select": false, "value": "4.1235"},
-            "Genome version": {},
-            "Chromosome's_number": {"select": false, "value": "87"},
-            "Locus_of_insertion": {"select": false, "value": "7"},
-            "Mutated_region": {"select": false, "value": "96"},
-            "Sub-localization": {"select": false, "value": "Cellular"},
-            "Cell_type": {"select": false, "value": "Membrane"},
-            "Region_type": {"select": false, "value": "Mesentery"},
-            "Phenotype": [
-                {
-                    "stage": "http://ircan.org/schema/Lethality",
-                    "phenotype": "http://ircan.org/schema/EmbryoStage",
-                    "value": "56"
-                },
-                {
-                    "stage": "http://ircan.org/schema/Fecundity",
-                    "phenotype": "http://ircan.org/schema/AdultStage",
-                    "value": "1"
-                },
-                {
-                    "stage": "http://ircan.org/schema/Regeneration",
-                    "phenotype": "http://ircan.org/schema/LarvalStage",
-                    "value": "3"
-                }
-            ],
-            "Publication": {"select": true, "value": "Autre"},
-            "Status": {"select": true, "value": "http://ircan.org/schema/established"},
-            "Tag_type": {"select": false, "value": "mORANGE"},
-            "Vector_description": {"select": false, "value": "Vector description oui "},
-            "Construction_description": {"select": false, "value": "construct"},
-            "Mutation_type": {"select": false, "value": "mutate ouio"},
-            "Supplementary_information": {"select": false, "value": "absence of machin"},
-            "Version": {"select": true, "value": "http://ircan.org/schema/GenomeV1"},
-            "Date_": {},
-            "Details": {},
-            "Ensembl_ID": {"select": false, "value": "45868"},
-            "Genbank_ID": {},
-            "Title": {"select": false, "value": "Bonne publi"},
-            "Date": {"select": false, "value": "1999-04-23"},
-            "Creator": {"select": false, "value": "MatMat"},
-            "Source": {"select": false, "value": "nature.com"},
-            "Reagents_and_protocols": {"select": false, "value": ""}
+describe("SPARQL Client Tests", function () {
+  const jsons = {
+    all: {
+      Line_name: { select: false, value: "MHT" },
+      Synonym_line_name: { select: false, value: "Synonyme MHT" },
+      Line_type: { select: true, value: "http://ircan.org/schema/Reporter" },
+      Generation: { select: false, value: "F3" },
+      Zygosity: { select: true, value: "http://purl.obolibrary.org/obo/GENO_0000402" },
+      Lab_of_origin: { select: true, value: "http://ircan.org/data/entities/RentzschLab" },
+      Exp: { select: false, value: null },
+      Charac: { select: false, value: null },
+      Molecular_tools: { select: true, value: "http://purl.obolibrary.org/obo/FBcv_0003008" },
+      Vector_name: { select: false, value: "Vector poco" },
+      Name: { select: false, value: "POUPOI" },
+      Sequence: { select: false, value: "ABFSE" },
+      Promoter: { select: false, value: "Promoter45" },
+      NvERTx_ID: { select: false, value: "4.1235" },
+      "Genome version": {},
+      "Chromosome's_number": { select: false, value: "87" },
+      Locus_of_insertion: { select: false, value: "7" },
+      Mutated_region: { select: false, value: "96" },
+      "Sub-localization": { select: false, value: "Cellular" },
+      Cell_type: { select: false, value: "Membrane" },
+      Region_type: { select: false, value: "Mesentery" },
+      Phenotype: [
+        {
+          stage: "http://ircan.org/schema/Lethality",
+          phenotype: "http://ircan.org/schema/EmbryoStage",
+          value: "56",
         },
-        minimum: {
-            Line_name: {select: false, value: 'bgbgb'},
-            Synonym_line_name: {},
-            Line_type: {select: true, value: 'http://ircan.org/schema/Functional'},
-            Generation: {
-                select: true,
-                value: 'http://ircan.org/data/entities/F0'
-            },
-            Zygosity: {
-                select: true,
-                value: 'http://purl.obolibrary.org/obo/GENO_0000134'
-            },
-            Lab_of_origin: {select: true, value: 'http://ircan.org/data/entities/RentzschLab'},
-            Status: {select: true, value: 'http://ircan.org/schema/established'},
-            Exp: {select: false, value: null},
-            Charac: {select: false, value: null},
-            Tag_type: {select: false, value: 'NA'},
-            Construction_description: {},
-            Mutation_type: {},
-            Reagents_and_protocols: {},
-            Molecular_tools: {
-                select: true,
-                value: 'http://purl.obolibrary.org/obo/FBcv_0003008'
-            },
-            Name: {select: false, value: 'gene34'},
-            Sequence: {},
-            Promoter: {},
-            'Ensembl accession number': {},
-            Genbank_accession_number: {},
-            Ensembl_ID: {},
-            Genbank_ID: {},
-            NvERTx_ID: {},
-            "Chromosome's_number": {},
-            Locus_of_insertion: {},
-            Mutated_region: {},
-            'Sub-localization': {select: true, value: 'http://ircan.org/schema/CellMembrane'},
-            Cell_type: {select: true, value: 'http://ircan.org/schema/Cnidocyte'},
-            Region_type: {select: true, value: 'http://ircan.org/schema/BodyWall'},
-            Phenotype: [
-                {
-                    stage: 'http://ircan.org/schema/Developmental',
-                    phenotype: 'http://ircan.org/schema/AdultStage',
-                    value: ''
-                }
-            ],
-            Version: {select: true, value: 'http://ircan.org/schema/GenomeV1'},
-            Date_: {},
-            Details: {},
-            Publication: {select: true, value: 'Autre'}
-        }
-    }
-    const queries = (id) => {
-        return {
-            line: {
-                query: `
+        {
+          stage: "http://ircan.org/schema/Fecundity",
+          phenotype: "http://ircan.org/schema/AdultStage",
+          value: "1",
+        },
+        {
+          stage: "http://ircan.org/schema/Regeneration",
+          phenotype: "http://ircan.org/schema/LarvalStage",
+          value: "3",
+        },
+      ],
+      Publication: { select: true, value: "Autre" },
+      Status: { select: true, value: "http://ircan.org/schema/established" },
+      Tag_type: { select: false, value: "mORANGE" },
+      Vector_description: { select: false, value: "Vector description oui " },
+      Construction_description: { select: false, value: "construct" },
+      Mutation_type: { select: false, value: "mutate ouio" },
+      Supplementary_information: { select: false, value: "absence of machin" },
+      Version: { select: true, value: "http://ircan.org/schema/GenomeV1" },
+      Date_: {},
+      Details: {},
+      Ensembl_ID: { select: false, value: "45868" },
+      Genbank_ID: {},
+      Title: { select: false, value: "Bonne publi" },
+      Date: { select: false, value: "1999-04-23" },
+      Creator: { select: false, value: "MatMat" },
+      Source: { select: false, value: "nature.com" },
+      Reagents_and_protocols: { select: false, value: "" },
+    },
+    minimum: {
+      Line_name: { select: false, value: "bgbgb" },
+      Synonym_line_name: {},
+      Line_type: { select: true, value: "http://ircan.org/schema/Functional" },
+      Generation: {
+        select: true,
+        value: "http://ircan.org/data/entities/F0",
+      },
+      Zygosity: {
+        select: true,
+        value: "http://purl.obolibrary.org/obo/GENO_0000134",
+      },
+      Lab_of_origin: { select: true, value: "http://ircan.org/data/entities/RentzschLab" },
+      Status: { select: true, value: "http://ircan.org/schema/established" },
+      Exp: { select: false, value: null },
+      Charac: { select: false, value: null },
+      Tag_type: { select: false, value: "NA" },
+      Construction_description: {},
+      Mutation_type: {},
+      Reagents_and_protocols: {},
+      Molecular_tools: {
+        select: true,
+        value: "http://purl.obolibrary.org/obo/FBcv_0003008",
+      },
+      Name: { select: false, value: "gene34" },
+      Sequence: {},
+      Promoter: {},
+      "Ensembl accession number": {},
+      Genbank_accession_number: {},
+      Ensembl_ID: {},
+      Genbank_ID: {},
+      NvERTx_ID: {},
+      "Chromosome's_number": {},
+      Locus_of_insertion: {},
+      Mutated_region: {},
+      "Sub-localization": { select: true, value: "http://ircan.org/schema/CellMembrane" },
+      Cell_type: { select: true, value: "http://ircan.org/schema/Cnidocyte" },
+      Region_type: { select: true, value: "http://ircan.org/schema/BodyWall" },
+      Phenotype: [
+        {
+          stage: "http://ircan.org/schema/Developmental",
+          phenotype: "http://ircan.org/schema/AdultStage",
+          value: "",
+        },
+      ],
+      Version: { select: true, value: "http://ircan.org/schema/GenomeV1" },
+      Date_: {},
+      Details: {},
+      Publication: { select: true, value: "Autre" },
+    },
+  };
+  const queries = (id) => {
+    return {
+      line: {
+        query: `
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -141,10 +140,10 @@ describe('SPARQL Client Tests', function () {
                               
                        ?line s:visibility s:Seen.
                  }`,
-                output: 7
-            },
-            search: {
-                query: `
+        output: 7,
+      },
+      search: {
+        query: `
                 SELECT ?field ?ID ?Name ?Type ?Zygosity ?Generation ?Tag ?Tool ?Lab ?Status WHERE {
                         ?line rdf:type ?field;
                                 obo:RO_0002354 ?exp;
@@ -168,10 +167,10 @@ describe('SPARQL Client Tests', function () {
                             
                         ?line s:visibility s:Seen.
                 }`,
-                output: 10
-            },
-            exp: {
-                query: `
+        output: 10,
+      },
+      exp: {
+        query: `
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -202,10 +201,10 @@ describe('SPARQL Client Tests', function () {
                       optional{?exp s:reagentsAndProtocols ?reagents_and_protocols}
                       optional{?exp s:vectorDescription ?Vector_description}
                 }`,
-                output: {'all': 6, 'minimum': 4}
-            },
-            gene: {
-                query: `
+        output: { all: 6, minimum: 4 },
+      },
+      gene: {
+        query: `
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -232,10 +231,10 @@ describe('SPARQL Client Tests', function () {
                       s:hasGenBankNumber/rdfs:label ?Genbank_accession_number;
                       s:hasNvERTxID/rdfs:label ?NvERTx_ID.
                 }`,
-                output: 12
-            },
-            charac: {
-                query: `
+        output: 12,
+      },
+      charac: {
+        query: `
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -253,10 +252,10 @@ describe('SPARQL Client Tests', function () {
                     optional {?charac obo:RO_0000086 s:Functional.
                     ?charac rdfs:label ?supp_info}
                 }`,
-                output: {'all': 1, 'minimum': 0}
-            },
-            location: {
-                query: `
+        output: { all: 1, minimum: 0 },
+      },
+      location: {
+        query: `
                 SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                 ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                 ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -274,10 +273,10 @@ describe('SPARQL Client Tests', function () {
                       s:cellLocated/rdfs:label ?cell_label;
                       s:regionLocated/rdfs:label ?region_label.
                 }`,
-                output: 3
-            },
-            publi: {
-                query: `
+        output: 3,
+      },
+      publi: {
+        query: `
                     SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -296,10 +295,10 @@ describe('SPARQL Client Tests', function () {
                           rdfs:seeAlso/geno:id ?Publication_id;
                           rdfs:seeAlso/rdfs:label ?Publication_name.}
                     }`,
-                output: {'all': 6, 'minimum': 1}
-            },
-            phen: {
-                query: `
+        output: { all: 6, minimum: 1 },
+      },
+      phen: {
+        query: `
                     SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
                     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
                     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
@@ -319,37 +318,37 @@ describe('SPARQL Client Tests', function () {
                             }
                           }
                     }`,
-                output: 3
-            }
-        }
-    }
-    before(async () => {
-        const query = `
+        output: 3,
+      },
+    };
+  };
+  before(async () => {
+    const query = `
         DELETE {?x ?y ?z} WHERE {
             FILTER(strstarts(str(?x), str(mut:)) || strstarts(str(?x), str(ac:)))
           ?x ?y ?z
         }`;
 
-        await request(query, 'update')
-        await new Promise(resolve => setTimeout(resolve, 500))
-    });
+    await request(query, "update");
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
 
-    it('new ID for data', async () => {
-        assert.strictEqual(await findID(), 0)
-        const query = `
+  it("new ID for data", async () => {
+    assert.strictEqual(await findID(), 0);
+    const query = `
         INSERT DATA {
             mut:test5 a obo:OBI_1000048;
                 geno:id 5.    
             mut:test0 a obo:OBI_1000048;
                 geno:id 0.
-        }`
-        await request(query, 'update')
-        assert.strictEqual(await findID(), 6)
-    })
+        }`;
+    await request(query, "update");
+    assert.strictEqual(await findID(), 6);
+  });
 
-    describe('Send email tests', () => {
-        before(async () => {
-            let query = `
+  describe("Send email tests", () => {
+    before(async () => {
+      let query = `
             INSERT DATA {
             sAc:password
                 a          rdf:Property ;
@@ -424,55 +423,55 @@ describe('SPARQL Client Tests', function () {
                 wac:accessTo s:genotyped .
 
             }
-            `
-            //console.log(query)
-            await request(query, 'update').catch((e) => console.log(Error(`ADD ERR ${e}`)))
-        })
-        it('send email nobody', async () => {
-            const id = 2
-            let account = 'Rottinger'
-            let res = await sendEmail(account, id)
-            assert.strictEqual(res, 'no director')
-        })
-        it('send email Director', async () => {
-            const id = 2
-            let account = 'LabRottingerLab'
-            //let res = await sendEmail(account, id)
-            //console.log(res)
-            //assert.strictEqual(res.response.includes('OK'), true)
-        })
-    })
+            `;
+      //console.log(query)
+      await request(query, "update").catch((e) => console.log(Error(`ADD ERR ${e}`)));
+    });
+    it("send email nobody", async () => {
+      const id = 2;
+      let account = "Rottinger";
+      let res = await sendEmail(account, id);
+      assert.strictEqual(res, "no director");
+    });
+    it("send email Director", async () => {
+      const id = 2;
+      let account = "LabRottingerLab";
+      //let res = await sendEmail(account, id)
+      //console.log(res)
+      //assert.strictEqual(res.response.includes('OK'), true)
+    });
+  });
 
-    Object.keys(jsons).forEach((key, id) => {
-        describe(`Tests input ${key}`, () => {
-            const q = queries(id)
-            before(async () => {
-                let query = JSONToSPARQL(id, jsons[key]);
-                //console.log(query)
-                await request(query, 'update').catch((e) => console.log(Error(`ADD ERR ${e}`)))
-            })
-            Object.keys(q).forEach((node) => {
-                it(`Get ${node} node`, async () => {
-                    let data;
-                    if (node === 'line') {
-                        let data = await request(q[node].query, 'query')
-                        assert.strictEqual(Object.keys(data).length, 0, JSON.stringify(data, null, 3))
-                        await changeVisibilityNode(id)
-                    }
-                    if (node === "search") {
-                        await changeVisibilityNode(id)
-                        data = await request(q[node].query, 'query')
-                        assert.strictEqual(Object.keys(data.Name).length, id + 1, JSON.stringify(data, null, 3))
-                    } else {
-                        data = await request(q[node].query, 'query')
-                        let output = q[node].output;
-                        if (typeof output === 'object') {
-                            output = output[key]
-                        }
-                        assert.strictEqual(Object.keys(data).length, output, JSON.stringify(data, null, 3))
-                    }
-                })
-            })
-        })
-    })
+  Object.keys(jsons).forEach((key, id) => {
+    describe(`Tests input ${key}`, () => {
+      const q = queries(id);
+      before(async () => {
+        let query = JSONToSPARQL(id, jsons[key]);
+        //console.log(query)
+        await request(query, "update").catch((e) => console.log(Error(`ADD ERR ${e}`)));
+      });
+      Object.keys(q).forEach((node) => {
+        it(`Get ${node} node`, async () => {
+          let data;
+          if (node === "line") {
+            let data = await request(q[node].query, "query");
+            assert.strictEqual(Object.keys(data).length, 0, JSON.stringify(data, null, 3));
+            await changeVisibilityNode(id);
+          }
+          if (node === "search") {
+            await changeVisibilityNode(id);
+            data = await request(q[node].query, "query");
+            assert.strictEqual(Object.keys(data.Name).length, id + 1, JSON.stringify(data, null, 3));
+          } else {
+            data = await request(q[node].query, "query");
+            let output = q[node].output;
+            if (typeof output === "object") {
+              output = output[key];
+            }
+            assert.strictEqual(Object.keys(data).length, output, JSON.stringify(data, null, 3));
+          }
+        });
+      });
+    });
+  });
 });

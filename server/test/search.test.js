@@ -142,12 +142,8 @@ describe("Search Client Tests", async function () {
 
     Object.keys(jsons).forEach(async (key, id) => {
       const query = JSONToSPARQL(id, jsons[key]);
-      await request(query, "update").catch((e) =>
-        console.log(Error(`ADD ERR ${e}`))
-      );
-      await changeVisibilityNode(id).catch((e) =>
-        console.log(Error(`CHANGE ERR ${e}`))
-      );
+      await request(query, "update").catch((e) => console.log(Error(`ADD ERR ${e}`)));
+      await changeVisibilityNode(id).catch((e) => console.log(Error(`CHANGE ERR ${e}`)));
     });
 
     query = `
@@ -196,9 +192,7 @@ describe("Search Client Tests", async function () {
                 wac:accessTo sAc:NvCentral .
         }`;
 
-    await request(query, "update").catch((e) =>
-      console.log(Error(`ADD ERR ${e}`))
-    );
+    await request(query, "update").catch((e) => console.log(Error(`ADD ERR ${e}`)));
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
   it("search tests", async () => {

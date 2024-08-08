@@ -62,7 +62,7 @@ export function verifiyAccount(token) {
   return account;
 }
 
-export const checkRightsData = (account = "Visitor", filter='') => {
+export const checkRightsData = (account = "Visitor", filter = "") => {
   const query = `
       SELECT DISTINCT 
       (MAX(?Read) as ?read) 
