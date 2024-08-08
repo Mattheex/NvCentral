@@ -318,8 +318,6 @@ export const JSONToSPARQL = (id, newData) => {
         delete newData['Supplementary_information']
     }
 
-    console.log(newData)
-
     return `
     INSERT DATA {
         ${addProperty(null, subJson(newData, ['Line_name']))}

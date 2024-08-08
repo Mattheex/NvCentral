@@ -130,7 +130,7 @@ const jsons = {
   },
 };
 
-describe.skip("Search Client Tests", async function () {
+describe("Search Client Tests", async function () {
   before(async () => {
     let query = `
         DELETE {?x ?y ?z} WHERE {

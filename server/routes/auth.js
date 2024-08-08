@@ -25,37 +25,7 @@ export const getRights = async (account, nodeLooking = null) => {
       }
     }
   }
-
-  console.log(data);
-
   return data;
-
-  const { read, write, append, control, node } = data;
-
-  if (nodeLooking !== null) {
-    const index = node.indexOf(nodeLooking);
-    return [
-      read[index] === "true",
-      write[index] === "true",
-      append[index] === "true",
-      control[index] === "true",
-    ];
-  }
-
-  const json = data["node"].reduce(
-    (acc, item, index) => ({
-      ...acc,
-      [item]: [
-        read[index] === "true",
-        write[index] === "true",
-        append[index] === "true",
-        control[index] === "true",
-      ],
-    }),
-    {}
-  );
-
-  return json;
 };
 
 export const getUsername = async (account) => {
@@ -73,7 +43,6 @@ router.post("/info", async (req, res) => {
   if (account === "Visitor") {
     return res.json("no account");
   }
-  console.log(`account ${account}`);
   const username = await getUsername(account).catch((err) => {
     console.log(err);
     res.status(400).send({
@@ -103,7 +72,6 @@ router.post("/login", (req, res) => {
 
   request(query, "query")
     .then(async (data) => {
-      console.log(data);
       if (Object.keys(data).length === 0) {
         res.status(401).json({ error: "Invalid username" });
       } else {
@@ -111,9 +79,6 @@ router.post("/login", (req, res) => {
         if (result) {
           const account = data["account"][0].split("/").pop();
           const token = jwt.sign({ node: account }, config.secretKEY);
-          //const rights = await getRights(account);
-          //console.log(rights);
-          console.log(token);
           res.json(token);
         } else {
           res.status(401).json({ error: "Invalid password" });

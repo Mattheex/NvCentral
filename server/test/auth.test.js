@@ -1,7 +1,7 @@
 // test/auth.test.js
 import { describe, it, before } from "node:test";
 import assert from "node:assert";
-import {getRights, getUsername } from "../routes/auth.js";
+import { getRights, getUsername } from "../routes/auth.js";
 import { request } from "../global.js";
 
 describe("Auth Client Tests", async function () {
@@ -19,7 +19,7 @@ describe("Auth Client Tests", async function () {
             mut:Line1 a obo:OBI_1000048;
                 geno:id 0;
                 obo:NCIT_C42628  en:TechnauLab ;
-                geno:status  s:genotyped.
+                geno:status  s:published.
 
             mut:Line2 a obo:OBI_1000048;
                 geno:id 1;
@@ -33,8 +33,7 @@ describe("Auth Client Tests", async function () {
         }`;
 
     await request(query, "update");
-    await new Promise(resolve => setTimeout(resolve, 500))
-
+    await new Promise((resolve) => setTimeout(resolve, 500));
   });
   it("check rights", async () => {
     const query = `
@@ -69,7 +68,7 @@ describe("Auth Client Tests", async function () {
 
             ac:MatthieuFeraudAccessLine1 a wac:Authorization ;
                 wac:agent ac:MatthieuFeraud;
-                wac:mode wac:Read, wac:Write ;
+                wac:mode wac:Write ;
                 wac:accessTo mut:Line1 .
 
             ac:AccessReadNvCentral
@@ -85,21 +84,47 @@ describe("Auth Client Tests", async function () {
 
     await request(query, "update");
 
-    let node = "http://ircan.org/data/mutants/Line3";
+    let node = "mut:Line3";
     let rights = await getRights("MatthieuFeraud", node);
-    assert.deepEqual(rights, [true, false, false, false], rights);
+    assert.deepEqual(
+      rights,
+      {
+        read: true,
+        write: false,
+        append: false,
+        control: false,
+        node: ["http://ircan.org/data/mutants/Line3"],
+      },
+      rights
+    );
     rights = await getRights("Visitor");
     assert.deepEqual(
       rights,
-      { "http://ircan.org/data/mutants/Line2": [true, false, false, false] },
+      {
+        read: [true, true],
+        write: [false, false],
+        append: [false, false],
+        control: [false, false],
+        node: ["http://ircan.org/data/mutants/Line1", "http://ircan.org/data/mutants/Line2"],
+      },
       rights.toString()
     );
-    node = "http://ircan.org/data/mutants/Line1";
+    node = "mut:Line1";
     rights = await getRights("MatthieuFeraud", node);
-    assert.deepEqual(rights, [true, true, false, false], rights);
+    assert.deepEqual(
+      rights,
+      {
+        read: true,
+        write: true,
+        append: false,
+        control: false,
+        node: ["http://ircan.org/data/mutants/Line1"],
+      },
+      rights
+    );
   });
-  it ('get username', async () => {
-    const username = await getUsername('MatthieuFeraud')
-    assert.equal(username,'RottingerTeam',username)
-  })
+  it("get username", async () => {
+    const username = await getUsername("MatthieuFeraud");
+    assert.equal(username, "RottingerTeam", username);
+  });
 });
