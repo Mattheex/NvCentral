@@ -68,6 +68,7 @@ export const searchData = async (filter, account) => {
             type: "btn",
             label: row[key] === "true",
             variant: "danger",
+            value : row["ID"]
           };
         } else if (key === "Name") {
           temp[key] = {

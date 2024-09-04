@@ -444,6 +444,7 @@ export const deleteNode = async (node) => {
         await request(deleteQuery, 'update')
         return {success: true, message: 'Data has been deleted'};
     } catch (err) {
+        console.log(err)
         return {success: false, message: err.message || err};
     }
 }

@@ -144,14 +144,6 @@ function Header({ username, setUsername }) {
                 <NavDropdown.Item as={Link} to={"/account"}>
                   Account
                 </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={Link}
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                  }}
-                >
-                  Log out
-                </NavDropdown.Item>
               </NavDropdown>
             )}
           </Nav>

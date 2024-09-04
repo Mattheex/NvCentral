@@ -99,6 +99,13 @@ function Account({ type }) {
           showAlert("Account successfully created", "success");
         })
         .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+    } else {
+      localStorage.removeItem("token");
+      if (state === null) {
+        navigate("/");
+      } else {
+        navigate(state.prev);
+      }
     }
   };
 
@@ -236,16 +243,15 @@ function Account({ type }) {
               </Form.Group>
             )}
 
-            {useOnlineStatus("token") === null && (
               <Form.Group as={Row} className="m-3">
                 <Col sm={4}>
                   <Button variant="primary" type="submit">
                     {type === "In" && "To connect"}
                     {type === "Up" && "Create an account"}
+                    {useOnlineStatus("token") !== null && "Log out"}
                   </Button>
                 </Col>
               </Form.Group>
-            )}
           </Form>
         </Card.Body>
       </Card>
@@ -388,9 +394,10 @@ function Transgenic() {
       .catch((err) => console.log(err) || showAlert(err.message, "danger"));
   }, [selected, setResults, showAlert]);
 
-  const handleDelete = async (e) => {
-    const node = e.target.value;
-    const { serverError } = await axios.post(`/add/deleted/${node}`);
+  const handleDelete = async (key,value) => {
+    const node = value;
+    console.log(`/add/deleted/${node}`)
+    const { serverError } = await axios.get(`/add/deleted/${node}`);
     if (!serverError) {
       searchMutants();
     }
