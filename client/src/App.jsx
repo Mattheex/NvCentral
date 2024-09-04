@@ -19,6 +19,18 @@ import Col from "react-bootstrap/Col";
 import { AlertProvider, useAlert } from "./context/Alert";
 import InputGroup from "react-bootstrap/InputGroup";
 import Stack from "react-bootstrap/Stack";
+import Container from "react-bootstrap/esm/Container";
+import Option from "./components/Option";
+import {
+  addAccount,
+  deleteAccount,
+  getLabs,
+  infoAccount,
+  loginAccount,
+  removeTeamAccount,
+  teamAccount,
+} from "./api/service";
+import { useOnlineStatus } from "./api/store";
 
 function App() {
   const routing = {
@@ -28,7 +40,7 @@ function App() {
   const [username, setUsername] = useState(null);
 
   return (
-    <div className="App">
+    <Stack className="App">
       <AlertProvider>
         <Routes>
           <Route path="/" element={<Header username={username} setUsername={setUsername} />}>
@@ -39,97 +51,23 @@ function App() {
             <Route path="/add" element={<Add />} />
             <Route path="*" element={<NoMatch />} />
             <Route path="/all/:value" element={<SearchAll routing={routing} />} />
-            <Route path="/signIn" element={<SignIn />} />
-            <Route path="/account" element={<Account username={username} />} />
+            <Route path="/signIn" element={<Account type={"In"} />} />
+            <Route path="/signUp" element={<Account type={"Up"} />} />
+            <Route path="/account" element={<Account />} />
           </Route>
         </Routes>
       </AlertProvider>
-    </div>
-  );
-}
-
-function Account({ username }) {
-  const [account, setAccount] = useState({ password: "" });
-  const [teams, setTeams] = useState([
-    { index: 0, name: "Matthieu Feraud" },
-    { index: 1, name: "Mika" },
-  ]);
-
-  const handleChange = (field, value) => {
-    setAccount((account) => ({ ...account, ...{ [field]: value } }));
-  };
-
-  const handleSubmit = (field, value) => {
-    if (value === "delete") {
-      setTeams((teams) => teams.filter((_, index) => index !== field));
-    }
-  };
-
-  const handleChangeTeam = (field, value) => {
-    setTeams(teams.map((team) => (team.index === field ? { ...team, name: value } : team)));
-  };
-
-  return (
-    <Stack gap={3} className="align-items-center justify-content-center">
-      <Card className="w-50 mt-4">
-        <Card.Header>Account information</Card.Header>
-        <Card.Body>
-          <Form.Group className="m-3" as={Row}>
-            <Form.Label column sm={2}>
-              Username
-            </Form.Label>
-            <Col sm={10}>
-              <Label placeholder={username} disabled={true} />
-            </Col>
-          </Form.Group>
-          <Form.Group className="m-3" as={Row}>
-            <Form.Label column sm={2}>
-              Password
-            </Form.Label>
-            <Col sm={10}>
-              <InputGroup>
-                <Label placeholder={"Type current password"} handleChange={handleChange} />
-                <Button variant="outline-primary">✓</Button>
-              </InputGroup>
-            </Col>
-          </Form.Group>
-        </Card.Body>
-      </Card>
-
-      <Card className="w-50">
-        <Card.Header>Manage Team</Card.Header>
-        <Card.Body>
-          {teams.map((value, index) => (
-            <Form.Group key={index} className="m-3" as={Row}>
-              <InputGroup>
-                <Label k={value.index} value={value.name} handleChange={handleChangeTeam} />
-                <Button variant="outline-primary" onClick={() => handleSubmit(value.index, "accept")}>
-                  ✓
-                </Button>
-                <Button variant="outline-danger" onClick={() => handleSubmit(value.index, "delete")}>
-                  ✗
-                </Button>
-              </InputGroup>
-            </Form.Group>
-          ))}
-          <Button
-            variant="primary"
-            onClick={() => setTeams([...teams, { name: "", index: teams.length }])}
-          >
-            +
-          </Button>
-        </Card.Body>
-      </Card>
     </Stack>
   );
 }
 
-function SignIn() {
-  const [account, setAccount] = useState({ username: "", password: "" });
-  const [error, setError] = useState(false);
-  const navigate = useNavigate();
+function Account({ type }) {
   const { showAlert } = useAlert();
+  const [account, setAccount] = useState({ username: "", password: "", team: "",mail:"" });
+  const [teams, setTeams] = useState([{}]);
+  const [options, setOptions] = useState([]);
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   const handleChange = (field, value) => {
     setAccount((account) => ({ ...account, ...{ [field]: value } }));
@@ -137,77 +75,188 @@ function SignIn() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("/auth/login", account)
-      .then((res) => {
-        localStorage.setItem("token", res.data);
-        if (state === null) {
-          navigate("/");
-        } else {
-          navigate(state.prev);
-        }
-        showAlert("Successfully connected", "success");
-      })
-      .catch((err) => {
-        console.log(err);
-        setError(true);
-      });
+    if (type === "In") {
+      loginAccount(account)
+        .then((res) => {
+          localStorage.setItem("token", res.data);
+          if (state === null) {
+            navigate("/");
+          } else {
+            navigate(state.prev);
+          }
+          showAlert("Successfully connected", "success");
+        })
+        .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+    } else if (type === "Up") {
+      addAccount(account)
+        .then((res) => {
+          localStorage.setItem("token", res.data);
+          if (state === null) {
+            navigate("/");
+          } else {
+            navigate(state.prev);
+          }
+          showAlert("Account successfully created", "success");
+        })
+        .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+    }
   };
 
+  const updateOption = useCallback(() => {
+    getLabs()
+      .then((res) => {
+        setOptions(res.data);
+      })
+      .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+  }, [showAlert]);
+
+  const updateAccount = useCallback(() => {
+    infoAccount()
+      .then((res) => {
+        if (res.data !== "no account") {
+          setAccount((account) => ({ ...account, ...{ username: res.data.username } }));
+        } else {
+          setAccount((account) => ({ ...account, ...{ username: "" } }));
+        }
+      })
+      .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+  }, [showAlert]);
+
+  const updateTeam = useCallback(() => {
+    teamAccount()
+      .then((res) => setTeams(res.data))
+      .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+  }, [showAlert]);
+
+  const handleAccountManagement = (field, value) => {
+    if (field === "Remove from team") {
+      removeTeamAccount({ node: value })
+        .then(() => {
+          updateTeam();
+          showAlert("Successfully removed from team", "success");
+        })
+        .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+    } else if (field === "Delete account") {
+      deleteAccount({ node: value })
+        .then(() => {
+          updateTeam();
+          showAlert("Successfully deleted", "success");
+        })
+        .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+    }
+  };
+
+  useEffect(() => {
+    if (type === "In" || type === "Up") {
+      updateOption();
+    } else {
+      updateTeam();
+      updateAccount();
+    }
+    updateOption();
+  }, [type, updateAccount, updateOption, updateTeam]);
+
   return (
-    <Stack className="align-items-center justify-content-center">
-      <Card className="w-50">
+    <Stack gap={3} className="align-items-center justify-content-center">
+      <Card className="w-75 mt-4">
+        <Card.Header>
+          {type === "In" && "Sign In"}
+          {type === "Up" && "Sign Up"}
+          {useOnlineStatus("token") !== null && "Account Information"}
+        </Card.Header>
         <Card.Body>
-          <Card.Title>Connexion</Card.Title>
-          <Form className="m-3" onSubmit={handleSubmit}>
-            <Form.Group as={Row} className="mb-3">
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="m-3" as={Row}>
               <Form.Label column sm={2}>
                 Username
               </Form.Label>
               <Col sm={10}>
-                <Label
-                  type="text"
-                  className={error ? "border border-danger" : ""}
-                  value={account["username"]}
-                  k="username"
-                  placeholder={"username"}
-                  handleChange={handleChange}
-                />
+                {useOnlineStatus("token") === null && (
+                  <Label
+                    type="text"
+                    value={account["username"]}
+                    k="username"
+                    placeholder={"username"}
+                    handleChange={handleChange}
+                  />
+                )}
+                {useOnlineStatus("token") !== null && (
+                  <Label placeholder={account.username} disabled={true} />
+                )}
               </Col>
             </Form.Group>
-
-            <Form.Group as={Row} className="mb-3" controlId="forPassword">
+            <Form.Group className="m-3" as={Row}>
               <Form.Label column sm={2}>
                 Password
               </Form.Label>
               <Col sm={10}>
-                <Label
-                  type="password"
-                  className={error ? "border border-danger" : ""}
-                  value={account["password"]}
-                  k="password"
-                  placeholder={"password"}
-                  handleChange={handleChange}
-                />
+                {useOnlineStatus("token") === null && (
+                  <Label
+                    type="password"
+                    value={account["password"]}
+                    k="password"
+                    placeholder={"password"}
+                    handleChange={handleChange}
+                  />
+                )}
+                {useOnlineStatus("token") !== null && (
+                  <InputGroup>
+                    <Label placeholder={"Type current password"} handleChange={handleChange} />
+                    <Button variant="outline-primary">✓</Button>
+                  </InputGroup>
+                )}
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} className={`mb-3 ${error ? "d-block" : "d-none"}`}>
-              <Col sm={{ span: 10, offset: 2 }}>
-                <Form.Text>bad user/password</Form.Text>
-              </Col>
-            </Form.Group>
+            {type === "Up" && (
+              <Form.Group className="m-3" as={Row}>
+                <Form.Label column sm={2}>
+                  Email
+                </Form.Label>
+                <Col sm={10}>
+                  <Label
+                    type="email"
+                    value={account["mail"]}
+                    k="mail"
+                    placeholder={"e-mail"}
+                    handleChange={handleChange}
+                  />
+                </Col>
+              </Form.Group>
+            )}
 
-            <Form.Group as={Row} className="mb-3">
-              <Col sm={{ span: 10, offset: 2 }}>
-                <Button variant="primary" type="submit">
-                  Submit
-                </Button>
-              </Col>
-            </Form.Group>
+            {type === "Up" && (
+              <Form.Group className="m-3" as={Row}>
+                <Form.Label column sm={2}>
+                  Choose a team
+                </Form.Label>
+                <Col sm={10}>
+                  <Option options={options} field={"team"} handleChange={handleChange} />
+                </Col>
+              </Form.Group>
+            )}
+
+            {useOnlineStatus("token") === null && (
+              <Form.Group as={Row} className="m-3">
+                <Col sm={4}>
+                  <Button variant="primary" type="submit">
+                    {type === "In" && "To connect"}
+                    {type === "Up" && "Create an account"}
+                  </Button>
+                </Col>
+              </Form.Group>
+            )}
           </Form>
         </Card.Body>
       </Card>
+      {useOnlineStatus("token") !== null && Object.keys(teams[0]).length !== 0 && (
+        <Card className="w-75">
+          <Card.Header>Manage Team</Card.Header>
+          <Card.Body>
+            <Table results={teams} handleChange={handleAccountManagement} />
+          </Card.Body>
+        </Card>
+      )}
     </Stack>
   );
 }
@@ -254,7 +303,7 @@ function SearchAll({ routing }) {
   );
 }
 
-function Transgenic({ routing }) {
+function Transgenic() {
   const [selected, setSelected] = useState({
     "?field": "http://purl.obolibrary.org/obo/OBI_1000048",
     "?Type": ["Reporter", "Functional", "Wild"],
@@ -314,7 +363,7 @@ function Transgenic({ routing }) {
 
   const { showAlert } = useAlert();
 
-  const handleChange = (field, value) => {
+  const handleChange = useCallback((field, value) => {
     if (field === "?Type") {
       if (value.checked) {
         value = [...selected[field], value.value];
@@ -323,7 +372,7 @@ function Transgenic({ routing }) {
       }
     }
     setSelected((selected) => ({ ...selected, ...{ [field]: value } }));
-  };
+  },[selected]);
 
   const searchMutants = useCallback(() => {
     axios
@@ -339,14 +388,12 @@ function Transgenic({ routing }) {
       .catch((err) => console.log(err) || showAlert(err.message, "danger"));
   }, [selected, setResults, showAlert]);
 
-  const handleDelete = (e) => {
+  const handleDelete = async (e) => {
     const node = e.target.value;
-    axios
-      .get(`/add/deleted/${node}`, {})
-      .then(() => {
-        searchMutants();
-      })
-      .catch((err) => console.log(err) || showAlert(err.message, "danger"));
+    const { serverError } = await axios.post(`/add/deleted/${node}`);
+    if (!serverError) {
+      searchMutants();
+    }
   };
 
   useEffect(() => {
@@ -368,13 +415,15 @@ function Transgenic({ routing }) {
 
   return (
     <div className="d-flex flex-row flex-grow-1">
-      <Menu section={"Options"} types={options} handleChange={handleChange}></Menu>
-      <Table
-        title={"Transgenic Lines"}
-        results={results}
-        routing={routing}
-        handleDelete={handleDelete}
-      ></Table>
+      <Menu section={"Options"} types={options} handleChange={handleChange} />
+      <Container className="tableColor overflow-auto">
+        <Stack direction="horizontal" className="justify-content-between p-3 border-bottom">
+          <h5 className="m-0">Transgenic Lines</h5>
+          <span>{results.length} Results</span>
+        </Stack>
+        {results[0].length === 0 && <div className="text-center">Nothing to display</div>}
+        {results[0].length !== 0 && <Table results={results} handleChange={handleDelete} />}
+      </Container>
     </div>
   );
 }

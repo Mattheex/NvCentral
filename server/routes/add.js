@@ -21,7 +21,7 @@ export const findID = async () => {
 }
 
 
-export const JSONToSPARQL = (id, newData) => {
+export const JSONToSPARQL = (id, newData,account) => {
     const json = {
         Line_name: {
             nodeType: 'obo:OBI_1000048',
@@ -336,13 +336,20 @@ export const JSONToSPARQL = (id, newData) => {
         
         ${addProperty(json.Title.nodeID, subJson(newData, ['Date', 'Creator', 'Source', 'Associated lines']))}
         ${json.Line_name.nodeID} s:visibility s:Unseen.
+
+        ac:${account}Access${json.Line_name.nodeID} a   wac:Authorization ;
+                                                    wac:agent    ac:${account};
+                                                    wac:mode     wac:Read, wac:Write;
+                                                    wac:accessTo mut:${json.Line_name.nodeID}.
+
+        ac:${account} wac:accessControl ac:${account}Access${json.Line_name.nodeID}.
     }`
 }
 
 export const sendEmail = async (account, ID) => {
     const query = `
     SELECT ?mail WHERE {
-        ac:${account} sAc:director/foaf:mbox ?mail.
+        ac:${account} sioc:member_of/sAc:hasDirector/sioc:email ?mail.
     }`
 
     let data = await request(query, 'query')
@@ -374,12 +381,12 @@ const queryDeleteDatabase = (id, query) => {
 }
 
 router.post("/line/", async (req, res) => {
+    const account = verifiyAccount(req.headers['authorization'])
     const ID = await findID()
     console.log(`ID ${ID}`)
-    const query = JSONToSPARQL(ID, req.body)
+    const query = JSONToSPARQL(ID, req.body, account)
     console.log(`Query ${query}`)
     const deleteQuery = queryDeleteDatabase(ID, query)
-    const account = verifiyAccount(req.headers['authorization'])
     console.log(`Compte ${account}`)
     sendEmail(account, ID).then(r => console.log(r))
     request(query, 'update').then(data => {

@@ -31,7 +31,7 @@ export const getRights = async (account, nodeLooking = null) => {
 export const getUsername = async (account) => {
   const query = `
     SELECT ?username WHERE {
-        ac:${account} foaf:accountName ?username.
+        ac:${account} sioc:name ?username.
     }`;
   const data = await request(query, "query");
   return data["username"];
@@ -66,7 +66,7 @@ router.post("/login", (req, res) => {
 
   const query = `
     SELECT ?id ?account ?password WHERE {
-      ?account foaf:accountName '${username}';
+      ?account sioc:name '${username}';
                sAc:password     ?password.
     }`;
 
@@ -85,6 +85,177 @@ router.post("/login", (req, res) => {
         }
       }
     })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
+
+router.post("/add/account", (req, res) => {
+  const { username, password, mail, team } = req.body;
+
+  const hash = bcrypt.hashSync(password, 10);
+
+  const query = `
+    INSERT DATA {
+      ac:${username} a sioc:UserAccount ;
+                     sioc:member_of <${team}>;
+                     sioc:name "${username}";
+                     sioc:email "${mail}";
+                     sAc:password "${hash}".
+
+      <${team}> sioc:has_member ac:${username}.
+    }`;
+
+  request(query, "update")
+    .then((data) => {
+      const token = jwt.sign({ node: username }, config.secretKEY);
+      res.json(token);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
+
+router.post("/get/lab", (req, res) => {
+  //const account = verifiyAccount(req.headers["authorization"]);
+
+  const query = `
+    SELECT ?node ?label WHERE {
+      ?node a sioc:Usergroup, obo:OBI_0003250;
+          rdfs:label ?label
+    }`;
+
+  request(query, "query")
+    .then((data) => {
+      data = Object.entries(data).reduce(
+        (acc, [key, values]) => {
+          values.forEach((value, index) => {
+            acc[index] ||= {};
+            acc[index][key] = value;
+          });
+          return acc;
+        },
+        [{}]
+      );
+      res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
+
+router.post("/team", (req, res) => {
+  const account = verifiyAccount(req.headers["authorization"]);
+
+  const query = `
+    SELECT ?account ?name ?mail WHERE {
+      ?lab a sioc:Usergroup;
+        sAc:hasDirector ac:${account};
+        sioc:has_member ?account.
+
+      ?account sioc:name ?name;
+              sioc:email ?mail.
+
+      FILTER(?account != ac:${account})
+    }`;
+
+  request(query, "query")
+    .then((data) => {
+      data = Object.entries(data).reduce(
+        (acc, [key, values]) => {
+          values.forEach((value, index) => {
+            acc[index] ||= {};
+            acc[index][key] = value;
+          });
+          return acc;
+        },
+        [{}]
+      );
+
+      if (Object.keys(data[0]).length !== 0) {
+        for (let account of data) {
+          const id = account["account"].split("/").pop();
+          const token = jwt.sign({ node: id }, config.secretKEY);
+
+          account["name"] = { type: "label", label: account["name"] };
+          account["mail"] = { type: "label", label: account["mail"] };
+          account["Remove from team"] = {
+            type: "btn",
+            label: true,
+            variant: "warning",
+            value: token,
+          };
+          account["Delete account"] = {
+            type: "btn",
+            label: true,
+            variant: "danger",
+            value: token,
+          };
+          delete account["account"];
+        }
+      }
+
+      res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
+
+router.post("/delete/account", (req, res) => {
+  const { node } = req.body;
+  const account = verifiyAccount(req.headers["authorization"]);
+  const member = verifiyAccount(node);
+
+  const query = `
+  DELETE {
+    ac:${member} ?y ?z.
+  }
+  WHERE {
+    ?lab sAc:hasDirector ac:${account};
+        sioc:has_member ac:${member}.
+
+    ac:${member} ?y ?z.
+  }`;
+
+  request(query, "update")
+    .then(res.sendStatus(200))
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
+
+router.post("/delete/teamAccount", (req, res) => {
+  const { node } = req.body;
+  const account = verifiyAccount(req.headers["authorization"]);
+  const member = verifiyAccount(node);
+
+  const query = `
+  DELETE {
+    ?lab sioc:has_member ac:${member}
+  }
+  WHERE {
+    ?lab sAc:hasDirector ac:${account};
+        sioc:has_member ac:${member}.
+  }`;
+
+  request(query, "update")
+    .then(res.sendStatus(200))
     .catch((error) => {
       console.log(error);
       res.status(400).send({

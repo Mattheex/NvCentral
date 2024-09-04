@@ -5,6 +5,13 @@ const router = express.Router();
 export const searchData = async (filter, account) => {
   console.log(account);
 
+  let queryRights = checkRightsData(account);
+  if (account === "Administrator"){
+    queryRights = `BIND(true AS ?read).
+                    BIND (true AS ?write)`
+  }
+
+
   const query = `
     SELECT ?field ?ID ?Name ?Type ?Zygosity ?Generation ?Tag ?Tool ?Lab ?Status ?write WHERE {
         ?node rdf:type ?field;
@@ -30,7 +37,7 @@ export const searchData = async (filter, account) => {
         ?node s:visibility s:Seen.
         FILTER(?read = true)
         {
-            ${checkRightsData(account)}
+            ${queryRights}
         } 
     }`;
 
@@ -47,28 +54,42 @@ export const searchData = async (filter, account) => {
     [{}]
   );
 
+  console.log(data);
+
+  let json = [];
+
   if (Object.keys(data[0]).length !== 0) {
-    for (let key in data) {
-      let row = data[key];
-      row["Name"] = {
-        label: row["Name"],
-        link: row["ID"],
-        field: row["field"].split("/").pop(),
-      };
-      if (row["write"] === "true") {
-        row["Action"] = true;
-      } else {
-        row["Action"] = false;
+    for (let line in data) {
+      let row = data[line];
+      let temp = {};
+      for (let key in row) {
+        if (key === "write") {
+          temp["Delete"] = {
+            type: "btn",
+            label: row[key] === "true",
+            variant: "danger",
+          };
+        } else if (key === "Name") {
+          temp[key] = {
+            type: "link",
+            label: row[key],
+            link: row["ID"],
+            field: row["field"].split("/").pop(),
+          };
+        } else if (key !== "ID" && key !== "field") {
+          temp[key] = {
+            type: "label",
+            label: row[key],
+          };
+        }
       }
-      delete row["write"];
-      delete row["ID"];
-      delete row["field"];
+      json.push(temp);
     }
   }
 
-  console.log(data);
+  console.log(json);
 
-  return data;
+  return json;
 };
 
 router.post("search/all/", (req, res) => {
@@ -131,6 +152,8 @@ router.post("/mutants", (req, res) => {
       }
     }
   }
+
+  console.log("mutants");
 
   const account = verifiyAccount(req.headers["authorization"]);
   searchData(string, account)

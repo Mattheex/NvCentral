@@ -11,6 +11,7 @@
 @prefix geno:    <http://www.geneontology.org/formats/oboInOwl#> .
 @prefix sioc:    <http://rdfs.org/sioc/ns#> .
 @prefix en:      <http://ircan.org/data/entities/> .
+@prefix obo:   <http://purl.obolibrary.org/obo/> .
 
 
 sAc:password
@@ -46,11 +47,17 @@ sAc:NvCentral
     sioc:member_of    <AllGroup>.
 
 <LabRottingerLab>
-    a                 sioc:Usergroup ;
+    a                 sioc:Usergroup, obo:OBI_0003250 ;
+    rdfs:label "Rottinger Lab";
     sioc:member_of    <AllGroup> ;
     sAc:hasDirector      <EricRottinger> ;
-    sioc:has_member   <MatthieuFeraud>, <EricRottinger> ;
+    sioc:has_member   <Matthieu>, <Mika>, <EricRottinger> ;
     wac:accessControl <LabRottingerLabAccessLabRottinger2>, <AccessAppendNvCentral> .
+
+<RentzschLab>
+    a          sioc:Usergroup, obo:OBI_0003250 ;
+    rdfs:label "Rentzsch lab" .
+
 
 <LabRottingerLabAccessLabRottinger2>
     a            wac:Authorization ;
@@ -72,16 +79,26 @@ sAc:NvCentral
     wac:mode     wac:Read, wac:Write ;
     wac:accessTo en:LabRottingerLab2 .
 
-<MatthieuFeraud>
+<Matthieu>
     a                 sioc:UserAccount ;
     sioc:member_of    <LabRottingerLab> ;
-    foaf:accountName  "RottingerTeam" ;
+    sioc:name          "Matthieu" ;
+    sioc:email        "matthieuferaud31@gmail.com" ;
     sAc:password      '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
     wac:accessControl <AccessAppendNvCentral>, <MatthieuFeraudAccessLine1> .
 
+<Mika>
+    a                 sioc:UserAccount ;
+    sioc:member_of    <LabRottingerLab> ;
+    sioc:name          "Mika" ;
+    sioc:email        "mika@gmail.com" ;
+    sAc:password      '$2b$12$SunmSi3OAkfcCeAY1tqCged3kgAO0o8egZQ5.VA50mI7mLxCIUZsi' ;
+    wac:accessControl <AccessAppendNvCentral>, <MatthieuFeraudAccessLine1> .
+
+
 <MatthieuFeraudAccessLine1>
     a            wac:Authorization ;
-    wac:agent    <MatthieuFeraud>, <EricRottinger> ;
+    wac:agent    <Matthieu>, <EricRottinger> ;
     wac:mode     wac:Read, wac:Write ;
     wac:accessTo mutants:Line1 .
 

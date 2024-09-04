@@ -6,15 +6,23 @@ import nodemailer from "nodemailer";
 export const client = new SparqlClient({
   endpointUrl: config.endpointUrl[process.env.NODE_ENV],
   user: config.user,
-  password: process.env.secretKEY,
+  pass: process.env.secretKEY,
 });
 
 export const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  pport:465,
+  secure: true, // true for 465, false for other ports
+  logger: true,
+  debug: true,
+  secureConnection: false,
   auth: {
     user: "noreply.nvcentral@gmail.com",
-    pass: process.env.smtpPass,
+    pass: 'zukiwqaffzeeybtr',
   },
+  tls:{
+    rejectUnAuthorized:true
+}
 });
 
 export function request(query, type) {
@@ -112,6 +120,7 @@ const prefix = `
     PREFIX bao:       <http://www.bioassayontology.org/bao#>
     PREFIX edam:      <http://edamontology.org/>
     PREFIX efo:       <http://www.ebi.ac.uk/efo/>
+    PREFIX schema:    <http://schema.org/>
 `;
 
 const addPrefix = (query) => {

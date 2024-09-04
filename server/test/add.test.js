@@ -447,7 +447,7 @@ describe("SPARQL Client Tests", function () {
       const q = queries(id);
       before(async () => {
         let query = JSONToSPARQL(id, jsons[key]);
-        //console.log(query)
+        console.log(query)
         await request(query, "update").catch((e) => console.log(Error(`ADD ERR ${e}`)));
       });
       Object.keys(q).forEach((node) => {

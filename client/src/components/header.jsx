@@ -112,7 +112,7 @@ function Header({ username, setUsername }) {
   };
 
   return (
-    <div className="d-flex flex-column h-100 header">
+    <>
       <Navbar
         className={isHome ? "bg-transparent fw-bold p-2" : "bg-primary fw-bold p-2"}
         style={{ position: "fixed", top: 0, zIndex: 3, width: "100%" }}
@@ -130,12 +130,17 @@ function Header({ username, setUsername }) {
           </Nav>
           <Nav className="ms-auto me-2">
             {username === null && (
-              <Nav.Link as={Link} to={`/signIn`} state={{ prev: location.pathname }}>
-                Log In
-              </Nav.Link>
+              <NavDropdown title="Account">
+                <NavDropdown.Item as={Link} to={`/signIn`}>
+                  Sign In
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to={`/signUp`}>
+                  Sign Up
+                </NavDropdown.Item>
+              </NavDropdown>
             )}
             {username !== null && (
-              <NavDropdown title={username} id="basic-nav-dropdown">
+              <NavDropdown title={username}>
                 <NavDropdown.Item as={Link} to={"/account"}>
                   Account
                 </NavDropdown.Item>
@@ -165,15 +170,17 @@ function Header({ username, setUsername }) {
           </InputGroup>
         </Container>
       </Navbar>
+
       {alert && (
         <Alert
           variant={alert.variant}
-          className={"position-absolute z-3"}
-          style={{ top: "20px", left: "20px" }}
+          className={"position-fixed"}
+          style={{ top: "20px", left: "20px", zIndex: 4 }}
         >
           {alert.message}
         </Alert>
       )}
+
       <Outlet />
       <Navbar className={isHome ? "bg-transparent fw-bold" : "bg-primary fw-bold"} variant="dark">
         <Nav className="d-flex justify-content-evenly flex-grow-1">
@@ -183,7 +190,7 @@ function Header({ username, setUsername }) {
           <Nav.Link href="#genome">Contact Us</Nav.Link>
         </Nav>
       </Navbar>
-    </div>
+    </>
   );
 }
 

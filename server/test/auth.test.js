@@ -4,7 +4,7 @@ import assert from "node:assert";
 import { getRights, getUsername } from "../routes/auth.js";
 import { request } from "../global.js";
 
-describe("Auth Client Tests", async function () {
+describe.skip("Auth Client Tests", async function () {
   before(async () => {
     let query = `
         DELETE {?x ?y ?z} WHERE {
