@@ -19,7 +19,9 @@ export default {
             "Generation": "Generation",
             "Zygosity": "Zygosity",
             "Lab_of_origin": "Lab_of_origin",
-            "Status": "Status"
+            "Status": "Status",
+            "Added by" : "Creator",
+            "Date added" : "Created" 
         },
         "Genetic_modifications": {
             "Tag_type": "Tag_type",

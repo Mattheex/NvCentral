@@ -43,6 +43,8 @@ export const searchData = async (filter, account) => {
 
   let data = await request(query, "query");
 
+  console.log(data)
+
   data = Object.entries(data).reduce(
     (acc, [key, values]) => {
       values.forEach((value, index) => {
@@ -88,47 +90,44 @@ export const searchData = async (filter, account) => {
     }
   }
 
-  console.log(json);
-
   return json;
 };
 
-router.post("search/all/", (req, res) => {
+router.post("/all", (req, res) => {
   let string = "";
   const nodes = [
     "?Name",
     "?Type",
     "?Zygosity",
-    "?gene_name",
     "?Type",
     "?Lab",
     "?Generation",
     "?Tag",
-    "?cell_label",
     "?Tool",
   ];
 
-  string += "FILTER (";
-  string += nodes.map((key) => `regex(${key}, '${req.body.Value}')`).join(" || ");
-  string += ")\n";
+  const routing = {
+    "Mutants" : "obo:OBI_1000048"
+  };
 
-  const account = verifiyAccount(req.headers["authorization"]);
-  searchData(string, account)
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => console.log(err));
-});
+  if (req.body['?field'].length === 0) {
+    res.json([])
+  }
 
-router.post("/omics", (req, res) => {
-  let string = "";
+
   for (let key in req.body) {
     if (key === "?field") {
-      string += `FILTER (${key} = <${req.body[key]}>)\n`;
+      string += "FILTER (";
+      string += req.body[key].map((value) => `${key} = ${routing[value]}`).join(" || ");
+      string += ")\n";
     } else {
-      string += `FILTER (regex(${key}, '${req.body[key]}'))\n`;
+      string += "FILTER (";
+      string += nodes.map((key) => `regex(${key}, '${req.body.Value}')`).join(" || ");
+      string += ")\n";
     }
   }
+
+  console.log(string)
 
   const account = verifiyAccount(req.headers["authorization"]);
   searchData(string, account)
@@ -140,6 +139,11 @@ router.post("/omics", (req, res) => {
 
 router.post("/mutants", (req, res) => {
   let string = "";
+
+  if (req.body['?field'].length === 0) {
+    res.json([])
+  }
+
   for (let key in req.body) {
     if (key === "?Type") {
       string += "FILTER (";
@@ -154,7 +158,6 @@ router.post("/mutants", (req, res) => {
     }
   }
 
-  console.log("mutants");
 
   const account = verifiyAccount(req.headers["authorization"]);
   searchData(string, account)
@@ -164,7 +167,7 @@ router.post("/mutants", (req, res) => {
     .catch((err) => console.log(err));
 });
 
-router.get("/mutants/options", async (req, res) => {
+router.post("/mutants/options", async (req, res) => {
   const query = `
     SELECT ?lab_label ?cell_label WHERE {
       ?line obo:RO_0000053 ?charac;

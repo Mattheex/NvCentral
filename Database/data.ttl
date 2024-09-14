@@ -11,6 +11,8 @@
 @prefix taxon: <http://purl.uniprot.org/taxonomy/> .
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix ac: <http://ircan.org/account/> .
+
 
 <MutantGenotyping>
     a               edam:data_1583 ;
@@ -202,7 +204,9 @@
     terms:source     <publication1> ;
     geno:id          0 ;
     geno:status      s:published ;
-    s:visibility     s:Seen .
+    terms:created   "2024-09-12"^^xsd:Date ;
+    terms:creator    ac:Matthieu.
+
 
 <Line2>
     a                obo:OBI_1000048 ;
@@ -218,7 +222,9 @@
     terms:source     <publication2> ;
     geno:id          1 ;
     geno:status      s:published ;
-    s:visibility     s:Seen .
+    s:visibility     s:Seen ;
+    terms:created   "2024-09-12"^^xsd:Date ;
+    terms:creator    ac:Matthieu.
 
 <LineMHT2>
     a                obo:OBI_1000048 ;

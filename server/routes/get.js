@@ -6,7 +6,7 @@ import {request} from "../global.js";
 const router = express.Router();
 
 export const queryLine = (id,visibility) => `
-    SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status
+    SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status ?Creator ?Created
     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
     ?Chromosomes_number ?Locus_of_insertion ?Mutated_region
@@ -25,7 +25,9 @@ export const queryLine = (id,visibility) => `
           obo:NCIT_C42628/rdfs:label ?Lab_of_origin;
           obo:RO_0002350/rdfs:label ?Generation;
           dcterms:source ?Publication;
-          geno:status/rdfs:label ?Status.
+          geno:status/rdfs:label ?Status;
+          dcterms:creator/sioc:name ?Creator;
+          dcterms:created ?Created.
     
           ?exp obo:RO_0004009 ?tool;
           obo:RO_0002234 ?gene.

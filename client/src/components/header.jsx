@@ -23,7 +23,7 @@ function DropDown({ sub, field, append }) {
             {Object.entries(Object.entries(links)).map(
               ([index, [label, link]]) =>
                 (label !== "Submit data" || (append && label === "Submit data")) && (
-                  <NavDropdown.Item key={index} className="p-0 mt-2" as={Link} to={link}>
+                  <NavDropdown.Item reloadDocument key={index} className="p-0 mt-2" as={Link} to={link}>
                     {label}
                   </NavDropdown.Item>
                 )
@@ -35,9 +35,9 @@ function DropDown({ sub, field, append }) {
   );
 }
 
-function Header({ username, setUsername }) {
+function Header() {
   const { alert, showAlert } = useAlert();
-
+  const [username, setUsername] = useState(null);
   const token = useOnlineStatus("token");
   const [rights, setRights] = useState({});
 
