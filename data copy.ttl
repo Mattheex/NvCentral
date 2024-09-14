@@ -1,0 +1,41 @@
+@base <http://ircan.org/data/mutants/> .
+@prefix bao:   <http://www.bioassayontology.org/bao#> .
+@prefix data:  <http://ircan.org/data/> .
+@prefix edam:  <http://edamontology.org/> .
+@prefix geno:  <http://www.geneontology.org/formats/oboInOwl#> .
+@prefix go:    <http://purl.obolibrary.org/obo/GO_> .
+@prefix obo:   <http://purl.obolibrary.org/obo/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s:     <http://ircan.org/schema/> .
+@prefix en:    <http://ircan.org/data/entities/> .
+@prefix taxon: <http://purl.uniprot.org/taxonomy/> .
+@prefix terms: <http://purl.org/dc/terms/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+<Line1>
+    a                obo:OBI_1000048 ;
+    rdfs:label       "MyHC1::mCherry" ;
+    s:visibility     s:Seen .
+
+<publication1>
+    a             obo:NCIT_C48471 ;
+    rdfs:label    "A muscle-specific transgenic reporter line of the sea anemone, Nematostella vectensis" ;
+    terms:creator "Eduard Renfer, Annette Amon-Hassenzahl, Patrick R. H. Steinmetz, and Ulrich Technau" ;
+    terms:date    "2010-01-05"^^xsd:Date ;
+    terms:source  <https://pubmed.ncbi.nlm.nih.gov/20018670/> ;
+    rdfs:seeAlso  <Line1> .
+
+<KnockIn1>
+    a              obo:OBI_0001149 ;
+    rdfs:label     "Reporter line" ;
+    obo:RO_0000053 <FluorescenceTag1> ;
+    obo:RO_0000086 s:Reporter .
+
+<Exp1>
+    a              obo:OBI_0003131 ;
+    rdfs:label     "Fluorescence protein induction" ;
+    s:vectorDescription
+                   "1.6-KB fragment of MyHC1 promoter region upstream of the start codon and an mCherry reporter gene, flanked bu inverted binding sites of meganuclease I-SceI" ;
+    obo:RO_0002234 <MyHC1> ;
+    obo:RO_0002404 <KnockIn1> ;
+    obo:RO_0004009 <pCRII-TOPO>, obo:FBcv_0000480 .
