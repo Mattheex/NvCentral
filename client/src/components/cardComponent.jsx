@@ -68,7 +68,9 @@ function Field({ info, section, k, setInputAdd, inputAdd }) {
   if (section === "Submit Data") {
     field = <SimpleLabel info={info} k={k} setInputAdd={setInputAdd}></SimpleLabel>;
   } else {
-    if (Array.isArray(info)) {
+    if (typeof info === "object" && !Array.isArray(info)) {
+      field = <Card.Link href={info.link}>{info.text}</Card.Link>;
+    } else if (Array.isArray(info)) {
       field = (
         <>
           {info.map((item, index) => (

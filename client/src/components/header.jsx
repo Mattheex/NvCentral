@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useAlert } from "../context/Alert";
 import axios from "axios";
 import { useOnlineStatus } from "../api/store";
+import { post, URL } from "../api/service";
 
 function DropDown({ sub, field, append }) {
   return (
@@ -43,17 +44,7 @@ function Header() {
 
   useEffect(() => {
     async function fetchData() {
-      axios
-        .post(
-          "/auth/info",
-          { node: "sAc:NvCentral" },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          }
-        )
+      post(URL.auth.rightsAccount, { node: "sAc:NvCentral" })
         .then((res) => {
           if (res.data !== "no account") {
             setUsername(res.data.username);

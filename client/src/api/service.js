@@ -21,12 +21,14 @@ export const deleteAccount = (data) => post("auth/delete/account", data);
 export const SearchMutants = (data) => post("/search/mutants", data);
 export const SearchOptions = () => post("search/mutants/options");
 
-
 export const URL = {
-  auth : {
-    loginAccount : '/auth/login',
-    addAccount : '/auth/add/account',
-    teamAccount : "/auth/delete/teamAccount",
-    deleteAccount : 'auth/delete/account'
-  }
-}
+  auth: {
+    infoAccount: "/auth/info",
+    rightsAccount: "/auth/info/rights",
+    loginAccount: "/auth/login",
+    addAccount: "/auth/add/account",
+    editAccount: "/auth/edit/account",
+    teamAccount: "/auth/delete/teamAccount",
+    deleteAccount: "auth/delete/account",
+  },
+};

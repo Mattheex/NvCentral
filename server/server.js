@@ -24,6 +24,7 @@ app.use('/add', addRoutes);
 app.use('/search', searchRoutes);
 app.use('/auth', authRoutes);
 app.use('/get', getRoutes);
+app.use('/uploads', express.static('uploads'))
 
 
 app.listen(port, () => console.log('Server is running on port 5000'));

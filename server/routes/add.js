@@ -692,6 +692,9 @@ router.get("/", async (req, res) => {
     Source: { type: "text", collapse: { field: "Publication", value: "Autre" } },
   };
 
+  delete json.Summary["Added by"];
+  delete json.Summary["Date added"];
+
   res.json(json);
 });
 

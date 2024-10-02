@@ -26,8 +26,9 @@ function App() {
             <Route path="/add" element={<Add />} />
             <Route path="*" element={<NoMatch />} />
             <Route path="/all/:value?" element={<Transgenic title={"All Data"} />} />
-            <Route path="/signIn" element={<Account type={"In"} />} />
-            <Route path="/signUp" element={<Account type={"Up"} />} />
+            <Route path="/signIn" element={<Account />} />
+            <Route path="/signUp" element={<Account />} />
+            <Route path="/account/:id" element={<Account />} />
             <Route path="/account" element={<Account />} />
           </Route>
         </Routes>
@@ -44,11 +45,11 @@ function Transgenic({ title }) {
   const { showAlert } = useAlert();
   const params = useParams();
 
-  console.log(title)
+  console.log(title);
 
   const handleChange = useCallback(
     (field, value) => {
-      if (field === "?Type" || field==="?field") {
+      if (field === "?Type" || field === "?field") {
         if (value.checked) {
           value = [...selected[field], value.value];
         } else {
