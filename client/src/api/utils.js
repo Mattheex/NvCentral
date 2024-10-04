@@ -69,6 +69,7 @@ export const allFilters = {
       Zygosity: "",
       Lab_of_origin: "",
       Status: "",
+      Image: "",
     },
     Genetic_modifications: {
       Tag_type: "",
@@ -116,7 +117,7 @@ export const allFilters = {
   },
   add: {
     info: {
-      Summary: { Line_name: "", Line_type: [], Zygosity: [] },
+      Summary: { Line_name: "", Line_type: [], Zygosity: [], Image: "" },
       Phenotype: { Select: { Phenotype: [], Stage: [] }, Other: {} },
     },
     input: {
@@ -127,6 +128,7 @@ export const allFilters = {
       Zygosity: {},
       Lab_of_origin: {},
       Status: {},
+      Image: "",
       Exp: { select: false, value: null },
       Charac: { select: false, value: null },
       Tag_type: { select: false, value: null },
@@ -158,65 +160,17 @@ export const allFilters = {
       },
     },
   },
-  "All Data" : {
-    selected:{
+  "All Data": {
+    selected: {
       "?field": ["Mutants"],
     },
-    options :[
+    options: [
       {
         type: "switch",
         label: "Mutants",
         field: "?field",
         checked: true,
       },
-    ]
-  }
+    ],
+  },
 };
-
-/*const useCallApi = async (url, options) => {
-  const { showAlert } = useAlert();
-  const [apiData, setApiData] = useState(null);
-  const [serverError,setServerError] = useState(false)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(url, options);
-        if (!res.ok) {
-          showAlert(`HTTP error: Status ${res.status}`, "danger");
-        }
-        setApiData(res.data);
-      } catch (err) {
-        console.log(err.message);
-        showAlert(err.message);
-        setServerError(true)
-      }
-    };
-
-    fetchData();
-  }, [options, showAlert, url]);
-
-  return { apiData };
-};*/
-
-/*const searchMutants = useCallback(() => {
-  axios
-    .post("/search/mutants", selected, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-      },
-    })
-    .then((res) => {
-      setResults(res.data);
-    })
-    .catch((err) => console.log(err) || showAlert(err.message, "danger"));
-}, [selected, setResults, showAlert]);
-
-export const useDeleteNode = (e) => {
-  const node = e.target.value;
-  const {apiData, serverError} = useCallApi(`/add/deleted/${node}`)
-  if (!serverError){
-useSearchMutants()
-  }
-};*/

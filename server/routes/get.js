@@ -5,7 +5,7 @@ import { request } from "../global.js";
 const router = express.Router();
 
 export const queryLine = (id, visibility) => `
-    SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status ?Creator ?CreatorID ?Created
+    SELECT ?Line_name ?Synonym_line_name ?Line_type ?Lab_of_origin ?Zygosity ?Generation ?Status ?Creator ?CreatorID ?Created ?img
     ?Tag_type ?Molecular_tools ?Vector_name ?construction ?mutation_type ?reagents_and_protocols ?Vector_description
     ?Gene_name ?Sequence ?Promoter ?Genome_version ?Genome_details ?Genome_date ?Ensembl_accession_number ?Genbank_accession_number ?NvERTx_ID
     ?Chromosomes_number ?Locus_of_insertion ?Mutated_region
@@ -28,6 +28,7 @@ export const queryLine = (id, visibility) => `
           dcterms:creator/sioc:name ?Creator;
           dcterms:creator ?CreatorID;
           dcterms:created ?Created.
+          optional {?line foaf:depiction ?img}
     
           ?exp obo:RO_0004009 ?tool;
           obo:RO_0002234 ?gene.
@@ -92,15 +93,15 @@ export const queryLine = (id, visibility) => `
     }`;
 
 router.get("/line/:id&:visibility", async (req, res) => {
-  console.time("query");
-  console.log(req.params);
+  //console.time("query");
+  //console.log(req.params);
 
   request(queryLine(req.params.id, req.params.visibility), "query")
     .then((data) => {
-      console.timeEnd("query");
-      console.time("formating");
+      //console.timeEnd("query");
+      //console.time("formating");
 
-      console.log(data);
+      //console.log(data);
 
       function loopThroughJSON(obj, newObj, path) {
         for (let key in obj) {
@@ -160,7 +161,7 @@ router.get("/line/:id&:visibility", async (req, res) => {
 
       data = loopThroughJSON(config.structJSON, {}, "");
 
-      console.log(data["Phenotype"]);
+      //console.log(data["Phenotype"]);
 
       const replace = (phen, superclass) => {
         for (let i = 0; i < phen.length; i++) {
@@ -180,8 +181,8 @@ router.get("/line/:id&:visibility", async (req, res) => {
           replace(data["Phenotype"]["Timeline"][superclass], superclass);
         }
       }
-      console.timeEnd("formating");
-      console.log(data);
+      //console.timeEnd("formating");
+      //console.log(data);
       res.json(data);
     })
     .catch((err) => console.log(err));

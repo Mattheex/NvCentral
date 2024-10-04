@@ -10,7 +10,7 @@ import Home from "./components/Home";
 import { AlertProvider, useAlert } from "./context/Alert";
 import Stack from "react-bootstrap/Stack";
 import { allFilters } from "./api/utils";
-import { get, SearchOptions, post } from "./api/service";
+import { get, SearchOptions, post, URL } from "./api/service";
 import Account from "./layout/Account";
 
 function App() {
@@ -44,6 +44,7 @@ function Transgenic({ title }) {
   const isInitialMount = useRef(true);
   const { showAlert } = useAlert();
   const params = useParams();
+  let searchUrl = "";
 
   console.log(title);
 
@@ -62,16 +63,13 @@ function Transgenic({ title }) {
     [selected]
   );
 
-  const searchMutants = useCallback(
-    (url) => {
-      post(url, selected)
-        .then((res) => {
-          setResults(res.data);
-        })
-        .catch((err) => showAlert(err.message, "danger", err));
-    },
-    [selected, setResults, showAlert]
-  );
+  const searchMutants = useCallback(() => {
+    post(searchUrl, selected)
+      .then((res) => {
+        setResults(res.data);
+      })
+      .catch((err) => showAlert(err.message, "danger", err));
+  }, [searchUrl, selected, showAlert]);
 
   const searchOptions = useCallback(() => {
     SearchOptions().then((res) => {
@@ -84,19 +82,19 @@ function Transgenic({ title }) {
     });
   }, [setOptions]);
 
-  const handleDelete = async (key, value) => {
-    const node = value;
-    console.log(`/add/deleted/${node}`);
-    const { serverError } = await get(`/add/deleted/${node}`);
-    if (!serverError) {
-      searchMutants();
-    }
+  const handleDelete = (key, value) => {
+    console.log(`/add/deleted/${value}`);
+    get(`/add/deleted/${value}`)
+      .then(() => {
+        searchMutants();
+        showAlert("Successfully deleted", "success");
+      })
+      .catch((err) => showAlert(err.message, "danger", err));
   };
 
   useEffect(() => {
-    let url;
     if (title === "All Data") {
-      url = "/search/all";
+      searchUrl = "/search/all";
       if (isInitialMount.current) {
         isInitialMount.current = false; // Set to false after the first render
         if (params.value) {
@@ -108,10 +106,10 @@ function Transgenic({ title }) {
         return;
       }
     } else {
-      url = "/search/mutants";
+      searchUrl = "/search/mutants";
       searchOptions();
     }
-    searchMutants(url);
+    searchMutants();
   }, [params.value, searchMutants, searchOptions, setSelected, title]);
 
   return (
@@ -179,8 +177,13 @@ function Add() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(inputAdd);
+
     const checkValues = (obj) => {
       for (let key in obj) {
+        if (key === "Image") {
+          continue;
+        }
         if (typeof obj[key] === "object" && obj[key] !== null) {
           if (!checkValues(obj[key])) {
             return false;
@@ -205,6 +208,17 @@ function Add() {
       console.log("bad values");
       return;
     }
+
+    if (inputAdd.Image !== "") {
+      const formData = new FormData();
+      formData.append("image", inputAdd.Image.file, "lines&" + inputAdd.Image.filename);
+
+      post(URL.upload.img, formData, "multipart/form-data").catch((err) =>
+        showAlert(err.message, "danger", err)
+      );
+    }
+
+    console.log(inputAdd);
     post("/add/line", inputAdd)
       .then(() => {
         navigate("/");

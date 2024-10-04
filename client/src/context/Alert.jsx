@@ -7,6 +7,8 @@ export const AlertProvider = ({ children }) => {
   const [alert, setAlert] = useState(null);
 
   const showAlert = useCallback((message, variant, detail = undefined) => {
+    console.log(message)
+    console.log('detail', detail)
     if (detail) console.log(detail);
     setAlert({ message, variant });
     setTimeout(() => setAlert(null), 2000); // Clear the alert after 2 seconds

@@ -58,6 +58,9 @@ export const JSONToSPARQL = (id, newData, account) => {
       property: "geno:status",
       NA: false,
     },
+    Image: {
+      property: "foaf:depiction",
+    },
     Exp: {
       property: "obo:RO_0002354",
       nodeType: "obo:OBI_0001154",
@@ -370,6 +373,7 @@ export const JSONToSPARQL = (id, newData, account) => {
             "Lab_of_origin",
             "Title",
             "Status",
+            "Image",
           ])
         )}
         
@@ -415,14 +419,20 @@ export const JSONToSPARQL = (id, newData, account) => {
         ${addProperty(json.Title.nodeID, subJson(newData, ["Date", "Creator", "Source", "Associated lines"]))}
         ${json.Line_name.nodeID} s:visibility s:Unseen.
         ${json.Line_name.nodeID} dcterms:creator ac:${account}.
-        ${json.Line_name.nodeID} dcterms:created ${dateString()}^^xsd:Date.
+        ${json.Line_name.nodeID} dcterms:created "${dateString()}"^^xsd:date.
 
-        ac:${account}Access${json.Line_name.nodeID} a   wac:Authorization ;
+        ac:${account}Access${json.Line_name.nodeID.substring(
+    4,
+    json.Line_name.nodeID.length
+  )} a   wac:Authorization ;
                                                     wac:agent    ac:${account};
                                                     wac:mode     wac:Read, wac:Write;
-                                                    wac:accessTo mut:${json.Line_name.nodeID}.
+                                                    wac:accessTo ${json.Line_name.nodeID}.
 
-        ac:${account} wac:accessControl ac:${account}Access${json.Line_name.nodeID}.
+        ac:${account} wac:accessControl ac:${account}Access${json.Line_name.nodeID.substring(
+    4,
+    json.Line_name.nodeID.length
+  )}.
     }`;
 };
 
@@ -463,16 +473,15 @@ const queryDeleteDatabase = (id, query) => {
 router.post("/line/", async (req, res) => {
   const account = verifiyAccount(req.headers["authorization"]);
   const ID = await findID();
-  console.log(`ID ${ID}`);
+  //console.log(`ID ${ID}`);
   const query = JSONToSPARQL(ID, req.body, account);
-  console.log(`Query ${query}`);
+  //console.log(`Query ${query}`);
   const deleteQuery = queryDeleteDatabase(ID, query);
-  console.log(`Compte ${account}`);
+  //console.log(`Compte ${account}`);
   sendEmail(account, ID).then((r) => console.log(r));
   request(query, "update")
     .then((data) => {
-      console.log(data);
-      console.log(deleteQuery);
+      //console.log(data);
       request(deleteQuery, "update")
         .then((data) => res.json(data))
         .catch((err) =>
@@ -502,14 +511,14 @@ router.get("/accept/:node", (req, res) => {
   const { node } = req.params;
   changeVisibilityNode(node)
     .then((data) => {
-      console.log(data);
+      //console.log(data);
       res.send("Data has been accepted");
     })
     .catch((err) => console.log(err));
 });
 
 export const deleteNode = async (node) => {
-  const selectQuery = `
+  /*const selectQuery = `
     SELECT ?queryZip WHERE {
         ?node rdf:type schema:DeleteAction;
                      geno:id ${node};
@@ -534,21 +543,47 @@ export const deleteNode = async (node) => {
   } catch (err) {
     console.log(err);
     return { success: false, message: err.message || err };
-  }
+  }*/
+
+  const deleteQuery = `
+  DELETE DATA {
+    ?node ?y ?z
+  } WHERE {
+    ?node ?y ?z.
+    ?node geno:id ${node}
+  }`;
+
+  return request(query, "update");
 };
 
 router.get("/deleted/:node", async (req, res) => {
   const { node } = req.params;
-  const result = await deleteNode(node);
-  console.log(result);
+  const deleteQuery = `
+  DELETE {
+    ?node ?y ?z.
+  } WHERE {
+    ?node ?y ?z.
+    ?node geno:id ${node}.
+  }`;
+  request(deleteQuery, "update")
+    .then((data) => res.json({ success: true, message: "Data has been deleted" }))
+    .catch((err) => {
+      console.log(err)
+      res.status(400).send({
+      message: err,
+    })}
+      
+    );
+  /*const result = await deleteNode(node);
+  //console.log(result);
   if (result.success) {
     res.send(result.message);
   } else {
-    console.log(result);
+    //console.log(result);
     res.status(400).send({
       message: result.message,
     });
-  }
+  }*/
 });
 
 const AddExistingNodes = async (field, value) => {
@@ -656,6 +691,8 @@ router.get("/", async (req, res) => {
   json.Summary.Zygosity = await AddExistingNodes("Zygosity", "");
   json.Summary.Lab_of_origin = await AddExistingNodes("Lab_of_origin", "");
   json.Summary.Status = await AddExistingNodes("Status", "");
+  json.Summary.Image = "file";
+
   json.Genetic_modifications.Tag_type = {
     type: "text",
     collapse: { field: "Line_type", value: "http://ircan.org/schema/Reporter" },

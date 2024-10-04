@@ -18,7 +18,7 @@ export const transporter = nodemailer.createTransport({
   secureConnection: false,
   auth: {
     user: "noreply.nvcentral@gmail.com",
-    pass: 'zukiwqaffzeeybtr',
+    pass: process.env.smtpPass
   },
   tls:{
     rejectUnAuthorized:true
@@ -114,7 +114,7 @@ const prefix = `
     PREFIX s:         <http://ircan.org/schema/>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
     PREFIX sAc:  <http://ircan.org/schema/account/>
-    PREFIX xs: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX dcterms:   <http://purl.org/dc/terms/>
     PREFIX bao:       <http://www.bioassayontology.org/bao#>

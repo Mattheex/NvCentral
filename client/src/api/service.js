@@ -1,14 +1,14 @@
 import axios from "axios";
 
-export const post = (url, data = undefined) =>
+export const post = (url, data = undefined, content = "application/json") =>
   axios.post(url, data, {
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": content,
       Authorization: localStorage.getItem("token"),
     },
   });
 
-export const get = (url, data = undefined) => axios.get(url);
+export const get = (url) => axios.get(url, { headers: { "Content-type": "application/json" } });
 
 export const loginAccount = (data) => post("/auth/login", data);
 export const addAccount = (data) => post("/auth/add/account", data);
@@ -30,5 +30,8 @@ export const URL = {
     editAccount: "/auth/edit/account",
     teamAccount: "/auth/delete/teamAccount",
     deleteAccount: "auth/delete/account",
+  },
+  upload: {
+    img: "/upload/img",
   },
 };

@@ -5,6 +5,7 @@ import addRoutes from './routes/add.js';
 import searchRoutes from './routes/search.js';
 import authRoutes from './routes/auth.js';
 import getRoutes from './routes/get.js';
+import uploadRoutes from './routes/upload.js'
 
 const app = express();
 const port = 5000;
@@ -24,6 +25,7 @@ app.use('/add', addRoutes);
 app.use('/search', searchRoutes);
 app.use('/auth', authRoutes);
 app.use('/get', getRoutes);
+app.use('/upload', uploadRoutes);
 app.use('/uploads', express.static('uploads'))
 
 

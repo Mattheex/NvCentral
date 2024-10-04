@@ -12,6 +12,7 @@
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix ac: <http://ircan.org/account/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
 
 <MutantGenotyping>
@@ -204,7 +205,9 @@
     terms:source     <publication1> ;
     geno:id          0 ;
     geno:status      s:published ;
-    terms:created   "2024-09-12"^^xsd:Date ;
+    s:visibility     s:Seen ;
+    foaf:depiction   "http://localhost:5000/uploads/lines/reporter.png";
+    terms:created    "2024-09-12"^^xsd:Date ;
     terms:creator    ac:Matthieu.
 
 
@@ -223,7 +226,8 @@
     geno:id          1 ;
     geno:status      s:published ;
     s:visibility     s:Seen ;
-    terms:created   "2024-09-12"^^xsd:Date ;
+    foaf:depiction   "http://localhost:5000/uploads/lines/npou4.png";
+    terms:created    "2024-09-12"^^xsd:Date ;
     terms:creator    ac:Matthieu.
 
 <LineMHT2>

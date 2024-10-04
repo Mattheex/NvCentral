@@ -30,10 +30,11 @@ export const getRights = async (account, nodeLooking = null) => {
 
 export const getUsername = async (account) => {
   const query = `
-    SELECT ?username ?mail ?team WHERE {
+    SELECT ?username ?mail ?team ?pp WHERE {
         ac:${account} sioc:name ?username.
         optional{ac:${account} sioc:email ?mail.}
         optional{ac:${account} sioc:member_of/rdfs:label ?team.}
+        optional{ac:${account} sioc:avatar ?pp.}
     }`;
   const data = await request(query, "query");
   return data;
@@ -118,7 +119,7 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/add/account", (req, res) => {
-  const { username, password, mail, team } = req.body;
+  const { username, password, mail, team, pp } = req.body;
 
   const hash = bcrypt.hashSync(password, 10);
 
@@ -128,7 +129,8 @@ router.post("/add/account", (req, res) => {
                      sioc:member_of <${team}>;
                      sioc:name "${username}";
                      sioc:email "${mail}";
-                     sAc:password "${hash}".
+                     sAc:password "${hash}";
+                     sioc:avatar "${pp}". 
 
       <${team}> sioc:has_member ac:${username}.
     }`;
@@ -267,7 +269,7 @@ router.post("/edit/account", (req, res) => {
     ac:${account} ?y ?z
   }`;
 
-  console.log(query);
+  //console.log(query);
 
   request(query, "update")
     .then(() => {

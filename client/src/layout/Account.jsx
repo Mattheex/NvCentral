@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "./../context/Alert";
 import Stack from "react-bootstrap/Stack";
@@ -14,12 +14,43 @@ import { getLabs, post, teamAccount, URL } from "../api/service";
 import defaultUserImg from "../defaultUser.png";
 import Image from "react-bootstrap/Image";
 
-function LineForm({ label, value, type, field, options, handleChange }) {
+function LineForm({ label, value, type, field, options, handleChange, fileUploadRef }) {
   let left;
   let format = "text";
 
   if (options !== undefined && options.length !== 0) {
     left = <Option options={options} field={field} handleChange={handleChange} />;
+  } else if (label === "Photo") {
+    const handleImageUpload = (event) => {
+      event.preventDefault();
+      fileUploadRef.current.click();
+    };
+
+    left = (
+      <div style={{ height: "75px", width: "75px" }}>
+        <Image
+          roundedCircle
+          src={value}
+          style={{
+            height: "75px",
+            width: "75px",
+            position: "absolute",
+          }}
+        />
+        <button
+          type="button"
+          onClick={handleImageUpload}
+          style={{
+            position: "absolute",
+            height: "75px",
+            width: "75px",
+            background: "none",
+            border: "none",
+          }}
+        />
+        <input type="file" id="file" ref={fileUploadRef} onChange={handleChange} hidden />
+      </div>
+    );
   } else if (type === "In" || type === "Up" || (type === "Account" && field !== "team")) {
     if (field === "password") {
       format = "password";
@@ -35,7 +66,11 @@ function LineForm({ label, value, type, field, options, handleChange }) {
 
   return (
     <Form.Group className="m-3" as={Row}>
-      <Form.Label column sm={2}>
+      <Form.Label
+        column
+        sm={2}
+        style={{ display: "inline-flex", justifyContent: "center", flexDirection: "column" }}
+      >
         {label}
       </Form.Label>
       <Col sm={10}>{left}</Col>
@@ -45,7 +80,13 @@ function LineForm({ label, value, type, field, options, handleChange }) {
 
 export default function Account() {
   const { showAlert } = useAlert();
-  const [account, setAccount] = useState({ username: "", password: "", team: "", mail: "", pp: "" });
+  const [account, setAccount] = useState({
+    username: "",
+    password: "",
+    team: "",
+    mail: "",
+    pp: defaultUserImg,
+  });
   const [teams, setTeams] = useState([{}]);
   const [options, setOptions] = useState([]);
   const { state, pathname } = useLocation();
@@ -63,10 +104,28 @@ export default function Account() {
     type = "Account";
   }
 
+  const fileUploadRef = useRef();
+
+  const uploadImageDisplay = () => {
+    const uploadedFile = fileUploadRef.current.files[0];
+    const formData = new FormData();
+    const newName = `${parseInt(Math.random() * 1000000)}.${uploadedFile.name.split(".").pop()}`;
+    formData.append("image", uploadedFile,'pp&'+newName);
+
+    post(URL.upload.img, formData, "multipart/form-data")
+      .then((res) => {
+        const filename = res.data.filename;
+        setAccount((account) => ({ ...account, ...{ pp: `http://localhost:5000/uploads/pp/${filename}` } }));
+      })
+      .catch((error) => {
+        console.error(error);
+        setAccount((account) => ({ ...account, ...{ pp: defaultUserImg } }));
+      });
+  };
+
   const handleChange = useCallback(
     (field, value) => {
       setAccount((account) => ({ ...account, ...{ [field]: value } }));
-      console.log(account);
     },
     [setAccount]
   );
@@ -86,8 +145,6 @@ export default function Account() {
         })
         .catch((err) => showAlert(err.response.data.message, "danger", err));
     };
-
-    console.log(e.target.id);
 
     if (type === "In") {
       apiCall(URL.auth.loginAccount);
@@ -120,10 +177,7 @@ export default function Account() {
       .then((res) => {
         console.log(res.data);
         if (res.data !== "no account") {
-          setAccount((account) => ({
-            ...account,
-            ...{ username: res.data.username, mail: res.data.mail, team: res.data.team },
-          }));
+          setAccount(res.data)
         } else {
           setAccount((account) => ({ ...account, ...{ username: "" } }));
         }
@@ -177,13 +231,13 @@ export default function Account() {
             {type === "Account" && (
               <Image
                 roundedCircle
-                src={defaultUserImg}
-                width="70"
-                height="70"
+                src={account.pp}
+                width="75"
+                height="75"
                 style={{
                   position: "absolute",
                   top: "65px",
-                  right: "7%",
+                  right: "10%",
                 }}
               />
             )}
@@ -223,7 +277,12 @@ export default function Account() {
               </>
             )}
             {type === "Up" && (
-              <LineForm label="Photo" value={account.pp} type={type} field="pp" handleChange={handleChange} />
+              <LineForm
+                label={"Photo"}
+                value={account.pp}
+                handleChange={uploadImageDisplay}
+                fileUploadRef={fileUploadRef}
+              />
             )}
             {type !== "See" && (
               <Form.Group as={Row} sm={"auto"} className="m-3">

@@ -3,7 +3,7 @@ import express from "express";
 const router = express.Router();
 
 export const searchData = async (filter, account) => {
-  console.log(account);
+  //console.log(account);
 
   let queryRights = checkRightsData(account);
   if (account === "Administrator"){
@@ -43,7 +43,7 @@ export const searchData = async (filter, account) => {
 
   let data = await request(query, "query");
 
-  console.log(data)
+  //console.log(data)
 
   data = Object.entries(data).reduce(
     (acc, [key, values]) => {
@@ -56,7 +56,7 @@ export const searchData = async (filter, account) => {
     [{}]
   );
 
-  console.log(data);
+  //console.log(data);
 
   let json = [];
 
@@ -127,7 +127,7 @@ router.post("/all", (req, res) => {
     }
   }
 
-  console.log(string)
+  //console.log(string)
 
   const account = verifiyAccount(req.headers["authorization"]);
   searchData(string, account)
