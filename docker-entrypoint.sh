@@ -18,12 +18,12 @@ set -e
 
 
 # Read the secret from the Docker secret file
-if [ -f /run/secrets/key ]; then
-  ADMIN_PASSWORD="$(cat /run/secrets/key)"
-else
-  echo "Error: Secret not found!"
-  exit 1
-fi
+# if [ -f /run/secrets/key ]; then
+#   ADMIN_PASSWORD="$(cat /run/secrets/key)"
+# else
+#   echo "Error: Secret not found!"
+#   exit 1
+# fi
 
 if [ ! -f "$FUSEKI_BASE/shiro.ini" ] ; then
   # First time
