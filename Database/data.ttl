@@ -207,7 +207,7 @@
     geno:status      s:published ;
     s:visibility     s:Seen ;
     foaf:depiction   "http://localhost:5000/uploads/lines/reporter.png";
-    terms:created    "2024-09-12"^^xsd:Date ;
+    terms:created    "2024-09-12"^^xsd:date ;
     terms:creator    ac:Matthieu.
 
 
@@ -227,7 +227,7 @@
     geno:status      s:published ;
     s:visibility     s:Seen ;
     foaf:depiction   "http://localhost:5000/uploads/lines/npou4.png";
-    terms:created    "2024-09-12"^^xsd:Date ;
+    terms:created    "2024-07-25"^^xsd:date ;
     terms:creator    ac:Matthieu.
 
 <LineMHT2>
@@ -344,8 +344,8 @@
 <FluorescenceTag1>
     a               bao:BAO_0170002 ;
     rdfs:label      "mCherry fluorescence tag" ;
-    s:cellLocated   obo:UBERON_0002095 ;
-    s:regionLocated obo:CL_0000187 ;
+    s:cellLocated   s:Muscle ;
+    s:regionLocated s:Mesenteries ;
     s:subLocated    s:NA ;
     obo:RO_0000053  <EmbryoLethal1>, <Perturbation1>, <Regeneration1>, <SwimPerturbation1> ;
     obo:RO_0000086  obo:PATO_0000018, obo:PATO_0000322 .
@@ -353,7 +353,7 @@
 <PhenotypeLine2>
     a               bao:BAO_0170002 ;
     rdfs:label      "Absence of Cnidocysts" ;
-    s:cellLocated   go:0042151 ;
+    s:cellLocated   s:Cnidocyte ;
     s:regionLocated s:NA ;
     s:subLocated    s:NA ;
     obo:RO_0000053  <AdultFecondity2>, <EmbryoLethal2>, <LarvalLethal2>, <Perturbation2>, <SwimPerturbation2> ;

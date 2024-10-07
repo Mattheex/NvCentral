@@ -27,6 +27,7 @@ function SearchResultList({ result, handleChange, routing }) {
 function Home() {
   const [result, setResult] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [lastData, setLastData] = useState("");
   const inputRef = useRef(null);
 
   const Search = (field, value) => {
@@ -53,6 +54,12 @@ function Home() {
   };
 
   useEffect(() => {
+    get("/get/last/date")
+      .then((res) => {
+        setLastData(res.data);
+      })
+      .catch((err) => console.log(err));
+
     const listener = (event) => {
       if (event.code === "Enter") {
         event.preventDefault();
@@ -67,6 +74,9 @@ function Home() {
 
   return (
     <div className="d-flex flex-column flex-grow-1 align-items-center justify-content-center tableColor home">
+      <h6 style={{ position: "absolute", color: "white", top: "15px", right: "15px" }}>
+        Last data : {lastData}
+      </h6>
       <div className="d-flex flex-column w-50 h-50 shadow-lg p-5 justify-content-between">
         <Form className="d-flex">
           <Label

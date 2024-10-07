@@ -16,6 +16,15 @@
 
 set -e
 
+
+# Read the secret from the Docker secret file
+if [ -f /run/secrets/key ]; then
+  ADMIN_PASSWORD="$(cat /run/secrets/key)"
+else
+  echo "Error: Secret not found!"
+  exit 1
+fi
+
 if [ ! -f "$FUSEKI_BASE/shiro.ini" ] ; then
   # First time
   echo "###################################"
@@ -71,6 +80,58 @@ do
          -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8'\
          --data "dbName=${dataset}&dbType=${TDB_VERSION}"
 done
+
+echo "${ADMIN_PASSWORD}"
+
+curl -s 'http://localhost:3030/$/datasets'\
+         -u admin:${ADMIN_PASSWORD}\
+         -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8'\
+         --data "dbName=NvCentral&dbType=${TDB_VERSION}"
+
+
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/account.ttl \
+  "http://localhost:3030/NvCentral/"
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/schema.ttl \
+  "http://localhost:3030/NvCentral/"
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/min-ontology.ttl \
+  "http://localhost:3030/NvCentral/"
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/acl.ttl \
+  "http://localhost:3030/NvCentral/"
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/data.ttl \
+  "http://localhost:3030/NvCentral/"
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/entities.ttl \
+  "http://localhost:3030/NvCentral/"
+
+curl -X POST \
+  -u admin:${ADMIN_PASSWORD}\
+  -H "Content-Type: text/turtle" \
+  --data-binary @/jena-fuseki/ns.rdf \
+  "http://localhost:3030/NvCentral/"
+
 echo "Fuseki is available :-)"
 unset ADMIN_PASSWORD # Don't keep it in memory
 

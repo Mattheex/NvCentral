@@ -46,7 +46,7 @@ function Transgenic({ title }) {
   const params = useParams();
   let searchUrl = "";
 
-  console.log(title);
+  //console.log(title);
 
   const handleChange = useCallback(
     (field, value) => {

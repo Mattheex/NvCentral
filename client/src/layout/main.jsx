@@ -23,7 +23,7 @@ function Main({ section, info, handleChangeMenu, inputAdd, setInputAdd, handleCh
         {section === "Options" && (
           <>
             <Stack direction="horizontal" className="justify-content-between p-3 border-bottom">
-              <h5 className="m-0">{title}</h5>
+              <h5 className="m-0">{title.charAt(0).toUpperCase() + title.slice(1)}</h5>
               <span>{results.length} Results</span>
             </Stack>
             {results.length === 0 && <div className="text-center">Nothing to display</div>}

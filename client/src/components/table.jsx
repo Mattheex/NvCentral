@@ -20,7 +20,7 @@ function TableHeader({ columns }) {
 }
 
 function Results({ results, handleChange }) {
-  console.log(results);
+  //console.log(results);
   const columns = Object.keys(results[0]);
   return (
     <Table className="table table-striped">

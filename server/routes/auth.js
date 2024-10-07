@@ -2,7 +2,7 @@ import config from "../constants.js";
 import jwt from "jsonwebtoken";
 import express from "express";
 import { request, checkRightsData, verifiyAccount } from "../global.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 

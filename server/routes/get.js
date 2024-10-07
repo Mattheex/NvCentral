@@ -188,4 +188,19 @@ router.get("/line/:id&:visibility", async (req, res) => {
     .catch((err) => console.log(err));
 });
 
+router.get("/last/date", (req, res) => {
+  const query = `
+  SELECT ?Created WHERE {
+    ?node dcterms:created ?Created.
+  } ORDER BY DESC(?Created)`;
+
+  request(query, "query")
+    .then((data) => {      
+      const date = data["Created"][0].split('-');
+      const formattedDate =`${date[2]}/${date[1]}/${date[0]}`
+      res.json(formattedDate);
+    })
+    .catch((err) => console.log(err));
+});
+
 export default router;

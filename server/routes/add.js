@@ -439,7 +439,10 @@ export const JSONToSPARQL = (id, newData, account) => {
 export const sendEmail = async (account, ID) => {
   const query = `
     SELECT ?mail WHERE {
-        ac:${account} sioc:member_of/sAc:hasDirector/sioc:email ?mail.
+        ac:${account} sioc:member_of/sAc:hasDirector ?director.
+        ?director sioc:email ?mail.
+
+        FILTER(ac:${account} != ?director)
     }`;
 
   let data = await request(query, "query");
@@ -568,12 +571,11 @@ router.get("/deleted/:node", async (req, res) => {
   request(deleteQuery, "update")
     .then((data) => res.json({ success: true, message: "Data has been deleted" }))
     .catch((err) => {
-      console.log(err)
+      console.log(err);
       res.status(400).send({
-      message: err,
-    })}
-      
-    );
+        message: err,
+      });
+    });
   /*const result = await deleteNode(node);
   //console.log(result);
   if (result.success) {
