@@ -10,6 +10,7 @@ import Button from "react-bootstrap/Button";
 import Option from "./Option";
 import Label from "./Label";
 import Collapse from "react-bootstrap/Collapse";
+import Form from "react-bootstrap/Form";
 
 function SimpleLabel({ info, k, setInputAdd }) {
   const [inputValue, setInputValue] = useState("");
@@ -21,9 +22,25 @@ function SimpleLabel({ info, k, setInputAdd }) {
   };
 
   const handleChangeValue = (field, label) => {
-    console.log(`${field}: ${label}`);
+    //console.log(`${field}: ${label}`);
     setInputValue(label);
     setInputAdd((inputAdd) => ({ ...inputAdd, ...{ [field]: { select: false, value: label } } }));
+  };
+
+  const handleFileChange = (field, file) => {
+    console.log(file);
+    const newName = `${parseInt(Math.random() * 1000000)}.${file.name.split(".").pop()}`;
+    setInputAdd((inputAdd) => ({
+      ...inputAdd,
+      ...{
+        [field]: {
+          select: false,
+          file: file,
+          filename: newName,
+          value: `http://localhost:5000/uploads/lines/${newName}`,
+        },
+      },
+    }));
   };
 
   let label;
@@ -45,6 +62,8 @@ function SimpleLabel({ info, k, setInputAdd }) {
     label = <Label value={inputValue} k={k} handleChange={handleChangeValue} type={"date"} />;
   } else if (info === "textarea" || (typeof info === "object" && info.type === "textarea")) {
     label = <Label value={inputValue} k={k} handleChange={handleChangeValue} rows={6} as={"textarea"} />;
+  } else if (info === "file") {
+    label = <Form.Control type="file" k={k} onChange={(e) => handleFileChange(k, e.target.files[0])} />;
   } else {
     label = <Label value={inputValue} k={k} handleChange={handleChangeValue} />;
   }
@@ -68,7 +87,9 @@ function Field({ info, section, k, setInputAdd, inputAdd }) {
   if (section === "Submit Data") {
     field = <SimpleLabel info={info} k={k} setInputAdd={setInputAdd}></SimpleLabel>;
   } else {
-    if (Array.isArray(info)) {
+    if (typeof info === "object" && !Array.isArray(info)) {
+      field = <Card.Link href={info.link}>{info.text}</Card.Link>;
+    } else if (Array.isArray(info)) {
       field = (
         <>
           {info.map((item, index) => (
@@ -141,7 +162,8 @@ function DLRow({ info, section, setInputAdd, inputAdd }) {
     <dl className="row align-self-center">
       {Object.keys(info).map(
         (key, index) =>
-          info[key] !== "add" && (
+          info[key] !== "add" &&
+          !(key === "Image" && section !== "Submit Data") && (
             <Field
               key={index}
               info={info[key]}
@@ -149,7 +171,7 @@ function DLRow({ info, section, setInputAdd, inputAdd }) {
               k={key}
               setInputAdd={setInputAdd}
               inputAdd={inputAdd}
-            ></Field>
+            />
           )
       )}
     </dl>
@@ -203,17 +225,17 @@ function CardComponent({ info, header, section, inputAdd, setInputAdd }) {
     body.push(
       <DLRow key={body.length} info={info} section={section} setInputAdd={setInputAdd} inputAdd={inputAdd} />
     );
-    if (header === "Summary" && section !== "Submit Data") {
+    if (header === "Summary" && section !== "Submit Data" && info.Image !== "NA") {
+      console.log(info);
       body.push(
         <Image
           key={body.length}
-          src="https://nvlines.ircan.org/assets/mutant-cba5326aefd64dbdb9a22a20f8706602c6115945972ce5bbc5faeb22ed95c7bb.png"
-          rounded
+          src={info.Image}
           style={{
             width: "250px",
             height: "250px",
-            bottom: "35px",
-            right: "200px",
+            top: "100px",
+            right: "10%",
             position: "absolute",
           }}
         />

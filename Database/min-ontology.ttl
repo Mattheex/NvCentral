@@ -1,0 +1,58 @@
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://purl.org/dc/terms/contributor> <http://orcid.org/0000-0001-5948-3092> .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> "origin_of_mutation" .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "change induced by TALE endonuclease cleavage" .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym> "TALE endonuclease" .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://purl.obolibrary.org/obo/IAO_0000115> "Sequence change caused by the cleavage of specific DNA sequences by transcription activator-like effector nucleases (TALENs). TALEN proteins comprise a DNA binding domain fused to the catalytic domain of the FokI endonuclease. The DNA binding domain contains a repetitive region within the middle of the protein, consisting of tandem repeats of 34 amino acid segments, with each of these segments recognizing a single base pair. The specificity of the binding is determined by two hypervariable amino acids in positions 12 and 13 (repeat-variable diresidues). Cleavage requires dimerization of FokI. The endonuclease is directed to a target region by a pair of TALENs which bind to adjacent sequences separated by a spacer region, allowing dimerization and promoting cleavage." .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/FBcv_0003007> .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.geneontology.org/formats/oboInOwl#id> "FBcv:0003009" .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://purl.org/dc/terms/date> "2014-03-27T11:07:29+00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.w3.org/2000/01/rdf-schema#label> "TALEN" .
+<http://purl.obolibrary.org/obo/FBcv_0003009> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://purl.org/dc/terms/contributor> <http://orcid.org/0000-0001-5948-3092> .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> "origin_of_mutation" .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "change induced by zinc finger nuclease-mediated cleavage" .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/fbcv#camcur> .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym> "zinc finger nuclease" .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://purl.obolibrary.org/obo/IAO_0000115> "Sequence change caused by the cleavage of specific DNA sequences by zinc finger nucleases (ZFNs). ZFN proteins comprise a DNA binding domain linked to the DNA cleavage domain of FokI endonuclease. The DNA binding domain is composed of three Cys2His2 zinc fingers, with each zinc finger contacting three consecutive base pairs of DNA. The specificity of the binding is determined by the sequence of the three-zinc finger DNA binding domain, which recognizes a 9 base pair sequence. Cleavage requires dimerization of FokI. The endonuclease is directed to a target region by a pair of ZFNs which bind to sequences in close proximity, allowing dimerization and promoting cleavage." .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/FBcv_0003007> .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.geneontology.org/formats/oboInOwl#id> "FBcv:0003239" .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://purl.org/dc/terms/date> "2016-04-06T10:22:52+00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.w3.org/2000/01/rdf-schema#label> "ZFN" .
+<http://purl.obolibrary.org/obo/FBcv_0003239> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://purl.org/dc/terms/contributor> <http://orcid.org/0000-0001-5948-3092> .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> "origin_of_mutation" .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "change induced by CRISPR/Cas9 endonuclease cleavage" .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym> "CRISPR/Cas9 endonuclease" .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://purl.obolibrary.org/obo/IAO_0000115> "Sequence change caused by a cleavage of a specific DNA sequence induced by CRISPR (clustered regularly interspaced short palindromic repeats)/Cas9 nuclease system. This system relies on the transcription of a chimeric guide RNA (gRNA) which directs the Cas9 endonuclease to a specified DNA sequence through basepairing to 20 nucleotide CRISPR target sites. These sites are located next to a 3 nucleotide protospacer adjacent motif (PAM) required for DNA cleavage." .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/FBcv_0003007> .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.geneontology.org/formats/oboInOwl#id> "FBcv:0003008" .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://purl.org/dc/terms/date> "2014-03-27T11:07:29+00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.w3.org/2000/01/rdf-schema#label> "CRISPR/Cas9" .
+<http://purl.obolibrary.org/obo/FBcv_0003008> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> "origin_of_mutation" .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "change induced by I-SceI endonuclease cleavage" .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym> "SCEI endonuclease" .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://purl.obolibrary.org/obo/IAO_0000115> "Sequence change caused by the cleavage of an 18 base pair DNA sequence by the I-SceI endonuclease." .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/FBcv_0003007> .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.geneontology.org/formats/oboInOwl#id> "FBcv:0000480" .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.w3.org/2000/01/rdf-schema#label> "I-SceI" .
+<http://purl.obolibrary.org/obo/FBcv_0000480> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> "origin_of_mutation" .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "change induced by I-CreI endonuclease cleavage" .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://purl.obolibrary.org/obo/IAO_0000115> "Sequence change caused by the cleavage of a 19-24 bp palindromic DNA site by the I-CreI endonuclease." .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/FBcv_0003007> .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://www.geneontology.org/formats/oboInOwl#id> "FBcv:0000146" .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://www.w3.org/2000/01/rdf-schema#label> "I-CreI" .
+<http://purl.obolibrary.org/obo/FBcv_0000146> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/GENO_0000134> <http://purl.obolibrary.org/obo/IAO_0000115> "A zygosity quality inhering in a 'single locus complement' with half the number of alleles than normal (e.g. a single allele in a diploid genome, for example, a locus on the Y chromosome in a eukaryotic male genome, or a transgene that is present only in one of the two parental chromosome sets)" .
+<http://purl.obolibrary.org/obo/GENO_0000134> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/GENO_0000391> .
+<http://purl.obolibrary.org/obo/GENO_0000134> <http://www.w3.org/2000/01/rdf-schema#label> "hemizygous" .
+<http://purl.obolibrary.org/obo/GENO_0000134> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/GENO_0000136> <http://purl.obolibrary.org/obo/IAO_0000115> "A zygosity quality inhering in a 'single locus complement' where all copies of the feature at this location have the same sequence (in a eukaryotic diploid genome, this means having identical alleles on each of the two homologous chromosomes, one inherited from each parent)." .
+<http://purl.obolibrary.org/obo/GENO_0000136> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/GENO_0000391> .
+<http://purl.obolibrary.org/obo/GENO_0000136> <http://www.w3.org/2000/01/rdf-schema#label> "homozygous" .
+<http://purl.obolibrary.org/obo/GENO_0000136> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://purl.obolibrary.org/obo/GENO_0000135> <http://purl.obolibrary.org/obo/IAO_0000115> "A zygosity quality inhering in a 'single locus complement' where the copies of the feature at this location have at least one difference in sequence  (in a eukaryotic diploid genome, this means having two distinct alleles on each of the two homologous chromosomes, one inherited from each parent)." .
+<http://purl.obolibrary.org/obo/GENO_0000135> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/GENO_0000391> .
+<http://purl.obolibrary.org/obo/GENO_0000135> <http://www.w3.org/2000/01/rdf-schema#label> "heterozygous" .
+<http://purl.obolibrary.org/obo/GENO_0000135> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .

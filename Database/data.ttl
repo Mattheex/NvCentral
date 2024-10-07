@@ -11,6 +11,9 @@
 @prefix taxon: <http://purl.uniprot.org/taxonomy/> .
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix ac: <http://ircan.org/account/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
 
 <MutantGenotyping>
     a               edam:data_1583 ;
@@ -202,7 +205,11 @@
     terms:source     <publication1> ;
     geno:id          0 ;
     geno:status      s:published ;
-    s:visibility     s:Seen .
+    s:visibility     s:Seen ;
+    foaf:depiction   "http://localhost:5000/uploads/lines/reporter.png";
+    terms:created    "2024-09-12"^^xsd:date ;
+    terms:creator    ac:Matthieu.
+
 
 <Line2>
     a                obo:OBI_1000048 ;
@@ -218,7 +225,10 @@
     terms:source     <publication2> ;
     geno:id          1 ;
     geno:status      s:published ;
-    s:visibility     s:Seen .
+    s:visibility     s:Seen ;
+    foaf:depiction   "http://localhost:5000/uploads/lines/npou4.png";
+    terms:created    "2024-07-25"^^xsd:date ;
+    terms:creator    ac:Matthieu.
 
 <LineMHT2>
     a                obo:OBI_1000048 ;
@@ -334,8 +344,8 @@
 <FluorescenceTag1>
     a               bao:BAO_0170002 ;
     rdfs:label      "mCherry fluorescence tag" ;
-    s:cellLocated   obo:UBERON_0002095 ;
-    s:regionLocated obo:CL_0000187 ;
+    s:cellLocated   s:Muscle ;
+    s:regionLocated s:Mesenteries ;
     s:subLocated    s:NA ;
     obo:RO_0000053  <EmbryoLethal1>, <Perturbation1>, <Regeneration1>, <SwimPerturbation1> ;
     obo:RO_0000086  obo:PATO_0000018, obo:PATO_0000322 .
@@ -343,7 +353,7 @@
 <PhenotypeLine2>
     a               bao:BAO_0170002 ;
     rdfs:label      "Absence of Cnidocysts" ;
-    s:cellLocated   go:0042151 ;
+    s:cellLocated   s:Cnidocyte ;
     s:regionLocated s:NA ;
     s:subLocated    s:NA ;
     obo:RO_0000053  <AdultFecondity2>, <EmbryoLethal2>, <LarvalLethal2>, <Perturbation2>, <SwimPerturbation2> ;

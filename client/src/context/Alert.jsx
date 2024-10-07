@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
 
 const AlertContext = createContext();
 export const useAlert = () => useContext(AlertContext);
@@ -12,7 +6,10 @@ export const useAlert = () => useContext(AlertContext);
 export const AlertProvider = ({ children }) => {
   const [alert, setAlert] = useState(null);
 
-  const showAlert = useCallback((message, variant) => {
+  const showAlert = useCallback((message, variant, detail = undefined) => {
+    console.log(message)
+    console.log('detail', detail)
+    if (detail) console.log(detail);
     setAlert({ message, variant });
     setTimeout(() => setAlert(null), 2000); // Clear the alert after 2 seconds
   }, []);
@@ -25,9 +22,5 @@ export const AlertProvider = ({ children }) => {
     [alert, showAlert]
   );
 
-  return (
-    <AlertContext.Provider value={contextValue}>
-      {children}
-    </AlertContext.Provider>
-  );
+  return <AlertContext.Provider value={contextValue}>{children}</AlertContext.Provider>;
 };

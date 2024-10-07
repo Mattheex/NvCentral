@@ -5,14 +5,14 @@
   "main": "server.js",
   "scripts": {
     "test": "set NODE_ENV=test&&node --test --watch",
-    "start": "set NODE_ENV=development&&node server",
-    "dev": "set NODE_ENV=development&&nodemon server"
+    "start": "set NODE_ENV=development&&node --env-file .env server",
+    "dev": "set NODE_ENV=development&&nodemon --env-file .env server"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "chai": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -23,7 +23,8 @@
     "nodemailer": "^6.9.14",
     "npm": "^10.8.2",
     "sendmail": "^1.6.1",
-    "sparql-http-client": "^3.0.0"
+    "sparql-http-client": "^3.0.0",
+    "multer": "1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

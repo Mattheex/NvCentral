@@ -2,7 +2,7 @@ import config from "../constants.js";
 import jwt from "jsonwebtoken";
 import express from "express";
 import { request, checkRightsData, verifiyAccount } from "../global.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
@@ -30,20 +30,42 @@ export const getRights = async (account, nodeLooking = null) => {
 
 export const getUsername = async (account) => {
   const query = `
-    SELECT ?username WHERE {
+    SELECT ?username ?mail ?team ?pp WHERE {
         ac:${account} sioc:name ?username.
+        optional{ac:${account} sioc:email ?mail.}
+        optional{ac:${account} sioc:member_of/rdfs:label ?team.}
+        optional{ac:${account} sioc:avatar ?pp.}
     }`;
   const data = await request(query, "query");
-  return data["username"];
+  return data;
 };
 
 router.post("/info", async (req, res) => {
+  let { account } = req.body;
+  console.log(account);
+  if (account === undefined) {
+    account = verifiyAccount(req.headers["authorization"]);
+    if (account === "Visitor") {
+      return res.json("no account");
+    }
+    console.log(account);
+  }
+  const info = await getUsername(account).catch((err) => {
+    console.log(err);
+    res.status(400).send({
+      message: err,
+    });
+  });
+  res.json(info);
+});
+
+router.post("/info/rights", async (req, res) => {
   const { node } = req.body;
   const account = verifiyAccount(req.headers["authorization"]);
   if (account === "Visitor") {
     return res.json("no account");
   }
-  const username = await getUsername(account).catch((err) => {
+  const { username } = await getUsername(account).catch((err) => {
     console.log(err);
     res.status(400).send({
       message: err,
@@ -55,6 +77,9 @@ router.post("/info", async (req, res) => {
       message: err,
     });
   });
+
+  console.log(username);
+  console.log(rights);
 
   if (username !== undefined && rights !== undefined) {
     res.json({ username, rights });
@@ -73,7 +98,7 @@ router.post("/login", (req, res) => {
   request(query, "query")
     .then(async (data) => {
       if (Object.keys(data).length === 0) {
-        res.status(401).json({ error: "Invalid username" });
+        res.status(401).send({ message: "Invalid username" });
       } else {
         const result = bcrypt.compareSync(password, data.password[0]);
         if (result) {
@@ -81,7 +106,7 @@ router.post("/login", (req, res) => {
           const token = jwt.sign({ node: account }, config.secretKEY);
           res.json(token);
         } else {
-          res.status(401).json({ error: "Invalid password" });
+          res.status(401).send({ message: "Invalid password" });
         }
       }
     })
@@ -94,7 +119,7 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/add/account", (req, res) => {
-  const { username, password, mail, team } = req.body;
+  const { username, password, mail, team, pp } = req.body;
 
   const hash = bcrypt.hashSync(password, 10);
 
@@ -104,13 +129,14 @@ router.post("/add/account", (req, res) => {
                      sioc:member_of <${team}>;
                      sioc:name "${username}";
                      sioc:email "${mail}";
-                     sAc:password "${hash}".
+                     sAc:password "${hash}";
+                     sioc:avatar "${pp}". 
 
       <${team}> sioc:has_member ac:${username}.
     }`;
 
   request(query, "update")
-    .then((data) => {
+    .then(() => {
       const token = jwt.sign({ node: username }, config.secretKEY);
       res.json(token);
     })
@@ -205,6 +231,50 @@ router.post("/team", (req, res) => {
       }
 
       res.json(data);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send({
+        message: error,
+      });
+    });
+});
+
+router.post("/edit/account", (req, res) => {
+  const account = verifiyAccount(req.headers["authorization"]);
+
+  let toDelete = "";
+  let toAdd = "";
+  const prop = {
+    username: "sioc:name",
+    password: "sAc:password",
+    mail: "sioc:email",
+  };
+  delete req.body.team;
+
+  for (const key in req.body) {
+    toDelete += `ac:${account} ${prop[key]} ?z.\n`;
+    if (key === "password") {
+      req.body[key] = bcrypt.hashSync(req.body[key], 10);
+    }
+    toAdd += `ac:${account} ${prop[key]} "${req.body[key]}".\n`;
+  }
+
+  const query = `
+  DELETE {
+    ${toDelete}
+  } INSERT {
+    ${toAdd}
+  } WHERE {
+    ac:${account} ?y ?z
+  }`;
+
+  //console.log(query);
+
+  request(query, "update")
+    .then(() => {
+      const token = jwt.sign({ node: account }, config.secretKEY);
+      res.json(token);
     })
     .catch((error) => {
       console.log(error);
