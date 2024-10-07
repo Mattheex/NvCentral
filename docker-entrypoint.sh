@@ -81,7 +81,6 @@ do
          --data "dbName=${dataset}&dbType=${TDB_VERSION}"
 done
 
-echo "${ADMIN_PASSWORD}"
 
 curl -s 'http://localhost:3030/$/datasets'\
          -u admin:${ADMIN_PASSWORD}\
