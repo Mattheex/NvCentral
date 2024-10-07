@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "set NODE_ENV=test&&node --test --watch",
-    "start": "set NODE_ENV=development&&node --env-file .env server",
+    "start": "node server",
     "dev": "set NODE_ENV=development&&nodemon --env-file .env server"
   },
   "keywords": [],

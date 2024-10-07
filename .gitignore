@@ -5,3 +5,4 @@
 /apache-jena-fuseki-5.0.0
 server/.env
 ontologies.ttl
+/script/*
